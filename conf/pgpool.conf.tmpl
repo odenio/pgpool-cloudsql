@@ -1,0 +1,169 @@
+#
+# General note:
+#
+# - this file is procesed by https://github.com/odenio/envtpl, which reads in
+#   all current shell env vars and sets them up as sources for the golang text/template
+#   engine plus the sprig3 extensions (http://masterminds.github.io/sprig/)
+#
+# - by convention, vars in ALL_CAPS_SNAKE_CASE are set by the kubenetes pod, and
+#   thus in turn by helm values
+#
+# - vars in lower_case_snake_case are set by the updater.sh script
+#
+# - any unset var will produce an error, and thus fail the updater run
+
+# This file is a derivative of the original pgpool.conf file found at
+# https://github.com/pgpool/pgpool2/blob/master/src/sample/pgpool.conf.sample-stream,
+# provided by the pgpool maintainers, and released under the following license:
+#
+# Copyright (c) 2003-2021 PgPool Global Development Group
+#
+# Permission to use, copy, modify, and distribute this software and
+# its documentation for any purpose and without fee is hereby
+# granted, provided that the above copyright notice appear in all
+# copies and that both that copyright notice and this permission
+# notice appear in supporting documentation, and that the name of the
+# author not be used in advertising or publicity pertaining to
+# distribution of the software without specific, written prior
+# permission. The author makes no representations about the
+# suitability of this software for any purpose.  It is provided "as
+# is" without express or implied warranty.
+
+#------------------------------------------------------------------------------
+# CONNECTIONS
+#------------------------------------------------------------------------------
+
+listen_addresses = '*'
+port = 5432
+socket_dir = '/tmp'
+reserved_connections = {{ .RESERVED_CONNECTIONS }}
+
+# - Backend Connection Settings -
+
+# there is always a primary
+backend_hostname0 = '{{.primary_ip}}'
+backend_port0 = 5432
+# pgpool will send all mutations to the primary; everything else should go to a replica
+backend_weight0 = 0
+backend_flag0 = 'ALWAYS_PRIMARY|DISALLOW_TO_FAILOVER'
+backend_data_directory0 = /data0
+backend_application_name0 = 'server0'
+
+# fill out the replicas (if found) with some gnarly template logic:
+#
+# - for every env var in the form "replica_ip_N" (where N is hopefully an integer)
+# - the IP address of the node is the $value of the env var
+# - split the var name ($key) by underscores -- the 3rd element is the $node_id
+# - add a backend with that node ID
+# - set the backend_weight to 1 / (total number of replicas)
+#
+# Note that the reported weight in SHOW POOL_NODES may not necessarily agree with
+# what we set here: pgpool never prunes down nodes, and will recalculate weights
+# based on its view of available servers.  (Which is why we heartbeat.)
+
+{{ $replicas := environment "replica_ip_" -}}
+{{ $num_replicas := len $replicas -}}
+{{ range $key, $value := $replicas -}}
+{{ $parts := split "_" $key -}}
+{{ $node_id := $parts._2 -}}
+# replica {{ $node_id }}
+backend_hostname{{ $node_id }} = '{{ $value }}'
+backend_port{{ $node_id }} = 5432
+backend_weight{{ $node_id }} = {{ divf 1.0 $num_replicas }}
+backend_flag{{ $node_id }} = 'ALLOW_TO_FAILOVER'
+
+{{ end -}}
+
+# - Authentication -
+
+enable_pool_hba = off
+pool_passwd = ''
+authentication_timeout = 1min
+allow_clear_text_frontend_auth = on
+
+#------------------------------------------------------------------------------
+# POOLS
+#------------------------------------------------------------------------------
+
+# - Concurrent session and pool size -
+num_init_children = {{ .NUM_INIT_CHILDREN }}
+max_pool = {{ .MAX_POOL }}
+child_life_time = {{ .CHILD_LIFE_TIME }}
+child_max_connections = {{ .CHILD_MAX_CONNECTIONS }}
+connection_life_time = {{ .CONNECTION_LIFE_TIME }}
+client_idle_limit = {{ .CLIENT_IDLE_LIMIT }}
+
+#------------------------------------------------------------------------------
+# LOGS
+#------------------------------------------------------------------------------
+
+log_destination = 'stderr'
+log_line_prefix = '%t: pid %p: '
+log_connections = off
+log_disconnections = off
+log_hostname = off
+log_statement = off
+log_per_node_statement = off
+log_client_messages = off
+log_standby_delay = 'if_over_threshold'
+log_min_messages = '{{ .LOG_MIN_MESSAGES }}'
+log_error_verbosity = '{{ .LOG_ERROR_VERBOSITY }}'
+
+#------------------------------------------------------------------------------
+# FILE LOCATIONS
+#------------------------------------------------------------------------------
+
+pid_file_name = '/var/run/pgpool.pid'
+logdir = '/tmp'
+
+#------------------------------------------------------------------------------
+# CONNECTION POOLING
+#------------------------------------------------------------------------------
+
+connection_cache = on
+reset_query_list = 'ABORT; DISCARD ALL'
+
+#------------------------------------------------------------------------------
+# LOAD BALANCING MODE
+#------------------------------------------------------------------------------
+
+load_balance_mode = {{ .IGNORE_LEADING_WHITE_SPACE }}
+ignore_leading_white_space = on
+read_only_function_list = ''
+write_function_list = ''
+primary_routing_query_pattern_list = '{{ .PRIMARY_ROUTING_QUERY_PATTERN_LIST -}}'
+database_redirect_preference_list = ''
+app_name_redirect_preference_list = ''
+allow_sql_comments = {{ .ALLOW_SQL_COMMENTS }}
+disable_load_balance_on_write = '{{ .DISABLE_LOAD_BALANCE_ON_WRITE -}}'
+dml_adaptive_object_relationship_list= ''
+statement_level_load_balance = '{{ .STATEMENT_LEVEL_LOAD_BALANCE -}}'
+
+#------------------------------------------------------------------------------
+# NATIVE REPLICATION MODE
+#------------------------------------------------------------------------------
+
+# - Streaming -
+sr_check_period = 10
+sr_check_user = '{{ .SR_CHECK_USERNAME }}'
+sr_check_password = '{{ .SR_CHECK_PASSWORD }}'
+sr_check_database = '{{ .SR_CHECK_DATABASE }}'
+
+#------------------------------------------------------------------------------
+# HEALTH CHECK GLOBAL PARAMETERS
+#------------------------------------------------------------------------------
+
+health_check_period = 5
+health_check_timeout = 20
+health_check_user = '{{ .HEALTH_CHECK_USERNAME }}'
+health_check_password = '{{ .HEALTH_CHECK_PASSWORD }}'
+health_check_database = '{{ .HEALTH_CHECK_DATABASE }}'
+health_check_max_retries = 2
+health_check_retry_delay = 1
+connect_timeout = 10000
+
+#------------------------------------------------------------------------------
+# FAILOVER AND FAILBACK
+#------------------------------------------------------------------------------
+
+failover_on_backend_error = off

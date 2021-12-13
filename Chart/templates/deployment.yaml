@@ -1,0 +1,167 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Release.Name }}"
+  labels:
+    app: "{{ .Release.Name }}"
+spec:
+  replicas: {{ .Values.deploy.replicaCount }}
+  selector:
+    matchLabels:
+      app: "{{ .Release.Name }}"
+  revisionHistoryLimit: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
+  template:
+    metadata:
+      labels:
+        app: "{{ .Release.Name }}"
+    spec:
+      {{- with .Values.deploy.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deploy.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      containers:
+      - name: pgpool
+        image: "{{ .Values.deploy.repository }}:{{ .Values.deploy.tag }}"
+        command:
+        - "/usr/bin/pgpool.sh"
+        # weird things can happen with the gcp metadata service at startup time
+        # that will prevent us from ever getting our config data; if we haven't
+        # gotten up and running in 75 seconds, give up.
+        startupProbe:
+          tcpSocket:
+            port: 5432
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 1
+          failureThreshold: 15
+        # stop taking traffic from the service after 10s of unavailability
+        readinessProbe:
+          tcpSocket:
+            port: 5432
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 1
+          failureThreshold: 2
+        # fail the pod if we go unavailable for >30s
+        livenessProbe:
+          tcpSocket:
+            port: 5432
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          successThreshold: 1
+          failureThreshold: 6
+        volumeMounts:
+        - name: etcdir
+          mountPath: /etc/pgpool
+
+      - name: discovery
+        image: "{{ .Values.deploy.repository }}:{{ .Values.deploy.tag }}"
+        command:
+          - /usr/bin/discovery.sh
+        env:
+        - name: PRIMARY_INSTANCE_PREFIX
+          value: {{ required "You must set .discovery.primaryInstancePrefix!" .Values.discovery.primaryInstancePrefix | quote }}
+        - name: RESERVED_CONNECTIONS
+          value: "{{ .Values.pgpool.reservedConnections }}"
+        - name: NUM_INIT_CHILDREN
+          value: "{{ .Values.pgpool.numInitChildren }}"
+        - name: MAX_POOL
+          value: "{{ .Values.pgpool.maxPool }}"
+        - name: CHILD_LIFE_TIME
+          value: "{{ .Values.pgpool.childLifeTime }}"
+        - name: CHILD_MAX_CONNECTIONS
+          value: "{{ .Values.pgpool.childMaxConnections }}"
+        - name: CONNECTION_LIFE_TIME
+          value: "{{ .Values.pgpool.connectionLifeTime }}"
+        - name: CLIENT_IDLE_LIMIT
+          value: "{{ .Values.pgpool.clientIdleLimit }}"
+        - name: IGNORE_LEADING_WHITE_SPACE
+          value: "{{ .Values.pgpool.ignoreLeadingWhiteSpace }}"
+        - name: PRIMARY_ROUTING_QUERY_PATTERN_LIST
+          value: "{{ .Values.pgpool.primaryRoutingQueryPatternList }}"
+        - name: ALLOW_SQL_COMMENTS
+          value: "{{ .Values.pgpool.allowSqlComments }}"
+        - name: DISABLE_LOAD_BALANCE_ON_WRITE
+          value: "{{ .Values.pgpool.disableLoadBalanceOnWrite }}"
+        - name: STATEMENT_LEVEL_LOAD_BALANCE
+          value: "{{ .Values.pgpool.statementLevelLoadBalance }}"
+        - name: LOG_MIN_MESSAGES
+          value: "{{ .Values.pgpool.logMinMessages }}"
+        - name: LOG_ERROR_VERBOSITY
+          value: "{{ .Values.pgpool.logErrorVerbosity }}"
+        - name: SR_CHECK_USERNAME
+          value: {{ required "You must set pgpool.srCheckUsername!" .Values.pgpool.srCheckUsername | quote }}
+        - name: SR_CHECK_PASSWORD
+          value: "{{ .Values.pgpool.srCheckPassword }}"
+        - name: SR_CHECK_DATABASE
+          value: "{{ .Values.pgpool.srCheckDatabase }}"
+        - name: HEALTH_CHECK_USERNAME
+          value: {{ required "You must set pgpool.healthCheckUsername!" .Values.pgpool.healthCheckUsername | quote }}
+        - name: HEALTH_CHECK_PASSWORD
+          value: "{{ .Values.pgpool.healthCheckPassword }}"
+        - name: HEALTH_CHECK_DATABASE
+          value: "{{ .Values.pgpool.healthCheckDatabase }}"
+        - name: PCP_PASSWORD
+          value: "{{ .Values.pcp.password }}"
+        volumeMounts:
+        - name: etcdir
+          mountPath: /etc/pgpool
+
+      - name: exporter
+        image: "{{ .Values.deploy.repository }}:{{ .Values.deploy.tag }}"
+        startupProbe:
+          httpGet:
+            path: /metrics
+            port: 9719
+          failureThreshold: 10
+          successThreshold: 1
+          periodSeconds: 3
+        # adding and removing replicas sometimes makes the exporter unhappy,
+        # which means jail for telegraf, which means jail for stackdriver.
+        # Give up and fail the pod after 30s of such nonsense.
+        livenessProbe:
+          httpGet:
+            path: /metrics
+            port: 9719
+          periodSeconds: 5
+          failureThreshold: 6
+          successThreshold: 1
+        command:
+        - "/usr/bin/exporter.sh"
+        env:
+        - name: POSTGRES_USERNAME
+          value: {{ required "You must set .exporter.postgresUsername!" .Values.exporter.postgresUsername | quote }}
+        - name: POSTGRES_PASSWORD
+          value: {{ required "You must set .exporter.postgresPassword!" .Values.exporter.postgresPassword | quote }}
+        - name: POSTGRES_DATABASE
+          value: "{{ .Values.exporter.postgresDatabase }}"
+        - name: PGPOOL_SERVICE
+          value: localhost
+        - name: PGPOOL_SERVICE_PORT
+          value: "5432"
+
+      - name: telegraf
+        image: "{{ .Values.deploy.repository }}:{{ .Values.deploy.tag }}"
+        command:
+          - /usr/bin/telegraf.sh
+        volumeMounts:
+        - name: telegraf-config
+          mountPath: /etc/telegraf
+
+      volumes:
+      - name: etcdir
+        emptyDir: {}
+      - name: telegraf-config
+        configMap:
+          name: "{{ .Release.Name }}-telegraf"
