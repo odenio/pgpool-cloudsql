@@ -1,0 +1,36 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Release.Name }}-telegraf"
+data:
+  telegraf.conf: |+
+    [global_tags]
+
+    [agent]
+        interval = "10s"
+        round_interval = true
+        flush_interval = "10s"
+        hostname = "$HOSTNAME"
+
+    # Configuration for Google Cloud Stackdriver to send metrics to
+    [[outputs.stackdriver]]
+        # GCP Project
+        project = "$PROJECT_ID"
+        # The namespace for the metric descriptor
+        namespace = "telegraf"
+        # We're a pod
+        resource_type = "gke_container"
+      ## Additional resource labels
+      [outputs.stackdriver.resource_labels]
+        project_id = "$PROJECT_ID"
+        cluster_name = "$CLUSTER_NAME"
+        namespace_id = "$NAMESPACE"
+        instance_id = "$INSTANCE_ID"
+        pod_id = "$HOSTNAME"
+        container_name = "telegraf"
+        zone = "$ZONE"
+
+    # Read metrics from the pgpool2_exporter container
+    [[inputs.prometheus]]
+        urls = ["http://localhost:9719/metrics"]

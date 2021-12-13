@@ -1,0 +1,146 @@
+# Copyright 2021 Oden Technologies Inc (https://oden.io/)
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+deploy:
+  replicaCount: 1
+  repository: odentech/pgpool-cloudsql
+  tag: 1.0.1
+  affinity: {}
+    # # pin tasks to the default node pool
+    # nodeAffinity:
+    #   requiredDuringSchedulingIgnoredDuringExecution:
+    #     nodeSelectorTerms:
+    #     - matchExpressions:
+    #       - key: cloud.google.com/gke-nodepool
+    #         operator: In
+    #         values:
+    #         - default-pool
+    # # prefer that tasks are never scheduled
+    # # on the same kubernetes node
+    # podAntiAffinity:
+    #   requiredDuringSchedulingIgnoredDuringExecution:
+    #     - labelSelector:
+    #         matchExpressions:
+    #           - key: "app"
+    #             operator: In
+    #             values:
+    #             - "{{ .Release.Name }}"
+    #       topologyKey: "kubernetes.io/hostname"
+  tolerations: {}
+  podDisruptionBudget:
+    maxUnavailable: 1
+
+discovery:
+  # Because Google CloudSQL does not allow for immediate reuse of DB instance names,
+  # and encourages a naming scheme of "<name prefix>-<unique id>", pgpool-cloudsql's
+  # discovery logic looks for a primary instance where the name prefix portion matches
+  # this variable.  IOW if your primary has a name like "metadata-20201130", you would
+  # set primaryInstancePrefix to "metadata-".  This is fed as-is to the gcloud
+  # `--filter name:${primaryInstancePrefix}` option and MUST match one and only one
+  # non-replica instance.
+  primaryInstancePrefix: ""  # REQUIRED!
+
+exporter:
+  # this username and password is used by the pgpool2_exporter metrics exporter
+  # to connect to pgpool.  It can be any valid postgres user known to the backend
+  # database instance; we recommend making it a read-only one with limited access.
+  postgresUsername: ""  # REQUIRED!
+  postgresPassword: ""  # REQUIRED!
+  postgresDatabase: "postgres"
+
+pcp:
+  password: ""
+
+pgpool:
+  # Number of reserved connections.
+  # Pgpool-II does not accept connections if over
+  # num_init_children - reserved_connections.
+  reservedConnections: 0
+  # Number of concurrent sessions allowed
+  numInitChildren: 128
+  # Maximum number of cached backend connections in each pgpool child process.
+  # https://www.pgpool.net/docs/42/en/html/runtime-config-connection-pooling.html
+  maxPool: 32
+  # Pool exits after being idle for this many seconds
+  childLifeTime: "5min"
+  # Pool exits after receiving that many connections
+  # 0 means no exit 
+  childMaxConnections: 8192
+  # Connection to backend closes after being idle for this many seconds
+  # 0 means no close
+  connectionLifeTime: 0
+  # Client is disconnected after being idle for that many seconds
+  # (even inside an explicit transactions!) 
+  # 0 means no disconnection
+  clientIdleLimit: 300
+  # Ignore leading white spaces of each query
+  ignoreLeadingWhiteSpace: "on"
+  # Semicolon separated list of query patterns
+  # that should be sent to primary node
+  # Regexp are accepted
+  primaryRoutingQueryPatternList: '.*DO NOT LOAD BALANCE.*'
+  # if on, ignore SQL comments when judging if load balance or
+  # query cache is possible.
+  # If off, SQL comments effectively prevent the judgment
+  # (pre 3.4 behavior).
+  allowSqlComments: "on"
+  # Load balance behavior when write query is issued
+  # in an explicit transaction.
+  #
+  # Valid values:
+  #
+  # 'transaction' (default):
+  #     if a write query is issued, subsequent
+  #     read queries will not be load balanced
+  #     until the transaction ends.
+  #
+  # 'trans_transaction':
+  #     if a write query is issued, subsequent
+  #     read queries in an explicit transaction
+  #     will not be load balanced until the session ends.
+  #
+  # 'dml_adaptive':
+  #     Queries on the tables that have already been
+  #     modified within the current explicit transaction will
+  #     not be load balanced until the end of the transaction.
+  #
+  # 'always':
+  #     if a write query is issued, read queries will
+  #     not be load balanced until the session ends.
+  #
+  # Note that any query not in an explicit transaction
+  # is not affected by the parameter except 'always'.
+  disableLoadBalanceOnWrite: "transaction"
+  # Enables statement level load balancing
+  statementLevelLoadBalance: "on"
+  # Controls which minimum message levels are emitted to log. Valid
+  # values are DEBUG5, DEBUG4, DEBUG3, DEBUG2, DEBUG1, INFO, NOTICE,
+  # WARNING, ERROR, LOG, FATAL, and PANIC. Each level includes all the
+  # levels that follow it. The default is WARNING.
+  logMinMessages: "ERROR"
+  # Controls the amount of detail emitted for each message that is logged.
+  # Valid values are TERSE, DEFAULT, and VERBOSE, each adding more fields
+  # to displayed messages. TERSE excludes the logging of DETAIL, HINT,
+  # QUERY and CONTEXT error information.
+  logErrorVerbosity: "TERSE"
+  #
+  # Streaming replication check config.  REQUIRED.
+  srCheckUsername: ""
+  srCheckPassword: ""
+  srCheckDatabase: "postgres"
+  #
+  # Health Check config.  REQUIRED
+  healthCheckUsername: ""
+  healthCheckPassword: ""
+  healthCheckDatabase: "postgres"
