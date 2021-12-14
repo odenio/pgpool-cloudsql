@@ -1,0 +1,1021 @@
+{
+    "metricDescriptors": [
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_backend_by_process_total/gauge",
+            "labels": [
+                {
+                    "key": "pool_pid"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_backend_by_process_total/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_backend_by_process_used/gauge",
+            "labels": [
+                {
+                    "key": "backend_id"
+                },
+                {
+                    "key": "pool_id"
+                },
+                {
+                    "key": "username"
+                },
+                {
+                    "key": "pool_pid"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "database"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_backend_by_process_used/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_backend_by_process_used_ratio/gauge",
+            "labels": [
+                {
+                    "key": "pool_pid"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_backend_by_process_used_ratio/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_backend_total/gauge",
+            "labels": [
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_backend_total/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_backend_used/gauge",
+            "labels": [
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_backend_used/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_backend_used_ratio/gauge",
+            "labels": [
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_backend_used_ratio/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_frontend_total/gauge",
+            "labels": [
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_frontend_total/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_frontend_used/gauge",
+            "labels": [
+                {
+                    "key": "username"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "database"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_frontend_used/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_frontend_used_ratio/gauge",
+            "labels": [
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_frontend_used_ratio/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_last_scrape_duration_seconds/gauge",
+            "labels": [
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_last_scrape_duration_seconds/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_last_scrape_error/gauge",
+            "labels": [
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_last_scrape_error/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_ddl_cnt/counter",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "CUMULATIVE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_ddl_cnt/counter",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_delete_cnt/counter",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "CUMULATIVE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_delete_cnt/counter",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_error_cnt/counter",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "CUMULATIVE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_error_cnt/counter",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_fatal_cnt/counter",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "CUMULATIVE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_fatal_cnt/counter",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_insert_cnt/counter",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "CUMULATIVE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_insert_cnt/counter",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_other_cnt/counter",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "CUMULATIVE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_other_cnt/counter",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_panic_cnt/counter",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "CUMULATIVE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_panic_cnt/counter",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_select_cnt/counter",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "CUMULATIVE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_select_cnt/counter",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_status/gauge",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_status/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_update_cnt/counter",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "CUMULATIVE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_update_cnt/counter",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_cache_cache_hit_ratio/gauge",
+            "labels": [
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_cache_cache_hit_ratio/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_cache_free_cache_entries_size/gauge",
+            "labels": [
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_cache_free_cache_entries_size/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_cache_num_cache_entries/gauge",
+            "labels": [
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_cache_num_cache_entries/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_cache_num_hash_entries/gauge",
+            "labels": [
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_cache_num_hash_entries/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_cache_used_cache_entries_size/gauge",
+            "labels": [
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_cache_used_cache_entries_size/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_cache_used_hash_entries/gauge",
+            "labels": [
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_cache_used_hash_entries/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_average_duration/gauge",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_average_duration/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_average_retry_count/gauge",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_average_retry_count/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_fail_count/gauge",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_fail_count/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_max_duration/gauge",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_max_duration/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_max_retry_count/gauge",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_max_retry_count/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_min_duration/gauge",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_min_duration/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_retry_count/gauge",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_retry_count/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_skip_count/gauge",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_skip_count/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_status/gauge",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_status/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_success_count/gauge",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_success_count/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_total_count/gauge",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_health_check_stats_total_count/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_nodes_replication_delay/gauge",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_nodes_replication_delay/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_nodes_select_cnt/counter",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "CUMULATIVE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_nodes_select_cnt/counter",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_pool_nodes_status/gauge",
+            "labels": [
+                {
+                    "key": "role"
+                },
+                {
+                    "key": "hostname"
+                },
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                },
+                {
+                    "key": "port"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_pool_nodes_status/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_scrapes_total/counter",
+            "labels": [
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                }
+            ],
+            "metricKind": "CUMULATIVE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_scrapes_total/counter",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        },
+        {
+            "name": "projects/my-project/metricDescriptors/custom.googleapis.com/telegraf/pgpool2_up/gauge",
+            "labels": [
+                {
+                    "key": "host"
+                },
+                {
+                    "key": "url"
+                }
+            ],
+            "metricKind": "GAUGE",
+            "valueType": "DOUBLE",
+            "description": "Auto-created custom metric.",
+            "type": "custom.googleapis.com/telegraf/pgpool2_up/gauge",
+            "monitoredResourceTypes": [
+                "gke_container"
+            ]
+        }
+    ]
+}

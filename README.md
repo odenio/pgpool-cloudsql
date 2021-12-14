@@ -44,7 +44,7 @@ The exception is that any statement containing the string `DO NOT LOAD BALANCE`
 instance no matter what.  This is configureable at deploy time as
 `.pgpool.primaryRoutingQueryPatternList` in [values.yaml](Helm/values.yaml).
 
-# installing the chart
+# Installing the Chart
 
 ## Step One: add our Helm repository to your client:
 
@@ -156,6 +156,74 @@ Parameter | Description | Default
 `pgpool.healthCheckUsername` | *REQUIRED* Specifies the PostgreSQL user name to perform health check. The same user must exist in all the PostgreSQL backends. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-health-check.html#GUC-HEALTH-CHECK-USER)) | `""`
 `pgpool.healthCheckPassword` | Specifies the password for the PostgreSQL user name configured in health_check_user to perform health check. The user and password must be same in all the PostgreSQL backends. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-health-check.html#GUC-HEALTH-CHECK-PASSWORD)) | `""`
 `pgpool.healthCheckDatabase` | Specifies the PostgreSQL database name to perform health check. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-health-check.html#GUC-HEALTH-CHECK-DATABASE)) | `postgres`
+
+<hr>
+</details>
+
+# Monitoring with Google Cloud Monitoring (AKA Stackdriver)
+
+As configured, pgpool-cloudsql exports the following Google Cloud Monitoring
+[metricDescriptors](https://cloud.google.com/monitoring/custom-metrics/creating-metrics)
+with the [gke_container](https://cloud.google.com/monitoring/api/resources#tag_gke_container)
+resource type and all resource labels automatically filled in.
+
+An example Stackdriver dashboard definition can be found in
+[monitoring/dashboard.json](monitoring/dashboard.json).
+
+The full list of metricDescriptor definitions is in
+[monitoring/metrics.json](monitoring/metrics.json).
+
+<details>
+<summary>Full metric descriptor list</summary>
+<hr>
+
+All metricDescriptors are created under the `custom.googleapis.com/telegraf/` prefix.
+
+Metric Descriptor | List of Metric Labels
+--- | ---
+`pgpool2_backend_by_process_total/gauge` | `pool_pid, host, url`
+`pgpool2_backend_by_process_used/gauge` | `backend_id, pool_id, username, pool_pid, host, url, database`
+`pgpool2_backend_by_process_used_ratio/gauge` | `pool_pid, host, url`
+`pgpool2_backend_total/gauge` | `host, url`
+`pgpool2_backend_used/gauge` | `host, url`
+`pgpool2_backend_used_ratio/gauge` | `host, url`
+`pgpool2_frontend_total/gauge` | `host, url`
+`pgpool2_frontend_used/gauge` | `username, host, url, database`
+`pgpool2_frontend_used_ratio/gauge` | `host, url`
+`pgpool2_last_scrape_duration_seconds/gauge` | `host, url`
+`pgpool2_last_scrape_error/gauge` | `host, url`
+`pgpool2_pool_backend_stats_ddl_cnt/counter` | `role, hostname, host, url, port`
+`pgpool2_pool_backend_stats_delete_cnt/counter` | `role, hostname, host, url, port`
+`pgpool2_pool_backend_stats_error_cnt/counter` | `role, hostname, host, url, port`
+`pgpool2_pool_backend_stats_fatal_cnt/counter` | `role, hostname, host, url, port`
+`pgpool2_pool_backend_stats_insert_cnt/counter` | `role, hostname, host, url, port`
+`pgpool2_pool_backend_stats_other_cnt/counter` | `role, hostname, host, url, port`
+`pgpool2_pool_backend_stats_panic_cnt/counter` | `role, hostname, host, url, port`
+`pgpool2_pool_backend_stats_select_cnt/counter` | `role, hostname, host, url, port`
+`pgpool2_pool_backend_stats_status/gauge` | `role, hostname, host, url, port`
+`pgpool2_pool_backend_stats_update_cnt/counter` | `role, hostname, host, url, port`
+`pgpool2_pool_cache_cache_hit_ratio/gauge` | `host, url`
+`pgpool2_pool_cache_free_cache_entries_size/gauge` | `host, url`
+`pgpool2_pool_cache_num_cache_entries/gauge` | `host, url`
+`pgpool2_pool_cache_num_hash_entries/gauge` | `host, url`
+`pgpool2_pool_cache_used_cache_entries_size/gauge` | `host, url`
+`pgpool2_pool_cache_used_hash_entries/gauge` | `host, url`
+`pgpool2_pool_health_check_stats_average_duration/gauge` | `role, hostname, host, url, port`
+`pgpool2_pool_health_check_stats_average_retry_count/gauge` | `role, hostname, host, url, port`
+`pgpool2_pool_health_check_stats_fail_count/gauge` | `role, hostname, host, url, port`
+`pgpool2_pool_health_check_stats_max_duration/gauge` | `role, hostname, host, url, port`
+`pgpool2_pool_health_check_stats_max_retry_count/gauge` | `role, hostname, host, url, port`
+`pgpool2_pool_health_check_stats_min_duration/gauge` | `role, hostname, host, url, port`
+`pgpool2_pool_health_check_stats_retry_count/gauge` | `role, hostname, host, url, port`
+`pgpool2_pool_health_check_stats_skip_count/gauge` | `role, hostname, host, url, port`
+`pgpool2_pool_health_check_stats_status/gauge` | `role, hostname, host, url, port`
+`pgpool2_pool_health_check_stats_success_count/gauge` | `role, hostname, host, url, port`
+`pgpool2_pool_health_check_stats_total_count/gauge` | `role, hostname, host, url, port`
+`pgpool2_pool_nodes_replication_delay/gauge` | `role, hostname, host, url, port`
+`pgpool2_pool_nodes_select_cnt/counter` | `role, hostname, host, url, port`
+`pgpool2_pool_nodes_status/gauge` | `role, hostname, host, url, port`
+`pgpool2_scrapes_total/counter` | `host, url`
+`pgpool2_up/gauge` | `host, url`
 
 <hr>
 </details>
