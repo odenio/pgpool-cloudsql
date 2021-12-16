@@ -33,6 +33,10 @@ spec:
       containers:
       - name: pgpool
         image: "{{ .Values.deploy.repository }}:{{ .Values.deploy.tag }}"
+        {{- with .Values.deploy.resources.pgpool }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         command:
         - "/usr/bin/pgpool.sh"
         # weird things can happen with the gcp metadata service at startup time
@@ -67,6 +71,10 @@ spec:
 
       - name: discovery
         image: "{{ .Values.deploy.repository }}:{{ .Values.deploy.tag }}"
+        {{- with .Values.deploy.resources.discovery }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         command:
           - /usr/bin/discovery.sh
         env:
@@ -120,6 +128,10 @@ spec:
 
       - name: exporter
         image: "{{ .Values.deploy.repository }}:{{ .Values.deploy.tag }}"
+        {{- with .Values.deploy.resources.exporter }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         startupProbe:
           httpGet:
             path: /metrics
@@ -153,6 +165,10 @@ spec:
 
       - name: telegraf
         image: "{{ .Values.deploy.repository }}:{{ .Values.deploy.tag }}"
+        {{- with .Values.deploy.resources.telegraf }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         command:
           - /usr/bin/telegraf.sh
         volumeMounts:

@@ -44,14 +44,13 @@ RUN apk add --no-cache git make build-base python3 curl
 WORKDIR /src
 
 # sigh: https://github.com/influxdata/telegraf/pull/10097
-ADD https://129391-33258973-gh.circle-artifacts.com/0/build/dist/telegraf-1.21.0~f24665ed_static_linux_amd64.tar.gz .
-RUN tar xf telegraf-1.21.0~f24665ed_static_linux_amd64.tar.gz
+ADD https://134632-33258973-gh.circle-artifacts.com/0/build/dist/telegraf-1.21.0~38129d23_static_linux_amd64.tar.gz ./telegraf.tgz
+RUN tar xf telegraf.tgz
 
 # using our fork until/unless https://github.com/subfuzion/envtpl/pull/11 lands
 RUN git clone https://github.com/odenio/envtpl
 
-# using our fork until/unless https://github.com/pgpool/pgpool2_exporter/pull/9
-# and https://github.com/pgpool/pgpool2_exporter/pull/10 land
+# using our fork until/unless https://github.com/pgpool/pgpool2_exporter/pull/11 lands
 RUN git clone https://github.com/odenio/pgpool2_exporter.git
 
 WORKDIR /src/envtpl

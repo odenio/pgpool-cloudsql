@@ -15,7 +15,7 @@
 deploy:
   replicaCount: 1
   repository: odentech/pgpool-cloudsql
-  tag: 1.0.1
+  tag: 1.0.2
   affinity: {}
     # # pin tasks to the default node pool
     # nodeAffinity:
@@ -38,6 +38,16 @@ deploy:
     #             - "{{ .Release.Name }}"
     #       topologyKey: "kubernetes.io/hostname"
   tolerations: {}
+  resources:
+    pgpool: {}
+      # # pgpool can be a little memory-hungry, especially if you have a large client pool
+      # limits:
+      #   memory: "2Gi"
+      # requests:
+      #   memory: "1Gi"
+    discovery: {}
+    exporter: {}
+    telegraf: {}
   podDisruptionBudget:
     maxUnavailable: 1
 
@@ -68,7 +78,7 @@ pgpool:
   # num_init_children - reserved_connections.
   reservedConnections: 0
   # Number of concurrent sessions allowed
-  numInitChildren: 128
+  numInitChildren: 32
   # Maximum number of cached backend connections in each pgpool child process.
   # https://www.pgpool.net/docs/42/en/html/runtime-config-connection-pooling.html
   maxPool: 32

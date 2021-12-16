@@ -58,7 +58,7 @@ helm repo update
 ```sh
 export RELEASE_NAME=my-pgpool-service # a name (you will need 1 installed chart for each primary DB)
 export NAMESPACE=my-k8s-namespace     # a kubernetes namespace
-export CHART_VERSION=1.0.1            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
+export CHART_VERSION=1.0.2            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
 export VALUES_FILE=./my_values.yaml   # your values file
 
 helm install \
@@ -71,6 +71,24 @@ helm install \
   --values "${VALUES_FILE}"
 ```
 
+Please note that there are several Helm values that you are required to fill
+out; a bare-minimum local `my_values.yaml` would look like this:
+
+```yaml
+discovery:
+  primaryInstancePrefix: my-cloudsql-instance-name-prefix
+pgpool:
+  srCheckUsername: <postgres_username>
+  srCheckPassword: <postgres_password>
+  healthCheckUsername: <postgres_username>
+  healthCheckPassword: <postgres_password>
+exporter:
+  postgresUsername: <postgres_username>
+  postgresPassword: <postgres_password>
+```
+
+See below for the full list of possible values:
+
 # Chart Values
 
 ## Kubernetes deployment options
@@ -82,10 +100,14 @@ Parameter | Description | Default
 --- | --- | ---
 `deploy.replicaCount` | Number of pod replicas to deploy | `1`
 `deploy.repository` | Docker image repository of the runtime image | `odentech/pgpool-cloudsql`
-`deploy.tag` | Docker image tag of the runtime image | `1.0.1`
+`deploy.tag` | Docker image tag of the runtime image | `1.0.2`
 `deploy.affinity` | Kubernetes [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) spec applied to the deployment pods | `{}`
 `deploy.tolerations` | Kubernetes [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) spec applied to the deployment pods | `{}`
 `deploy.podDisruptionBudget.maxUnavailable` | Maximum number of pods allowed to be unavailable during an update ([docs](https://kubernetes.io/docs/tasks/run-application/configure-pdb/)) | 1
+`deploy.resources.pgpool` | Kubernetes [resource block](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the pgpool container | `{}`
+`deploy.resources.discovery` | Kubernetes [resource block](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the discovery container. | `{}`
+`deploy.resources.exporter` | Kubernetes [resource block](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the pgpool2_exporter container. | `{}`
+`deploy.resources.telegraf` | Kubernetes [resource block](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the telegraf container. | `{}`
 
 <hr>
 </details>
@@ -137,7 +159,7 @@ Parameter | Description | Default
 Parameter | Description | Default
 --- | --- | ---
 `pgpool.reservedConnections` | When this parameter is set to 1 or greater, incoming connections from clients are not accepted with error message "Sorry, too many clients already", rather than blocked if the number of current connections from clients is more than (`numInitChildren` - `reservedConnections`). ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-connection.html#GUC-RESERVED-CONNECTIONS)) | `0`
-`pgpool.numInitChildren` | The number of preforked Pgpool-II server processes. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-connection.html#GUC-NUM-INIT-CHILDREN)) | `128`
+`pgpool.numInitChildren` | The number of preforked Pgpool-II server processes. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-connection.html#GUC-NUM-INIT-CHILDREN)) | `32`
 `pgpool.maxPool` | The maximum number of cached connections in each Pgpool-II child process. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-connection.html#GUC-MAX-POOL)) | `32`
 `pgpool.childLifeTime` | Specifies the time in seconds to terminate a Pgpool-II child process if it remains idle. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-connection-pooling.html#GUC-CHILD-LIFE-TIME)) | `5min`
 `pgpool.childMaxConnections` | Specifies the lifetime of a Pgpool-II child process in terms of the number of client connections it can receive. Pgpool-II will terminate the child process after it has served child_max_connections client connections and will immediately spawn a new child process to take its place. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-connection-pooling.html#GUC-CHILD-MAX-CONNECTIONS)) | `8192`
