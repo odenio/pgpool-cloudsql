@@ -49,7 +49,7 @@ instance no matter what.  This is configureable at deploy time as
 ## Step One: add our Helm repository to your client:
 
 ```sh
-helm repo add odenio https://odenio.github.io/charts && \
+helm repo add odenio https://odenio.github.io/pgpool-cloudsql/charts && \
 helm repo update
 ```
 
@@ -58,7 +58,7 @@ helm repo update
 ```sh
 export RELEASE_NAME=my-pgpool-service # a name (you will need 1 installed chart for each primary DB)
 export NAMESPACE=my-k8s-namespace     # a kubernetes namespace
-export CHART_VERSION=1.0.2            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
+export CHART_VERSION=1.0.3            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
 export VALUES_FILE=./my_values.yaml   # your values file
 
 helm install \
@@ -100,7 +100,7 @@ Parameter | Description | Default
 --- | --- | ---
 `deploy.replicaCount` | Number of pod replicas to deploy | `1`
 `deploy.repository` | Docker image repository of the runtime image | `odentech/pgpool-cloudsql`
-`deploy.tag` | Docker image tag of the runtime image | `1.0.2`
+`deploy.tag` | Docker image tag of the runtime image | `1.0.3`
 `deploy.affinity` | Kubernetes [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) spec applied to the deployment pods | `{}`
 `deploy.tolerations` | Kubernetes [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) spec applied to the deployment pods | `{}`
 `deploy.podDisruptionBudget.maxUnavailable` | Maximum number of pods allowed to be unavailable during an update ([docs](https://kubernetes.io/docs/tasks/run-application/configure-pdb/)) | 1
