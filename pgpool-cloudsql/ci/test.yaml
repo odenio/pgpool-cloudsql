@@ -1,0 +1,8 @@
+discovery:
+  primaryInstancePrefix: testdb
+pgpool:
+  srCheckUsername: postgres
+  srCheckPassword: password
+exporter:
+  postgresUsername: postgres
+  postgresPassword: password

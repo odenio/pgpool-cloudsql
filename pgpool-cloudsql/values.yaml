@@ -1,11 +1,11 @@
 # Copyright 2021 Oden Technologies Inc (https://oden.io/)
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,7 +15,7 @@
 deploy:
   replicaCount: 1
   repository: odentech/pgpool-cloudsql
-  tag: 1.0.2
+  tag: 1.0.3
   affinity: {}
     # # pin tasks to the default node pool
     # nodeAffinity:
@@ -85,13 +85,13 @@ pgpool:
   # Pool exits after being idle for this many seconds
   childLifeTime: "5min"
   # Pool exits after receiving that many connections
-  # 0 means no exit 
+  # 0 means no exit
   childMaxConnections: 8192
   # Connection to backend closes after being idle for this many seconds
   # 0 means no close
   connectionLifeTime: 0
   # Client is disconnected after being idle for that many seconds
-  # (even inside an explicit transactions!) 
+  # (even inside an explicit transactions!)
   # 0 means no disconnection
   clientIdleLimit: 300
   # Ignore leading white spaces of each query
