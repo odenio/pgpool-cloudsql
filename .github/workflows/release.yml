@@ -27,7 +27,8 @@ jobs:
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.2.1
         with:
-          charts_dir: charts
+          charts_dir: .
+          package_path: charts
           config: cr.yaml
           charts_repo_url: https://odenio.github.io/pgpool-cloudsql
         env:
