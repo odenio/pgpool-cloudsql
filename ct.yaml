@@ -1,0 +1,4 @@
+target-branch: main
+remote: origin
+chart-dirs:
+  - .
