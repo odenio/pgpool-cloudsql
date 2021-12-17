@@ -49,7 +49,7 @@ instance no matter what.  This is configureable at deploy time as
 ## Step One: add our Helm repository to your client:
 
 ```sh
-helm repo add odenio https://odenio.github.io/pgpool-cloudsql/charts && \
+helm repo add pgpool-cloudsql https://odenio.github.io/pgpool-cloudsql && \
 helm repo update
 ```
 
