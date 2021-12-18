@@ -12,30 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Some included components are released under different licensing terms:
-#
-# Alpine Linux includes multiple components primarily licensed under
-# GPL2, MIT and BSD 2-clause terms: https://gitlab.alpinelinux.org/alpine/aports/-/issues/7423
-#
-# PGPool-II is released under the PGPool license, which is broadly
-# compatible with the MIT license: https://github.com/pgpool/pgpool2/blob/master/COPYING
-#
-# The Go language runtime is licensed under the Golang license, which
-# is broadly compatible with the 3-clause BSD license: https://github.com/golang/go/blob/master/LICENSE
-#
-# pgpool2_exporter is released under the MIT license: https://github.com/pgpool/pgpool2_exporter/blob/master/LICENSE
-#
-# telegraf is released under the MIT license: https://github.com/influxdata/telegraf/blob/master/LICENSE
-#
-# PostgreSQL and its libraries are released under the PostgreSQL License, which
-# is broadly compatible with the MIT license: https://www.postgresql.org/about/licence/
-#
-# The Google Cloud SDK and the "gcloud" CLI tool are released under the Apache License v2.0:
-# https://www.apache.org/licenses/LICENSE-2.0
-#
-# "envtpl" and Oden's forked contributions are released under the MIT license:
-# https://github.com/subfuzion/envtpl/blob/master/LICENSE
-
 # for the moment, edge has the latest version of pgpool
 ARG ALPINE_VERSION=edge
 
