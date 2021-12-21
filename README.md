@@ -58,7 +58,7 @@ helm repo update
 ```sh
 export RELEASE_NAME=my-pgpool-service # a name (you will need 1 installed chart for each primary DB)
 export NAMESPACE=my-k8s-namespace     # a kubernetes namespace
-export CHART_VERSION=1.0.3            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
+export CHART_VERSION=1.0.4            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
 export VALUES_FILE=./my_values.yaml   # your values file
 
 helm install \
@@ -100,7 +100,7 @@ Parameter | Description | Default
 --- | --- | ---
 `deploy.replicaCount` | Number of pod replicas to deploy | `1`
 `deploy.repository` | Docker image repository of the runtime image | `odentech/pgpool-cloudsql`
-`deploy.tag` | Docker image tag of the runtime image | `1.0.3`
+`deploy.tag` | Docker image tag of the runtime image | `1.0.4`
 `deploy.affinity` | Kubernetes [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) spec applied to the deployment pods | `{}`
 `deploy.tolerations` | Kubernetes [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) spec applied to the deployment pods | `{}`
 `deploy.podDisruptionBudget.maxUnavailable` | Maximum number of pods allowed to be unavailable during an update ([docs](https://kubernetes.io/docs/tasks/run-application/configure-pdb/)) | 1
@@ -178,6 +178,7 @@ Parameter | Description | Default
 `pgpool.healthCheckUsername` | *REQUIRED* Specifies the PostgreSQL user name to perform health check. The same user must exist in all the PostgreSQL backends. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-health-check.html#GUC-HEALTH-CHECK-USER)) | `""`
 `pgpool.healthCheckPassword` | Specifies the password for the PostgreSQL user name configured in health_check_user to perform health check. The user and password must be same in all the PostgreSQL backends. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-health-check.html#GUC-HEALTH-CHECK-PASSWORD)) | `""`
 `pgpool.healthCheckDatabase` | Specifies the PostgreSQL database name to perform health check. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-health-check.html#GUC-HEALTH-CHECK-DATABASE)) | `postgres`
+`pgpool.coredumpSizeLimit` | Size limit in blocks of core files that pgpool is allowed to emit if a worker crashes; this is fed to `ulimit -c` in the [wrapper script](bin/pgpool.sh), so valid values are any integer or `"unlimited"`. | `"0"`
 
 <hr>
 </details>

@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Copyright 2021 Oden Technologies Inc (https://oden.io/)
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,26 +19,29 @@ INST_META="${METADATA_BASE}/instance"
 PROJ_META="${METADATA_BASE}/project"
 NAMESPACE_FILE="/var/run/secrets/kubernetes.io/serviceaccount/namespace"
 
-log(){
+log() {
   local level msg highlight printcmd printflags emoji
   printcmd="${PRINTCMD:-echo}"
   printflags="${PRINTFLAGS:-"-e"}"
-  level="$(tr '[:lower:]' '[:upper:]' <<< "${@:1:1}")"
+  level="$(tr '[:lower:]' '[:upper:]' <<<"${@:1:1}")"
   msg=("${@:2}")
   case "${level}" in
-    FATAL) highlight="${RED}"; emoji="💀 "  ;;
-    ERR*) highlight="${RED}"; emoji="⛔️ " ;;
-    WARN*) highlight="${ORANGE}"; emoji="⚠️  " ;;
-    DEBUG) if [[ "${DEBUG}" != "true" ]]; then return; fi; highlight=""; emoji="🔎 " ;;
-    *) highlight="${CYAN}"; emoji="" ;;
+  FATAL) emoji="💀 " ;;
+  ERR*) emoji="⛔️ " ;;
+  WARN*) emoji="⚠️  " ;;
+  DEBUG)
+    if [[ "${DEBUG}" != "true" ]]; then return; fi
+    emoji="🔎 "
+    ;;
+  *) ;;
   esac
-  "${printcmd}" "${printflags}" "${highlight}$(date --iso=seconds --utc) ${emoji}${level}: ${msg[*]}${RST}" 1>&2
+  "${printcmd}" "${printflags}" "$(date --iso=seconds --utc) ${emoji}${level}: ${msg[*]}${RST}" 1>&2
   if [[ "${level}" == "FATAL" ]]; then
-    if [[ "${-}" =~ 'i' ]] ; then return 1; else exit 1; fi
+    if [[ "${-}" =~ 'i' ]]; then return 1; else exit 1; fi
   fi
 }
 
-get_repl_pool_node_id(){
+get_repl_pool_node_id() {
   local ip dir suffix
   ip="${1}"
   dir="${2:-"${STATEDIR}"}"
@@ -63,19 +66,18 @@ get_repl_pool_node_id(){
       log debug "no statefiles exist yet"
     fi
     log debug "Generated new suffix for ${ip}: ${suffix}"
-    echo "${suffix}" > "${dir}/${ip}"
+    echo "${suffix}" >"${dir}/${ip}"
   fi
 
   echo "${suffix}"
 }
 
-get_metadata(){
+get_metadata() {
+  CURLFLAGS="-sf"
   if [ "${DEBUG}" = "true" ]; then
     CURLFLAGS="-vf"
-  else
-    CURLFLAGS="-sf"
   fi
-  
+
   if [ -f "${NAMESPACE_FILE}" ]; then
     NAMESPACE="$(cat "${NAMESPACE_FILE}")"
   else
@@ -90,7 +92,7 @@ get_metadata(){
     sleep 5
   done
   ZONE="$(basename "${ZONE}")"
-  REGION="$(cut -d- -f1-2 <<< "${ZONE}")"
+  REGION="$(cut -d- -f1-2 <<<"${ZONE}")"
   log info "Region: ${REGION}"
   log info "Zone: ${ZONE}"
 

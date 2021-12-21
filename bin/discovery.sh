@@ -1,13 +1,13 @@
 #!/bin/bash -e
 
 # Copyright 2021 Oden Technologies Inc (https://oden.io/)
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -61,8 +61,9 @@ while true; do
     gcloud \
       --project "${PROJECT_ID}" \
       sql instances list \
-        --filter "region:${REGION} AND name:${PRIMARY_INSTANCE_PREFIX} AND state:RUNNABLE AND instanceType:CLOUD_SQL_INSTANCE" \
-        --format 'csv[no-heading](name,ip_addresses.filter("type:PRIVATE").*extract(ip_address).flatten())'); do
+      --filter "region:${REGION} AND name:${PRIMARY_INSTANCE_PREFIX} AND state:RUNNABLE AND instanceType:CLOUD_SQL_INSTANCE" \
+      --format 'csv[no-heading](name,ip_addresses.filter("type:PRIVATE").*extract(ip_address).flatten())'
+  ); do
     log error "Could not successfully look up primary instance matching ${PRIMARY_INSTANCE_PREFIX}, sleeping 5s and re-looping"
     sleep 5
     continue
@@ -75,7 +76,7 @@ while true; do
   fi
 
   unset primary_name primary_ip
-  IFS="," read -r primary_name primary_ip <<< "${primary_instances[0]}"
+  IFS="," read -r primary_name primary_ip <<<"${primary_instances[0]}"
 
   if [ -z "${primary_ip}" ]; then
     log error "No primary IP found for ${primary_name}; sleeping 5s and retrying."
@@ -101,13 +102,13 @@ while true; do
     gcloud \
       --project "${PROJECT_ID}" \
       sql instances list \
-        --sort-by serverCaCert.createTime \
-        --filter "region:${REGION} AND masterInstanceName:${PROJECT_ID}:${primary_name} AND state:RUNNABLE" \
-        --format 'csv[no-heading](name,ip_addresses.filter("type:PRIVATE").*extract(ip_address).flatten())' \
-      )
+      --sort-by serverCaCert.createTime \
+      --filter "region:${REGION} AND masterInstanceName:${PROJECT_ID}:${primary_name} AND state:RUNNABLE" \
+      --format 'csv[no-heading](name,ip_addresses.filter("type:PRIVATE").*extract(ip_address).flatten())'
+  )
 
   for replspec in "${current_replicas[@]}"; do
-    IFS="," read -r repl_dbname repl_private_ip <<< "${replspec}"
+    IFS="," read -r repl_dbname repl_private_ip <<<"${replspec}"
     if [[ "${repl_private_ip}" ]]; then
       pool_node_id="$(get_repl_pool_node_id "${repl_private_ip}" "${STATEDIR}")"
       if [[ -z "${pool_node_id}" ]]; then
@@ -151,7 +152,7 @@ while true; do
   # (if by some chance our container restarts w/o the pod restarting, we'll re-attach
   # all of the current replicas, but that's fine: it's a no-op)
   for replspec in "${current_replicas[@]}"; do
-    IFS="," read -r repl_dbname repl_private_ip <<< "${replspec}"
+    IFS="," read -r repl_dbname repl_private_ip <<<"${replspec}"
     if ! printf '%s\0' "${active_replicas[@]}" | grep -qzoP "${repl_private_ip}\n?"; then
       pool_node_id="$(get_repl_pool_node_id "${repl_private_ip}" "${STATEDIR}")"
       if [[ -z "${pool_node_id}" ]]; then

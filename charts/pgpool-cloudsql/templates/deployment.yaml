@@ -68,6 +68,9 @@ spec:
         volumeMounts:
         - name: etcdir
           mountPath: /etc/pgpool
+        env:
+        - name: COREDUMP_SIZE_LIMIT
+          value: "{{ .Values.pgpool.coredumpSizeLimit }}"
 
       - name: discovery
         image: "{{ .Values.deploy.repository }}:{{ .Values.deploy.tag }}"

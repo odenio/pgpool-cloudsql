@@ -1,13 +1,13 @@
 #!/bin/bash -e
 
 # Copyright 2021 Oden Technologies Inc (https://oden.io/)
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,11 @@
 
 # shellcheck disable=SC1091
 . /usr/bin/functions.sh
+
+# pgpool has a tendency to leave core files around willy-nilly, which is disconcerting
+COREDUMP_SIZE_LIMIT="${COREDUMP_SIZE_LIMIT:-"0"}"
+log info "Setting coredump size limit to ${COREDUMP_SIZE_LIMIT}"
+ulimit -c "${COREDUMP_SIZE_LIMIT}"
 
 # there is no point in starting until the discovery script has generated
 # our config file

@@ -15,7 +15,7 @@
 deploy:
   replicaCount: 1
   repository: odentech/pgpool-cloudsql
-  tag: 1.0.3
+  tag: 1.0.4
   affinity: {}
     # # pin tasks to the default node pool
     # nodeAffinity:
@@ -154,3 +154,5 @@ pgpool:
   healthCheckUsername: ""
   healthCheckPassword: ""
   healthCheckDatabase: "postgres"
+  # coredump size limit (fed to `ulimit -c`; defined in blocks or "unlimited")
+  coredumpSizeLimit: "0"
