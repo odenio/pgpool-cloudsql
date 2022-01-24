@@ -19,9 +19,8 @@ FROM --platform=linux/amd64 golang:1.17-alpine as go_utils
 RUN apk add --no-cache git make build-base python3 curl
 WORKDIR /src
 
-# sigh: https://github.com/influxdata/telegraf/pull/10097
-ADD https://134632-33258973-gh.circle-artifacts.com/0/build/dist/telegraf-1.21.0~38129d23_static_linux_amd64.tar.gz ./telegraf.tgz
-RUN tar xf telegraf.tgz
+# building from source until a release includes https://github.com/influxdata/telegraf/pull/10097
+RUN git clone https://github.com/influxdata/telegraf.git
 
 # using our fork until/unless https://github.com/subfuzion/envtpl/pull/11 lands
 RUN git clone https://github.com/odenio/envtpl
@@ -29,11 +28,15 @@ RUN git clone https://github.com/odenio/envtpl
 # using our fork until/unless https://github.com/pgpool/pgpool2_exporter/pull/11 lands
 RUN git clone https://github.com/odenio/pgpool2_exporter.git
 
+WORKDIR /src/telegraf
+RUN git checkout 697855c98b38a81bbe7dead59355f5740875448a
+RUN make all
+
 WORKDIR /src/envtpl
 RUN go install ./cmd/envtpl/...
 
 WORKDIR /src/pgpool2_exporter
-RUN git checkout all-fixes
+RUN git checkout 0b12a3c2dfdacadccabb24a5226a8531deff63ba
 RUN go install ./pgpool2_exporter.go
 
 FROM --platform=linux/amd64 alpine:${ALPINE_VERSION}
@@ -61,7 +64,7 @@ ENV PATH $PATH:/usr/local/gcloud/google-cloud-sdk/bin
 
 COPY --from=go_utils /go/bin/envtpl /bin/envtpl
 COPY --from=go_utils /go/bin/pgpool2_exporter /bin/pgpool2_exporter
-COPY --from=go_utils /src/telegraf-1.21.0/usr/bin/telegraf /bin/telegraf
+COPY --from=go_utils /src/telegraf/telegraf /bin/telegraf
 
 RUN mkdir /etc/templates
 COPY conf/*.conf /etc/templates/
