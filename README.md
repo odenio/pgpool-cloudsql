@@ -58,7 +58,7 @@ helm repo update
 ```sh
 export RELEASE_NAME=my-pgpool-service # a name (you will need 1 installed chart for each primary DB)
 export NAMESPACE=my-k8s-namespace     # a kubernetes namespace
-export CHART_VERSION=1.0.5            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
+export CHART_VERSION=1.0.6            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
 export VALUES_FILE=./my_values.yaml   # your values file
 
 helm install \
@@ -100,7 +100,9 @@ Parameter | Description | Default
 --- | --- | ---
 `deploy.replicaCount` | Number of pod replicas to deploy | `1`
 `deploy.repository` | Docker image repository of the runtime image | `odentech/pgpool-cloudsql`
-`deploy.tag` | Docker image tag of the runtime image | `1.0.5`
+`deploy.tag` | Docker image tag of the runtime image | `1.0.6`
+`deploy.service.tier` | Value for the "tier" [label](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) applied to the kubernetes [service](https://kubernetes.io/docs/concepts/services-networking/service/) | `1.0.6`
+`deploy.service.additionalLabels` | Map of additional k/v string pairs to add as labels for the kubernetes service | `{}`
 `deploy.affinity` | Kubernetes [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) spec applied to the deployment pods | `{}`
 `deploy.tolerations` | Kubernetes [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) spec applied to the deployment pods | `{}`
 `deploy.podDisruptionBudget.maxUnavailable` | Maximum number of pods allowed to be unavailable during an update ([docs](https://kubernetes.io/docs/tasks/run-application/configure-pdb/)) | 1
@@ -316,37 +318,7 @@ But there was some good news: the
 binary that scrapes and parses the data returned by the "sql-like" commands and
 exports it as a prometheus-compatible `/metrics` endpoint.
 
-The bad news is that it has several critical bugs in it; at the time of this
-writing we have two pull requests awaiting evaluation upstream:
-
-- [Counter types were exported as gauges](https://github.com/pgpool/pgpool2_exporter/pull/10)
-- [No metric for ratio of available connections](https://github.com/pgpool/pgpool2_exporter/pull/9)
-
-We are currently running a build of the exporter that has our fixes
-pre-applied; you can see this in the [Dockerfile](Dockerfile).
-
 ## Oh god, Telegraf
-
-Having cobbled together a prometheus-like metrics endpoint, the obvious last
-step was to use [telegraf](https://github.com/influxdata/telegraf) to forward
-the data to Stackdriver.
-
-Unfortunately, when we did so, we immediately noticed something very strange:
-any counter- type metric, no matter what values telegraf appeared to be
-sending, produced a graph that was a flat line at some seemingly random value
-between 0 and 1, and manual queries for the timeseries data from the
-stackdriver API would at first return data and then after a few minutes return
-only `{"unit": "not_a_unit"}` for the exact same query.
-
-The issue turned out to be that the telegraf stackdriver output plugin (which
-we here at oden wrote) was not actually setting the start time correctly on
-CUMULATIVE stackdriver metrics, and the stackdriver API imposes some frankly
-odd conditions on same.
-
-We have [an open PR](https://github.com/influxdata/telegraf/pull/10097) against
-telegraf that fixes this behavior, and for now we are deploying a version of
-telegraf helpfully provided by influxdata as part of their PR review process.
-(This, also, is in the dockerfile.)
 
 Lastly, it's worth calling out the [telegraf config
 file](Helm/templates/configmap.yaml); in order to correctly fill in the

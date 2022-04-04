@@ -5,6 +5,10 @@ metadata:
   name: "{{ .Release.Name }}"
   labels:
     app: "{{ .Release.Name }}"
+    tier: "{{ .Values.deploy.service.tier }}"
+    {{- with .Values.deploy.service.additionalLabels }}
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
 spec:
   ports:
   - port: 5432

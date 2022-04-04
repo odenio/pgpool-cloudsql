@@ -19,35 +19,29 @@ FROM --platform=linux/amd64 golang:1.17-alpine as go_utils
 RUN apk add --no-cache git make build-base python3 curl
 WORKDIR /src
 
-# building from source until a release includes https://github.com/influxdata/telegraf/pull/10097
-RUN git clone https://github.com/influxdata/telegraf.git
-
 # using our fork until/unless https://github.com/subfuzion/envtpl/pull/11 lands
 RUN git clone https://github.com/odenio/envtpl
-
-# using our fork until/unless https://github.com/pgpool/pgpool2_exporter/pull/11 lands
-RUN git clone https://github.com/odenio/pgpool2_exporter.git
-
-WORKDIR /src/telegraf
-RUN git checkout 697855c98b38a81bbe7dead59355f5740875448a
-RUN make all
 
 WORKDIR /src/envtpl
 RUN go install ./cmd/envtpl/...
 
-WORKDIR /src/pgpool2_exporter
-RUN git checkout 0b12a3c2dfdacadccabb24a5226a8531deff63ba
-RUN go install ./pgpool2_exporter.go
-
 FROM --platform=linux/amd64 alpine:${ALPINE_VERSION}
 RUN apk add --no-cache curl python3
+
+ARG TELEGRAF_VERSION=1.22.0
+RUN curl -sfL https://dl.influxdata.com/telegraf/releases/telegraf-${TELEGRAF_VERSION}_static_linux_amd64.tar.gz |\
+  tar zxf - --strip-components=2 -C /
+
+ARG EXPORTER_VERSION=1.2.0
+RUN curl -sfL https://github.com/pgpool/pgpool2_exporter/releases/download/v${EXPORTER_VERSION}/pgpool2_exporter-${EXPORTER_VERSION}.linux-amd64.tar.gz |\
+  tar zxf - --strip-components=1 -C /usr/bin
 
 # we build this in the deploy container because there's no guarantee
 # that golang:XXX-alpine and alpine:YYY will have the same python versions
 RUN mkdir -p /usr/local/gcloud \
-  && curl https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz | \
-  tar -C /usr/local/gcloud -zxvf - \
-  && /usr/local/gcloud/google-cloud-sdk/install.sh
+  && curl -sfL https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz | \
+  tar -C /usr/local/gcloud -zxf - \
+  && /usr/local/gcloud/google-cloud-sdk/install.sh -q
 
 RUN apk add --no-cache \
       bash \
@@ -63,8 +57,6 @@ RUN apk add --no-cache \
 ENV PATH $PATH:/usr/local/gcloud/google-cloud-sdk/bin
 
 COPY --from=go_utils /go/bin/envtpl /bin/envtpl
-COPY --from=go_utils /go/bin/pgpool2_exporter /bin/pgpool2_exporter
-COPY --from=go_utils /src/telegraf/telegraf /bin/telegraf
 
 RUN mkdir /etc/templates
 COPY conf/*.conf /etc/templates/
