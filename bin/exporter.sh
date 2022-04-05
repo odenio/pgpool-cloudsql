@@ -56,9 +56,8 @@ until echo 'SELECT null;' | psql -h "${PGPOOL_SERVICE}" -p "${PGPOOL_SERVICE_POR
   sleep 5
 done
 
-# for some reason, pgpool2_exporter's log level filtering is very broken
 set -o pipefail
-/bin/pgpool2_exporter --log.level=info --log.format=logfmt 2>&1 | grep -v 'level=debug'
+/bin/pgpool2_exporter --log.level=info --log.format=logfmt 2>&1
 EVAL="$?"
 log error "pgpool2_exporter exited with value ${EVAL}"
 sleep 1 # don't spam the kubelet
