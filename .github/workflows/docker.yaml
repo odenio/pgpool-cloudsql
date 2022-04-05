@@ -4,6 +4,9 @@ on:
   release:
     types:
     - created
+    - published
+    - edited
+    - released
   pull_request:
     types:
     - opened
