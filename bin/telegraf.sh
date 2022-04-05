@@ -21,7 +21,7 @@ get_metadata
 
 set +e
 log info "Starting up telegraf"
-/bin/telegraf --config /etc/telegraf/telegraf.conf
+/usr/bin/telegraf --config /etc/telegraf/telegraf.conf
 EVAL="$?"
 log error "Telegraf exited with status $EVAL"
 sleep 1 # don't spam the kubelet

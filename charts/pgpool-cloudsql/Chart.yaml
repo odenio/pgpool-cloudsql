@@ -15,7 +15,7 @@ apiVersion: v2
 description: the pgpool-ii connection pooling postgres proxy with automatic discovery of GCP CloudSQL backends
 name: pgpool-cloudsql
 type: application
-version: 1.0.7
+version: 1.0.8
 keywords:
 - postgresql
 - pgpool
