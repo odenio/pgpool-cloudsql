@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 
 # Copyright 2021 Oden Technologies Inc (https://oden.io/)
 #

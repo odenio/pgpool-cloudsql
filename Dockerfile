@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# for the moment, edge has the latest version of pgpool
-ARG ALPINE_VERSION=edge
+# for the moment, 3.15 has the latest version of pgpool that we support
+ARG ALPINE_VERSION=3.15
 
 FROM --platform=linux/amd64 golang:1.17-alpine as go_utils
 RUN apk add --no-cache git make build-base python3 curl

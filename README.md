@@ -58,7 +58,7 @@ helm repo update
 ```sh
 export RELEASE_NAME=my-pgpool-service # a name (you will need 1 installed chart for each primary DB)
 export NAMESPACE=my-k8s-namespace     # a kubernetes namespace
-export CHART_VERSION=1.0.8            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
+export CHART_VERSION=1.0.9            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
 export VALUES_FILE=./my_values.yaml   # your values file
 
 helm install \
@@ -100,8 +100,8 @@ Parameter | Description | Default
 --- | --- | ---
 `deploy.replicaCount` | Number of pod replicas to deploy | `1`
 `deploy.repository` | Docker image repository of the runtime image | `odentech/pgpool-cloudsql`
-`deploy.tag` | Docker image tag of the runtime image | `1.0.8`
-`deploy.service.tier` | Value for the "tier" [label](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) applied to the kubernetes [service](https://kubernetes.io/docs/concepts/services-networking/service/) | `1.0.8`
+`deploy.tag` | Docker image tag of the runtime image | `1.0.9`
+`deploy.service.tier` | Value for the "tier" [label](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) applied to the kubernetes [service](https://kubernetes.io/docs/concepts/services-networking/service/) | `1.0.9`
 `deploy.service.additionalLabels` | Map of additional k/v string pairs to add as labels for the kubernetes service | `{}`
 `deploy.affinity` | Kubernetes [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) spec applied to the deployment pods | `{}`
 `deploy.tolerations` | Kubernetes [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) spec applied to the deployment pods | `{}`
