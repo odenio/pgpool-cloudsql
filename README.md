@@ -63,7 +63,7 @@ export VALUES_FILE=./my_values.yaml   # your values file
 
 helm install \
   "${RELEASE_NAME}" \
-  odenio/pgpool-cloudsql \
+  pgpool-cloudsql/pgpool-cloudsql \
   --atomic \
   --timeout=5m0s \
   --namespace "${NAMESPACE}" \
