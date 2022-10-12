@@ -34,3 +34,11 @@ data:
     # Read metrics from the pgpool2_exporter container
     [[inputs.prometheus]]
         urls = ["http://localhost:9719/metrics"]
+
+    # alas until and unless the stackdriver output plugin gains
+    # the ability to handle histogram/distribution metrics, it is
+    # not safe to enable this: our logs become an endless stream
+    # of errors about the `go_gc_duration_seconds` metric having
+    # an unsupported ValueType
+    [[inputs.internal]]
+      collect_memstats = false
