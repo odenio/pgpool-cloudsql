@@ -21,7 +21,8 @@ get_metadata
 
 set +e
 log info "Starting up telegraf"
-/usr/bin/telegraf --config /etc/telegraf/telegraf.conf
+# filter out errors due to the stackdriver output plugin not yet supporting histogram/distribution metrics
+/usr/bin/telegraf --config /etc/telegraf/telegraf.conf 2>&1 | grep -v go_gc_duration_seconds
 EVAL="$?"
 log error "Telegraf exited with status $EVAL"
 sleep 1 # don't spam the kubelet
