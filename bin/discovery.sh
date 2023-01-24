@@ -61,7 +61,7 @@ while true; do
     gcloud \
       --project "${PROJECT_ID}" \
       sql instances list \
-      --filter "region:${REGION} AND name:${PRIMARY_INSTANCE_PREFIX} AND state:RUNNABLE AND instanceType:CLOUD_SQL_INSTANCE" \
+      --filter "region:${REGION} AND name~^${PRIMARY_INSTANCE_PREFIX} AND state:RUNNABLE AND instanceType:CLOUD_SQL_INSTANCE" \
       --format 'csv[no-heading](name,ip_addresses.filter("type:PRIVATE").*extract(ip_address).flatten())'
   ); do
     log error "Could not successfully look up primary instance matching ${PRIMARY_INSTANCE_PREFIX}, sleeping 5s and re-looping"
