@@ -19,8 +19,7 @@ FROM --platform=linux/amd64 golang:1.17-alpine as go_utils
 RUN apk add --no-cache git make build-base python3 curl
 WORKDIR /src
 
-# using our fork until/unless https://github.com/subfuzion/envtpl/pull/11 lands
-RUN git clone https://github.com/odenio/envtpl
+RUN git clone https://github.com/subfuzion/envtpl
 
 WORKDIR /src/envtpl
 RUN go install ./cmd/envtpl/...
