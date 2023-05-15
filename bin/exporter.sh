@@ -17,6 +17,8 @@
 # shellcheck disable=SC1091
 . /usr/bin/functions.sh
 
+EXIT_ON_ERROR="${EXIT_ON_ERROR:-"false"}"
+
 REQUIRED_VARS=(
   PGPOOL_SERVICE
   PGPOOL_SERVICE_PORT
@@ -56,9 +58,12 @@ until echo 'SELECT null;' | psql -h "${PGPOOL_SERVICE}" -p "${PGPOOL_SERVICE_POR
   sleep 5
 done
 
-set -o pipefail
-/usr/bin/pgpool2_exporter --log.level=info --log.format=logfmt 2>&1
-EVAL="$?"
-log error "pgpool2_exporter exited with value ${EVAL}"
-sleep 1 # don't spam the kubelet
-log fatal "Exiting"
+while true; do
+  /usr/bin/pgpool2_exporter --log.level=info --log.format=logfmt 2>&1
+  EXITVAL="$?"
+  if [[ "${EXIT_ON_ERROR}" == "true" ]]; then
+    log fatal "pgpool2_exporter exited with value ${EXITVAL}"
+  fi
+  log error "pgpool2_exporter exited with value ${EXITVAL}"
+  sleep 1 # don't spam the kubelet
+done

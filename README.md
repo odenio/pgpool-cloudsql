@@ -44,6 +44,12 @@ The exception is that any statement containing the string `DO NOT LOAD BALANCE`
 instance no matter what.  This is configureable at deploy time as
 `.pgpool.primaryRoutingQueryPatternList` in [values.yaml](Helm/values.yaml).
 
+## Upgrade Guides
+
+Old Version | New Version | Upgrade Guide
+--- | --- | ---
+v1.0.X | v1.1.0 | [link](UPGRADE.md#v10x--v110)
+
 # Installing the Chart
 
 ## Step One: add our Helm repository to your client:
@@ -58,7 +64,7 @@ helm repo update
 ```sh
 export RELEASE_NAME=my-pgpool-service # a name (you will need 1 installed chart for each primary DB)
 export NAMESPACE=my-k8s-namespace     # a kubernetes namespace
-export CHART_VERSION=1.0.12           # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
+export CHART_VERSION=1.1.0           # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
 export VALUES_FILE=./my_values.yaml   # your values file
 
 helm install \
@@ -100,7 +106,7 @@ Parameter | Description | Default
 --- | --- | ---
 `deploy.replicaCount` | Number of pod replicas to deploy | `1`
 `deploy.repository` | Docker image repository of the runtime image | `odentech/pgpool-cloudsql`
-`deploy.tag` | Docker image tag of the runtime image | `1.0.12`
+`deploy.tag` | Docker image tag of the runtime image | `1.1.0`
 `deploy.service.tier` | Value for the "tier" [label](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) applied to the kubernetes [service](https://kubernetes.io/docs/concepts/services-networking/service/) | `db`
 `deploy.service.additionalLabels` | Map of additional k/v string pairs to add as labels for the kubernetes service | `{}`
 `deploy.affinity` | Kubernetes [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) spec applied to the deployment pods | `{}`
@@ -148,6 +154,20 @@ Parameter | Description | Default
 `exporter.postgresUsername` | *REQUIRED* Username used by [pgpool2_exporter](https://github.com/pgpool/pgpool2_exporter) to connect to pgpool with.  This must be a valid postgres username in your installation. | `""`
 `exporter.postgresPassword` | *REQUIRED* Password used with `exporter.postgresUsername` | `""`
 `exporter.postgresDatabase` | Postgres database used in the connection string by `pgpool2_exporter` -- this must be a valid database name in your Postgres installation. | `postgres`
+`exporter.exitOnError` | Exit the container if the exporter process exits | `false`
+
+<hr>
+</details>
+
+## telegraf options
+
+<details>
+<summary>Show More</summary>
+<hr>
+
+Parameter | Description | Default
+--- | --- | ---
+`telegraf.exitOnError` | Exit the container if the telegraf process exits | `false`
 
 <hr>
 </details>
