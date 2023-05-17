@@ -15,7 +15,7 @@
 deploy:
   replicaCount: 1
   repository: odentech/pgpool-cloudsql
-  tag: 1.0.12
+  tag: 1.1.0
   affinity: {}
     # # pin tasks to the default node pool
     # nodeAffinity:
@@ -71,6 +71,10 @@ exporter:
   postgresUsername: ""  # REQUIRED!
   postgresPassword: ""  # REQUIRED!
   postgresDatabase: "postgres"
+  exitOnError: "false"
+
+telegraf:
+  exitOnError: "false"
 
 pcp:
   password: ""

@@ -19,11 +19,18 @@
 
 get_metadata
 
+EXIT_ON_ERROR="${EXIT_ON_ERROR:-"false"}"
+
 set +e
 log info "Starting up telegraf"
-# filter out errors due to the stackdriver output plugin not yet supporting histogram/distribution metrics
-/usr/bin/telegraf --config /etc/telegraf/telegraf.conf 2>&1 | grep -v go_gc_duration_seconds
-EVAL="$?"
-log error "Telegraf exited with status $EVAL"
-sleep 1 # don't spam the kubelet
-log fatal "Exiting"
+
+while true; do
+  # filter out errors due to the stackdriver output plugin not yet supporting histogram/distribution metrics
+  /usr/bin/telegraf --config /etc/telegraf/telegraf.conf 2>&1 | grep -v go_gc_duration_seconds
+  EXITVAL="$?"
+  if [[ "${EXIT_ON_ERROR}" == "true" ]]; then
+    log fatal "Telegraf exited with status $EXITVAL"
+  fi
+  log error "Telegraf exited with status $EXITVAL"
+  sleep 1 # don't spam the kubelet
+done

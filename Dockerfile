@@ -27,8 +27,8 @@ RUN go install ./cmd/envtpl/...
 FROM --platform=linux/amd64 alpine:${ALPINE_VERSION}
 RUN apk add --no-cache curl python3
 
-ARG TELEGRAF_VERSION=1.24.2
-RUN curl -sfL https://dl.influxdata.com/telegraf/releases/telegraf-${TELEGRAF_VERSION}_static_linux_amd64.tar.gz |\
+ARG TELEGRAF_VERSION=1.26.2
+RUN curl -sfL https://dl.influxdata.com/telegraf/releases/telegraf-${TELEGRAF_VERSION}_linux_amd64.tar.gz |\
   tar zxf - --strip-components=2 -C /
 
 ARG EXPORTER_VERSION=1.2.0
