@@ -49,6 +49,7 @@ instance no matter what.  This is configureable at deploy time as
 Old Version | New Version | Upgrade Guide
 --- | --- | ---
 v1.1.0 | v1.1.1 | [link](UPGRADE.md#v110--v111)
+v1.0.X | v1.1.0 | [link](UPGRADE.md#v10x--v110)
 
 # Installing the Chart
 
