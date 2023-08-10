@@ -66,7 +66,7 @@ discovery:
   # The Google Cloud region where discovery logic looks for databases.
   # if "true" it's  the same pod's region,
   # all regions otherwise.
-  stay_in_region: true
+  stayInRegion: true
 exporter:
   # this username and password is used by the pgpool2_exporter metrics exporter
   # to connect to pgpool.  It can be any valid postgres user known to the backend
