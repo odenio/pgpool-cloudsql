@@ -20,6 +20,7 @@ TMPLDIR="${TMPLDIR:-"/etc/templates"}"
 TEMPLATE="${TMPLDIR}/pgpool.conf.tmpl"
 STATEDIR="${STATEDIR:-"/etc/pgpool/nodes"}"
 REFRESH_INTERVAL="${REFRESH_INTERVAL:-60}"
+STAY_IN_REGION="${STAY_IN_REGION:-"true"}"
 
 export STATEDIR
 
@@ -32,7 +33,7 @@ if [ -z "${PRIMARY_INSTANCE_PREFIX}" ]; then
   log fatal "PRIMARY_INSTANCE_PREFIX unset"
 fi
 
-if [ "${STAY_IN_REGION:-}" = "false" ]; then
+if [ "${STAY_IN_REGION}" = "false" ]; then
   REGION='*'
 fi
 
