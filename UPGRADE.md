@@ -2,7 +2,11 @@
 
 ## `v1.1.0` → `v1.1.1`
 
-> 🛑 this release allows discovering database instances worldwide inside your GCP project, and not only in the pod region.
+> ℹ️ this release allows discovering database instances worldwide inside your GCP project, and not only in the pod region.
+
+### VALUES - New:
+- `discovery.stayInRegion` -- The discover logic looks for databases in the same pod's region, all regions otherwise; default is true
+
 
 ## `v1.0.X` → `v1.1.0`
 
