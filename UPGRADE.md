@@ -1,5 +1,13 @@
 # Upgrading Steps
 
+## `v1.1.0` → `v1.1.1`
+
+> ℹ️ this release allows discovering database instances worldwide inside your GCP project, and not only in the pod region.
+
+### VALUES - New:
+- `discovery.stayInRegion` -- The discover logic looks for databases in the same pod's region, all regions otherwise; default is true
+
+
 ## `v1.0.X` → `v1.1.0`
 
 > 🛑 this release changes the default error handling behavior for the metrics/monitoring containers; you will need to update your values.yaml if you wish to preserve the previous behavior.
