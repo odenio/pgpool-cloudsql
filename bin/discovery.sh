@@ -33,11 +33,11 @@ if [ -z "${PRIMARY_INSTANCE_PREFIX}" ]; then
   log fatal "PRIMARY_INSTANCE_PREFIX unset"
 fi
 
+get_metadata
+
 if [ "${STAY_IN_REGION}" = "false" ]; then
   REGION='*'
 fi
-
-get_metadata
 
 # set up passwordless pcp auth
 if [ -z "${PCP_PASSWORD}" ]; then

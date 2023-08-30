@@ -1,4 +1,8 @@
 # Upgrading Steps
+## `v1.1.1` → `v1.1.2`
+
+> ℹ️ this release fixes the initial value of the database region during the discovery phase.
+
 
 ## `v1.1.0` → `v1.1.1`
 
