@@ -1,4 +1,14 @@
 # Upgrading Steps
+## `v1.1.2` → `v1.1.3`
+
+> ℹ️ overall upgrade:
+
+    - 3.18 alpine
+    - 1.19 golang
+    - telegraf 1.28.1
+    - pgpool 4.4.3 (nurikoboshi)
+    - pgpool_exporter 1.2.1
+    - latest pkg from alpine
 ## `v1.1.1` → `v1.1.2`
 
 > ℹ️ this release fixes the initial value of the database region during the discovery phase.
