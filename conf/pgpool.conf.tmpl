@@ -44,7 +44,7 @@ reserved_connections = {{ .RESERVED_CONNECTIONS }}
 backend_hostname0 = '{{.primary_ip}}'
 backend_port0 = 5432
 # pgpool will send all mutations to the primary; everything else should go to a replica
-backend_weight0 = 0
+backend_weight0 = {{ .PRIMARY_WEIGHT }}
 backend_flag0 = 'ALWAYS_PRIMARY|DISALLOW_TO_FAILOVER'
 backend_data_directory0 = /data0
 backend_application_name0 = 'server0'
@@ -69,7 +69,7 @@ backend_application_name0 = 'server0'
 # replica {{ $node_id }}
 backend_hostname{{ $node_id }} = '{{ $value }}'
 backend_port{{ $node_id }} = 5432
-backend_weight{{ $node_id }} = {{ divf 1.0 $num_replicas }}
+backend_weight{{ $node_id }} = {{ divf $.REPLICAS_WEIGHT $num_replicas }}
 backend_flag{{ $node_id }} = 'ALLOW_TO_FAILOVER'
 
 {{ end -}}

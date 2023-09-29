@@ -15,7 +15,7 @@
 deploy:
   replicaCount: 1
   repository: odentech/pgpool-cloudsql
-  tag: 1.1.3
+  tag: 1.1.4
   affinity: {}
     # # pin tasks to the default node pool
     # nodeAffinity:
@@ -144,6 +144,14 @@ pgpool:
   disableLoadBalanceOnWrite: "transaction"
   # Enables statement level load balancing
   statementLevelLoadBalance: "on"
+  # It specifies the load balancing ratio of the primary postgres instance.
+  # It can be set to any integer or floating-point value greater than or equal to zero.
+  primaryWeight: 0
+  # It specifies the load balancing ratio of the replicas.
+  # It can be set to any integer or floating-point value greater than or equal to zero.
+  # It represents the cumulative weight of the replicas,
+  # where the weight of each individual replica is divided by the total number of replicas.
+  replicasWeight: 1
   # Controls which minimum message levels are emitted to log. Valid
   # values are DEBUG5, DEBUG4, DEBUG3, DEBUG2, DEBUG1, INFO, NOTICE,
   # WARNING, ERROR, LOG, FATAL, and PANIC. Each level includes all the

@@ -109,6 +109,10 @@ spec:
           value: "{{ .Values.pgpool.disableLoadBalanceOnWrite }}"
         - name: STATEMENT_LEVEL_LOAD_BALANCE
           value: "{{ .Values.pgpool.statementLevelLoadBalance }}"
+        - name: PRIMARY_WEIGHT
+          value: "{{ .Values.pgpool.primaryWeight }}"
+        - name: REPLICAS_WEIGHT
+          value: "{{ .Values.pgpool.replicasWeight }}"
         - name: LOG_MIN_MESSAGES
           value: "{{ .Values.pgpool.logMinMessages }}"
         - name: LOG_ERROR_VERBOSITY
