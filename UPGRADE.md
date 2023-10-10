@@ -1,4 +1,12 @@
 # Upgrading Steps
+## `v1.1.3` → `v1.1.4`
+
+> ℹ️ : this release allows to set primary and replicas weights.
+
+### VALUES - New:
+- `pgpool.primaryWeight` -- It specifies the load balancing ratio of the primary postgres instance; default is 0
+- `pgpool.replicasWeight` -- It specifies the load balancing ratio of the replicas; default is 1
+
 ## `v1.1.2` → `v1.1.3`
 
 > ℹ️ overall upgrade:

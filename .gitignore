@@ -1,3 +1,4 @@
 *secret*.yaml
 *.gz
 *.tgz
+.vscode
