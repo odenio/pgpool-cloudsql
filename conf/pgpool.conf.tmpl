@@ -127,8 +127,8 @@ reset_query_list = 'ABORT; DISCARD ALL'
 # LOAD BALANCING MODE
 #------------------------------------------------------------------------------
 
-load_balance_mode = {{ .IGNORE_LEADING_WHITE_SPACE }}
-ignore_leading_white_space = on
+load_balance_mode = on
+ignore_leading_white_space = {{ .IGNORE_LEADING_WHITE_SPACE }}
 read_only_function_list = ''
 write_function_list = ''
 primary_routing_query_pattern_list = '{{ .PRIMARY_ROUTING_QUERY_PATTERN_LIST -}}'

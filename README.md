@@ -48,6 +48,7 @@ instance no matter what.  This is configureable at deploy time as
 
 Old Version | New Version | Upgrade Guide
 --- | --- | ---
+v1.1.4 | v1.1.5 | [link](UPGRADE.md#v114--v115)
 v1.1.3 | v1.1.4 | [link](UPGRADE.md#v113--v114)
 v1.1.2 | v1.1.3 | [link](UPGRADE.md#v112--v113)
 v1.1.1 | v1.1.2 | [link](UPGRADE.md#v111--v112)

@@ -1,4 +1,12 @@
 # Upgrading Steps
+
+## `v1.1.4` → `v1.1.5`
+
+> ℹ️ : telegraf 1.28.3
+
+This release updates telegraf to the latest version, and fixes a templating error
+in which the ignoreLeadingWhiteSpace value was being applied in the wrong place.
+
 ## `v1.1.3` → `v1.1.4`
 
 > ℹ️ : this release allows to set primary and replicas weights.

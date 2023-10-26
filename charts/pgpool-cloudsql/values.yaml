@@ -15,7 +15,7 @@
 deploy:
   replicaCount: 1
   repository: odentech/pgpool-cloudsql
-  tag: 1.1.4
+  tag: 1.1.5
   affinity: {}
     # # pin tasks to the default node pool
     # nodeAffinity:
