@@ -1,5 +1,16 @@
 # Upgrading Steps
 
+## `v1.1.5` → `v1.1.6`
+
+> ℹ️ : telegraf 1.26.2
+
+This release rolls telegraf back to 1.26.2 -- for reasons that we have yet to
+determine, using the 1.28.x branch of telegraf results in an order-of-magnitude
+increase in Google Cloud Monitoring metrics usage.
+
+If you are _not_ seeing usage issues with Google Cloud Monitoring, you may
+safely ignore this update. :)
+
 ## `v1.1.4` → `v1.1.5`
 
 > ℹ️ : telegraf 1.28.3
