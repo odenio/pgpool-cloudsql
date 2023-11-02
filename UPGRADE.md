@@ -1,5 +1,13 @@
 # Upgrading Steps
 
+## `v1.1.6` → `v1.1.7`
+
+This release adds the ability to disable the telegraf component and add custom pod annotations.
+
+### VALUES - New:
+- `telegraf.enabled` -- Allows enabling/disabling the telegraf component; default is `true` to preserve existing behavior
+- `deploy.annotations` -- A map of kubernetes annotations to apply to each pod. Default is empty.
+
 ## `v1.1.5` → `v1.1.6`
 
 > ℹ️ : telegraf 1.26.2

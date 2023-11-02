@@ -33,7 +33,7 @@ data:
 
     # Read metrics from the pgpool2_exporter container
     [[inputs.prometheus]]
-        urls = ["http://localhost:9719/metrics"]
+        urls = ["http://localhost:9090/metrics"]
 
     # alas until and unless the stackdriver output plugin gains
     # the ability to handle histogram/distribution metrics, it is

@@ -59,7 +59,7 @@ until echo 'SELECT null;' | psql -h "${PGPOOL_SERVICE}" -p "${PGPOOL_SERVICE_POR
 done
 
 while true; do
-  /usr/bin/pgpool2_exporter --log.level=info --log.format=logfmt 2>&1
+  /usr/bin/pgpool2_exporter --web.listen-address=":9090" --log.level=info --log.format=logfmt 2>&1
   EXITVAL="$?"
   if [[ "${EXIT_ON_ERROR}" == "true" ]]; then
     log fatal "pgpool2_exporter exited with value ${EXITVAL}"

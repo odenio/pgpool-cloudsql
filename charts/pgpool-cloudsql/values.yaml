@@ -15,7 +15,7 @@
 deploy:
   replicaCount: 1
   repository: odentech/pgpool-cloudsql
-  tag: 1.1.6
+  tag: 1.1.7
   affinity: {}
     # # pin tasks to the default node pool
     # nodeAffinity:
@@ -38,6 +38,7 @@ deploy:
     #             - "{{ .Release.Name }}"
     #       topologyKey: "kubernetes.io/hostname"
   tolerations: {}
+  annotations: {}
   resources:
     pgpool: {}
       # # pgpool can be a little memory-hungry, especially if you have a large client pool
@@ -67,6 +68,7 @@ discovery:
   # if "true" it's  the same pod's region,
   # all regions otherwise.
   stayInRegion: true
+
 exporter:
   # this username and password is used by the pgpool2_exporter metrics exporter
   # to connect to pgpool.  It can be any valid postgres user known to the backend
@@ -76,7 +78,10 @@ exporter:
   postgresDatabase: "postgres"
   exitOnError: "false"
 
+# if enabled, use github.com/influxdata/telegraf to scrape values from the
+# exporter container and push them directly to google cloud monitoring
 telegraf:
+  enabled: "true"
   exitOnError: "false"
 
 pcp:
