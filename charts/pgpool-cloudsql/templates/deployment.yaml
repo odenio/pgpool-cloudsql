@@ -20,6 +20,10 @@ spec:
     metadata:
       labels:
         app: "{{ .Release.Name }}"
+      {{- with .Values.deploy.annotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
       {{- with .Values.deploy.affinity }}
       affinity:
@@ -33,6 +37,9 @@ spec:
       containers:
       - name: pgpool
         image: "{{ .Values.deploy.repository }}:{{ .Values.deploy.tag }}"
+        ports:
+          - name: postgres-port
+            containerPort: 5432
         {{- with .Values.deploy.resources.pgpool }}
         resources:
           {{- toYaml . | nindent 10 }}
@@ -44,7 +51,7 @@ spec:
         # gotten up and running in 75 seconds, give up.
         startupProbe:
           tcpSocket:
-            port: 5432
+            port: postgres-port
           initialDelaySeconds: 5
           periodSeconds: 5
           successThreshold: 1
@@ -52,7 +59,7 @@ spec:
         # stop taking traffic from the service after 10s of unavailability
         readinessProbe:
           tcpSocket:
-            port: 5432
+            port: postgres-port
           initialDelaySeconds: 5
           periodSeconds: 5
           successThreshold: 1
@@ -60,7 +67,7 @@ spec:
         # fail the pod if we go unavailable for >30s
         livenessProbe:
           tcpSocket:
-            port: 5432
+            port: postgres-port
           initialDelaySeconds: 5
           periodSeconds: 5
           successThreshold: 1
@@ -136,6 +143,9 @@ spec:
           mountPath: /etc/pgpool
 
       - name: exporter
+        ports:
+          - name: metrics
+            containerPort: 9179
         image: "{{ .Values.deploy.repository }}:{{ .Values.deploy.tag }}"
         {{- with .Values.deploy.resources.exporter }}
         resources:
@@ -144,7 +154,7 @@ spec:
         startupProbe:
           httpGet:
             path: /metrics
-            port: 9719
+            port: metrics
           failureThreshold: 10
           successThreshold: 1
           periodSeconds: 3
@@ -154,7 +164,7 @@ spec:
         livenessProbe:
           httpGet:
             path: /metrics
-            port: 9719
+            port: metrics
           periodSeconds: 5
           failureThreshold: 6
           successThreshold: 1
@@ -174,6 +184,7 @@ spec:
         - name: EXIT_ON_ERROR
           value: {{ .Values.exporter.exitOnError | default "false" | quote }}
 
+      {{- if eq .Values.telegraf.enabled "true" }}
       - name: telegraf
         image: "{{ .Values.deploy.repository }}:{{ .Values.deploy.tag }}"
         {{- with .Values.deploy.resources.telegraf }}
@@ -188,6 +199,7 @@ spec:
         volumeMounts:
         - name: telegraf-config
           mountPath: /etc/telegraf
+      {{- end }}
 
       volumes:
       - name: etcdir

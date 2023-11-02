@@ -28,7 +28,9 @@ The primary moving parts are:
 
 - The [telegraf](https://github.com/influxdata/telegraf) monitoring agent,
   configured to forward the metrics exposed by the exporter to Google Cloud
-  Monitoring, formerly known as Stackdriver.
+  Monitoring, formerly known as Stackdriver. (This portion is optional; if you
+  have an existing apparatus for scraping prometheus metrics, you can point
+  it directly at the exporter.)
 
 In general you should expect that if you add a new replica, it should start
 taking 1/Nth of the select query load (where N is the number of replicas)
@@ -48,6 +50,7 @@ instance no matter what.  This is configureable at deploy time as
 
 Old Version | New Version | Upgrade Guide
 --- | --- | ---
+v1.1.6 | v1.1.7 | [link](UPGRADE.md#v116--v117)
 v1.1.5 | v1.1.6 | [link](UPGRADE.md#v115--v116)
 v1.1.4 | v1.1.5 | [link](UPGRADE.md#v114--v115)
 v1.1.3 | v1.1.4 | [link](UPGRADE.md#v113--v114)
@@ -115,6 +118,7 @@ Parameter | Description | Default
 `deploy.tag` | Docker image tag of the runtime image | `1.1.0`
 `deploy.service.tier` | Value for the "tier" [label](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) applied to the kubernetes [service](https://kubernetes.io/docs/concepts/services-networking/service/) | `db`
 `deploy.service.additionalLabels` | Map of additional k/v string pairs to add as labels for the kubernetes service | `{}`
+`deploy.annotations` | Kubernetes [annotation](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/) spec applied to the deployment pods | `{}`
 `deploy.affinity` | Kubernetes [affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) spec applied to the deployment pods | `{}`
 `deploy.tolerations` | Kubernetes [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) spec applied to the deployment pods | `{}`
 `deploy.podDisruptionBudget.maxUnavailable` | Maximum number of pods allowed to be unavailable during an update ([docs](https://kubernetes.io/docs/tasks/run-application/configure-pdb/)) | 1
@@ -173,6 +177,7 @@ Parameter | Description | Default
 
 Parameter | Description | Default
 --- | --- | ---
+`telegraf.enabled` | If true, deploy and configure the telegraf container | `true`
 `telegraf.exitOnError` | Exit the container if the telegraf process exits | `false`
 
 <hr>
@@ -213,7 +218,7 @@ Parameter | Description | Default
 
 # Monitoring with Google Cloud Monitoring (AKA Stackdriver)
 
-As configured, pgpool-cloudsql exports the following Google Cloud Monitoring
+If the telegraf container is enabled, pgpool-cloudsql exports the following Google Cloud Monitoring
 [metricDescriptors](https://cloud.google.com/monitoring/custom-metrics/creating-metrics)
 with the [gke_container](https://cloud.google.com/monitoring/api/resources#tag_gke_container)
 resource type and all resource labels automatically filled in.
@@ -278,6 +283,30 @@ Metric Descriptor | List of Metric Labels
 
 <hr>
 </details>
+
+# Monitoring with Prometheus directly
+
+Using telegraf to forward prometheus metrics to Google Cloud
+Monitoring/Stackdriver is optional: the `pgpool2_exporter` container exposes a
+prometheus-style `/metrics` endpoint on port 9719/tcp (and named as the
+`metrics` port in the pod port configuration), and if you have an existing
+local Prometheus infrastructure or if you are using the [Google Managed Service
+for Prometheus](https://cloud.google.com/stackdriver/docs/managed-prometheus),
+you can scrape and ingest those metrics directly.
+
+The details of this will be specific to your local Prometheus setup, but
+traditionally prometheus-on-kubernetes collection agents (whether the native
+prometheus one or the Opentelemetry Collector) use Kubernetes annotations to
+configure their scrape targets. To add annotations to your pods, use the
+`.deploy.annotations` value in your Helm values.yaml, for example:
+
+```yaml
+deploy:
+  annotations:
+    prometheus.io/scrape: enabled
+    prometheus.io/path: /metrics
+    prometheus.io/port: metrics
+```
 
 # background info: maybe the real friends were all the yaks we shaved along the way
 
