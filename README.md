@@ -151,6 +151,7 @@ Parameter | Description | Default
 Parameter | Description | Default
 --- | --- | ---
 `discovery.primaryInstancePrefix` | *REQUIRED* Search sting used to find the primary instance ID; is fed to `gcloud sql instances list --filter name:${PRIMARY_INSTANCE_PREFIX}`.  *Must* match only one instance. | (none)
+`discovery.pruneThreshold` | Threshold in seconds after which an undiscoverable (missing or not in state `RUNNABLE`) replica will be removed from the generated configuration file. | `900`
 
 <hr>
 </details>
