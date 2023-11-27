@@ -94,6 +94,8 @@ spec:
           value: {{ required "You must set .discovery.primaryInstancePrefix!" .Values.discovery.primaryInstancePrefix | quote }}
         - name: STAY_IN_REGION
           value: {{ .Values.discovery.stayInRegion | quote }}
+        - name: PRUNE_THRESHOLD
+          value: {{ .Values.discovery.pruneThreshold | quote }}
         - name: RESERVED_CONNECTIONS
           value: "{{ .Values.pgpool.reservedConnections }}"
         - name: NUM_INIT_CHILDREN

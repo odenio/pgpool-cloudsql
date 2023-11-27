@@ -19,7 +19,8 @@ CONFIG="${PGPDIR}/pgpool.conf"
 TMPLDIR="${TMPLDIR:-"/etc/templates"}"
 TEMPLATE="${TMPLDIR}/pgpool.conf.tmpl"
 STATEDIR="${STATEDIR:-"/etc/pgpool/nodes"}"
-REFRESH_INTERVAL="${REFRESH_INTERVAL:-60}"
+REFRESH_INTERVAL="${REFRESH_INTERVAL:-60}" # how often in seconds to check for topology changes
+PRUNE_THRESHOLD="${PRUNE_THRESHOLD:-900}"  # how long to wait before pruning a missing replica
 STAY_IN_REGION="${STAY_IN_REGION:-"true"}"
 
 export STATEDIR
@@ -59,6 +60,7 @@ done
 mkdir -p "${STATEDIR}"
 
 declare -a active_replicas
+declare -A replica_touchpoints
 
 while true; do
   log info "Looking up primary instance matching prefix '${PRIMARY_INSTANCE_PREFIX}'"
@@ -94,12 +96,17 @@ while true; do
 
   log info "Looking up replicas"
 
-  # otherwise old dbs persist...
+  # prune missing replicas if they have been missing for over the pruning threshold
   mapfile -t replica_vars < <(compgen -A variable replica_ip_)
+  now="$(date +%s)"
   if [[ "${#replica_vars[@]}" -gt 0 ]]; then
     for repl_var in "${replica_vars[@]}"; do
-      log debug "Unsetting ${repl_var}"
-      unset "${repl_var}"
+      age="$((now - replica_touchpoints["${repl_var}"]))"
+      log debug "${repl_var} is ${age} seconds since last check"
+      if [[ age -gt PRUNE_THRESHOLD ]]; then
+        log info "Unsetting ${repl_var} due to it being missing for over ${PRUNE_THRESHOLD} seconds"
+        unset "${repl_var}"
+      fi
     done
   fi
 
@@ -126,6 +133,15 @@ while true; do
       log warning "Could not find a private IP address for ${repl_dbname} -- skipping"
     fi
   done
+
+  # update the map of replica ages
+  mapfile -t replica_vars < <(compgen -A variable replica_ip_)
+  now="$(date +%s)"
+  if [[ "${#replica_vars[@]}" -gt 0 ]]; then
+    for repl_var in "${replica_vars[@]}"; do
+      replica_touchpoints["${repl_var}"]="${now}"
+    done
+  fi
 
   tmpfile="$(mktemp)"
   log info "Generating temporary config ${tmpfile}"

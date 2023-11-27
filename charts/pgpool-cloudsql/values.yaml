@@ -15,7 +15,7 @@
 deploy:
   replicaCount: 1
   repository: odentech/pgpool-cloudsql
-  tag: 1.1.7
+  tag: 1.1.8
   affinity: {}
     # # pin tasks to the default node pool
     # nodeAffinity:
@@ -68,6 +68,12 @@ discovery:
   # if "true" it's  the same pod's region,
   # all regions otherwise.
   stayInRegion: true
+  # pgpool will itself automatically direct traffic away from backends that are failing
+  # health checks, so there is no need to immmediately prune replicas from the config
+  # if they are, e.g. briefly not in RUNNABLE state for some reason. If a replica has
+  # disappeared from our view, wait at least this many seconds before removing it from
+  # the config and forcing a reload
+  pruneThreshold: 900
 
 exporter:
   # this username and password is used by the pgpool2_exporter metrics exporter

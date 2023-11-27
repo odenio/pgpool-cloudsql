@@ -1,5 +1,24 @@
 # Upgrading Steps
 
+## `v1.1.7` → `v1.1.8`
+
+### Software upgrade
+
+This release updates pgpool from v4.4.3 to [v4.4.4](https://www.pgpool.net/docs/44/en/html/release-4-4-4.html).
+
+### New features
+
+Inactive replicas are now not removed from the configuration file until a
+threshold in seconds has been reached.  Because pgpool itself will direct
+traffic away from a replica that is failing its health checks, there is no need
+to immediately prune nodes that are not seen as active by the discovery script,
+whether due to not being in the `RUNNABLE` state for some reason or having been
+fully deleted.  This reduces the amount of potential config file thrashing
+during common operations like restoring a db cluster from a backup.
+
+### VALUES - New:
+- `discovery.pruneThreshold` -- Value in seconds for how long a replica can be unavailable (not in state `RUNNABLE` or fully missing) before we remove it from the configuration file and force a reload.  Default is 900.
+
 ## `v1.1.6` → `v1.1.7`
 
 This release adds the ability to disable the telegraf component and add custom pod annotations.

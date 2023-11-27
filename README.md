@@ -50,6 +50,7 @@ instance no matter what.  This is configureable at deploy time as
 
 Old Version | New Version | Upgrade Guide
 --- | --- | ---
+v1.1.7 | v1.1.8 | [link](UPGRADE.md#v117--v118)
 v1.1.6 | v1.1.7 | [link](UPGRADE.md#v116--v117)
 v1.1.5 | v1.1.6 | [link](UPGRADE.md#v115--v116)
 v1.1.4 | v1.1.5 | [link](UPGRADE.md#v114--v115)
