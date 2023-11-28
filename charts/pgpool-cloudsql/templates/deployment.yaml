@@ -47,32 +47,37 @@ spec:
         {{- end }}
         command:
         - "/usr/bin/pgpool.sh"
-        # weird things can happen with the gcp metadata service at startup time
-        # that will prevent us from ever getting our config data; if we haven't
-        # gotten up and running in 75 seconds, give up.
+
+        {{- if .Values.deploy.startupProbe.pgpool.enabled }}
         startupProbe:
           tcpSocket:
             port: postgres-port
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          successThreshold: 1
-          failureThreshold: 15
-        # stop taking traffic from the service after 10s of unavailability
+          initialDelaySeconds: {{ .Values.deploy.startupProbe.pgpool.initialDelaySeconds }}
+          periodSeconds: {{ .Values.deploy.startupProbe.pgpool.periodSeconds }}
+          timeoutSeconds: {{ .Values.deploy.startupProbe.pgpool.timeoutSeconds }}
+          successThreshold: {{ .Values.deploy.startupProbe.pgpool.successThreshold }}
+          failureThreshold: {{ .Values.deploy.startupProbe.pgpool.failureThreshold }}
+        {{- end }}
+        {{- if .Values.deploy.readinessProbe.pgpool.enabled }}
         readinessProbe:
           tcpSocket:
             port: postgres-port
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          successThreshold: 1
-          failureThreshold: 2
-        # fail the pod if we go unavailable for >30s
+          initialDelaySeconds: {{ .Values.deploy.readinessProbe.pgpool.initialDelaySeconds }}
+          periodSeconds: {{ .Values.deploy.readinessProbe.pgpool.periodSeconds }}
+          timeoutSeconds: {{ .Values.deploy.readinessProbe.pgpool.timeoutSeconds }}
+          successThreshold: {{ .Values.deploy.readinessProbe.pgpool.successThreshold }}
+          failureThreshold: {{ .Values.deploy.readinessProbe.pgpool.failureThreshold }}
+        {{- end }}
+        {{- if .Values.deploy.livenessProbe.pgpool.enabled }}
         livenessProbe:
           tcpSocket:
             port: postgres-port
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          successThreshold: 1
-          failureThreshold: 6
+          initialDelaySeconds: {{ .Values.deploy.livenessProbe.pgpool.initialDelaySeconds }}
+          periodSeconds: {{ .Values.deploy.livenessProbe.pgpool.periodSeconds }}
+          timeoutSeconds: {{ .Values.deploy.livenessProbe.pgpool.timeoutSeconds }}
+          successThreshold: {{ .Values.deploy.livenessProbe.pgpool.successThreshold }}
+          failureThreshold: {{ .Values.deploy.livenessProbe.pgpool.failureThreshold }}
+        {{- end }}
         volumeMounts:
         - name: etcdir
           mountPath: /etc/pgpool
@@ -156,23 +161,39 @@ spec:
         resources:
           {{- toYaml . | nindent 10 }}
         {{- end }}
+        {{- if .Values.deploy.startupProbe.exporter.enabled }}
         startupProbe:
           httpGet:
             path: /metrics
             port: metrics
-          failureThreshold: 10
-          successThreshold: 1
-          periodSeconds: 3
-        # adding and removing replicas sometimes makes the exporter unhappy,
-        # which means jail for telegraf, which means jail for stackdriver.
-        # Give up and fail the pod after 30s of such nonsense.
+          initialDelaySeconds: {{ .Values.deploy.startupProbe.exporter.initialDelaySeconds }}
+          periodSeconds: {{ .Values.deploy.startupProbe.exporter.periodSeconds }}
+          timeoutSeconds: {{ .Values.deploy.startupProbe.exporter.timeoutSeconds }}
+          successThreshold: {{ .Values.deploy.startupProbe.exporter.successThreshold }}
+          failureThreshold: {{ .Values.deploy.startupProbe.exporter.failureThreshold }}
+        {{- end }}
+        {{- if .Values.deploy.readinessProbe.exporter.enabled }}
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: metrics
+          initialDelaySeconds: {{ .Values.deploy.readinessProbe.exporter.initialDelaySeconds }}
+          periodSeconds: {{ .Values.deploy.readinessProbe.exporter.periodSeconds }}
+          timeoutSeconds: {{ .Values.deploy.readinessProbe.exporter.timeoutSeconds }}
+          successThreshold: {{ .Values.deploy.readinessProbe.exporter.successThreshold }}
+          failureThreshold: {{ .Values.deploy.readinessProbe.exporter.failureThreshold }}
+        {{- end }}
+        {{- if .Values.deploy.livenessProbe.exporter.enabled }}
         livenessProbe:
           httpGet:
             path: /metrics
             port: metrics
-          periodSeconds: 5
-          failureThreshold: 6
-          successThreshold: 1
+          initialDelaySeconds: {{ .Values.deploy.livenessProbe.exporter.initialDelaySeconds }}
+          periodSeconds: {{ .Values.deploy.livenessProbe.exporter.periodSeconds }}
+          timeoutSeconds: {{ .Values.deploy.livenessProbe.exporter.timeoutSeconds }}
+          successThreshold: {{ .Values.deploy.livenessProbe.exporter.successThreshold }}
+          failureThreshold: {{ .Values.deploy.livenessProbe.exporter.failureThreshold }}
+        {{- end }}
         command:
         - "/usr/bin/exporter.sh"
         env:

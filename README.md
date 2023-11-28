@@ -50,6 +50,7 @@ instance no matter what.  This is configureable at deploy time as
 
 Old Version | New Version | Upgrade Guide
 --- | --- | ---
+v1.1.8 | v1.1.9 | [link](UPGRADE.md#v118--v119)
 v1.1.7 | v1.1.8 | [link](UPGRADE.md#v117--v118)
 v1.1.6 | v1.1.7 | [link](UPGRADE.md#v116--v117)
 v1.1.5 | v1.1.6 | [link](UPGRADE.md#v115--v116)
@@ -127,7 +128,42 @@ Parameter | Description | Default
 `deploy.resources.discovery` | Kubernetes [resource block](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the discovery container. | `{}`
 `deploy.resources.exporter` | Kubernetes [resource block](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the pgpool2_exporter container. | `{}`
 `deploy.resources.telegraf` | Kubernetes [resource block](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the telegraf container. | `{}`
-
+`deploy.startupProbe.pgpool.enabled` | whether to create a [startup probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes) for the pgpool container | `true`
+`deploy.startupProbe.pgpool.initialDelaySeconds` | | `5`
+`deploy.startupProbe.pgpool.periodSeconds` | | `5`
+`deploy.startupProbe.pgpool.timeoutSeconds` | | `4`
+`deploy.startupProbe.pgpool.successThreshold` | | `1`
+`deploy.startupProbe.pgpool.failureThreshold` | | `1`
+`deploy.startupProbe.exporter.enabled` | whether to create a [startup probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes) for the exporter container | `true`
+`deploy.startupProbe.exporter.initialDelaySeconds` | | `5`
+`deploy.startupProbe.exporter.periodSeconds` | | `5`
+`deploy.startupProbe.exporter.timeoutSeconds` | | `4`
+`deploy.startupProbe.exporter.successThreshold` | | `1`
+`deploy.startupProbe.exporter.failureThreshold` | | `15`
+`deploy.readinessProbe.pgpool.enabled` | whether to create a [readiness probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes) for the pgpool container | `true`
+`deploy.readinessProbe.pgpool.initialDelaySeconds` | | `5`
+`deploy.readinessProbe.pgpool.periodSeconds` | | `5`
+`deploy.readinessProbe.pgpool.timeoutSeconds` | | `4`
+`deploy.readinessProbe.pgpool.successThreshold` | | `1`
+`deploy.readinessProbe.pgpool.failureThreshold` | | `2`
+`deploy.readinessProbe.exporter.enabled` | whether to create a [readiness probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes) for the exporter container | `true`
+`deploy.readinessProbe.exporter.initialDelaySeconds` | | `5`
+`deploy.readinessProbe.exporter.periodSeconds` | | `5`
+`deploy.readinessProbe.exporter.timeoutSeconds` | | `4`
+`deploy.readinessProbe.exporter.successThreshold` | | `1`
+`deploy.readinessProbe.exporter.failureThreshold` | | `2`
+`deploy.livenessProbe.pgpool.enabled` | whether to create a [liveness probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes) for the pgpool container | `true`
+`deploy.livenessProbe.pgpool.initialDelaySeconds` | | `5`
+`deploy.livenessProbe.pgpool.periodSeconds` | | `5`
+`deploy.livenessProbe.pgpool.timeoutSeconds` | | `4`
+`deploy.livenessProbe.pgpool.successThreshold` | | `1`
+`deploy.livenessProbe.pgpool.failureThreshold` | | `2`
+`deploy.livenessProbe.exporter.enabled` | whether to create a [liveness probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes) for the exporter container | `true`
+`deploy.livenessProbe.exporter.initialDelaySeconds` | | `5`
+`deploy.livenessProbe.exporter.periodSeconds` | | `5`
+`deploy.livenessProbe.exporter.timeoutSeconds` | | `4`
+`deploy.livenessProbe.exporter.successThreshold` | | `1`
+`deploy.livenessProbe.exporter.failureThreshold` | | `2`
 <hr>
 </details>
 

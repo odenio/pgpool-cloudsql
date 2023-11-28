@@ -15,7 +15,7 @@
 deploy:
   replicaCount: 1
   repository: odentech/pgpool-cloudsql
-  tag: 1.1.8
+  tag: 1.1.9
   affinity: {}
     # # pin tasks to the default node pool
     # nodeAffinity:
@@ -54,6 +54,51 @@ deploy:
   service:
     tier: "db"
     additionalLabels: {}
+  startupProbe:
+    pgpool:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      timeoutSeconds: 4
+      successThreshold: 1
+      failureThreshold: 15
+    exporter:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      timeoutSeconds: 4
+      successThreshold: 1
+      failureThreshold: 15
+  readinessProbe:
+    pgpool:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      timeoutSeconds: 4
+      successThreshold: 1
+      failureThreshold: 2
+    exporter:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      timeoutSeconds: 4
+      successThreshold: 1
+      failureThreshold: 2
+  livenessProbe:
+    pgpool:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      timeoutSeconds: 4
+      successThreshold: 1
+      failureThreshold: 5
+    exporter:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      timeoutSeconds: 4
+      successThreshold: 1
+      failureThreshold: 5
 
 discovery:
   # Because Google CloudSQL does not allow for immediate reuse of DB instance names,
