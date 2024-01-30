@@ -139,11 +139,29 @@ pcp:
   password: ""
 
 pgpool:
+  # whether to use static or dynamic process management mode; see
+  # https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html
+  # allowed values are "static" and "dynamic"
+  processManagementMode: "static"
+  # configure scale-in/out strategy when using "dynamic" process management;
+  # allowed values are "lazy", "gentle" and "aggressive"
+  # (this is ignored if pgpool.processManagementMode is "static"
+  processManagementStragegy: "gentle"
+  # minimum number of spare child processes to maintain if using dyamic
+  # process management mode (ignored when using static mode)
+  minSpareChildren: 5
+  # maximum number of spare child processes to maintain if using dyamic
+  # process management mode (ignored when using static mode)
+  maxSpareChildren: 10
   # Number of reserved connections.
   # Pgpool-II does not accept connections if over
   # num_init_children - reserved_connections.
   reservedConnections: 0
-  # Number of concurrent sessions allowed
+  # the hard limit for concurrent incoming connections: when using static process
+  # management pgpool will pre-fork exactly this many children. When using dynamic 
+  # process management, pgpool will try to maintain a pool of child processes that 
+  # satisfy the values of minSpareChilden and maxSpareChildren but will never go 
+  # over numInitChildren
   numInitChildren: 32
   # Maximum number of cached backend connections in each pgpool child process.
   # https://www.pgpool.net/docs/42/en/html/runtime-config-connection-pooling.html

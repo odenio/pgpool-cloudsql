@@ -101,6 +101,14 @@ spec:
           value: {{ .Values.discovery.stayInRegion | quote }}
         - name: PRUNE_THRESHOLD
           value: {{ .Values.discovery.pruneThreshold | quote }}
+        - name: PROCESS_MANAGEMENT_MODE
+          value: {{ .Values.pgpool.processManagementMode | quote }}
+        - name: PROCESS_MANAGEMENT_STRATEGY
+          value: {{ .Values.pgpool.processManagementStrategy | quote }}
+        - name: MIN_SPARE_CHILDREN
+          value: {{ .Values.pgpool.minSpareChildren | quote }}
+        - name: MAX_SPARE_CHILDREN
+          value: {{ .Values.pgpool.maxSpareChildren | quote }}
         - name: RESERVED_CONNECTIONS
           value: "{{ .Values.pgpool.reservedConnections }}"
         - name: NUM_INIT_CHILDREN

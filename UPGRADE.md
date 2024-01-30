@@ -1,5 +1,24 @@
 # Upgrading Steps
 
+## `v1.1.9` → `v1.1.10`
+
+### Software upgrade
+
+This release updates pgpool from v4.4.4 to [v4.5.0](https://www.pgpool.net/docs/45/en/html/release-4-5-0.html).
+
+### New features
+
+Enable support for pgpool's dynamic process management mode.  This is disabled by default.
+
+### VALUES - New:
+
+Parameter | Description | Default
+--- | --- | ---
+pgpool.processManagmentMode | Whether to use static or dynamic [process management](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html). Allowable values are `static` and `dynamic` | `static`
+pgpool.processManagementStrategy | When using [dynamic process managment](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html), defines how aggressively to scale down idle connections. Allowable values are `lazy`, `gentle` and `aggressive`. | `gentle`
+pgpool.minSpareChildren | When using [dynamic process management](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html), sets the target for the minimum number of spare child processes. | `10`
+pgpool.maxSpareChildren | When using [dynamic process management](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html), sets the target for the maximum number of spare child processes. | `10`
+
 ## `v1.1.8` → `v1.1.9`
 
 ### New features
