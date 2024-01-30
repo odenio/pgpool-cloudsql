@@ -50,7 +50,8 @@ instance no matter what.  This is configureable at deploy time as
 
 Old Version | New Version | Upgrade Guide
 --- | --- | ---
-v1.1.8 | v1.1.9 | [link](UPGRADE.md#v118--v119)
+v1.1.8 | v1.1.10 | [link](UPGRADE.md#v118--v1110)
+v1.1.9 | v1.1.9 | [link](UPGRADE.md#v118--v119)
 v1.1.7 | v1.1.8 | [link](UPGRADE.md#v117--v118)
 v1.1.6 | v1.1.7 | [link](UPGRADE.md#v116--v117)
 v1.1.5 | v1.1.6 | [link](UPGRADE.md#v115--v116)
@@ -230,7 +231,11 @@ Parameter | Description | Default
 Parameter | Description | Default
 --- | --- | ---
 `pgpool.reservedConnections` | When this parameter is set to 1 or greater, incoming connections from clients are not accepted with error message "Sorry, too many clients already", rather than blocked if the number of current connections from clients is more than (`numInitChildren` - `reservedConnections`). ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-connection.html#GUC-RESERVED-CONNECTIONS)) | `0`
-`pgpool.numInitChildren` | The number of preforked Pgpool-II server processes. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-connection.html#GUC-NUM-INIT-CHILDREN)) | `32`
+pgpool.processManagmentMode | Whether to use static or dynamic [process management](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html). Allowable values are `static` and `dynamic` | `static`
+pgpool.processManagementStrategy | When using [dynamic process managment](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html), defines how aggressively to scale down idle connections. Allowable values are `lazy`, `gentle` and `aggressive`. | `gentle`
+pgpool.minSpareChildren | When using [dynamic process management](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html), sets the target for the minimum number of spare child processes. | `10`
+pgpool.maxSpareChildren | When using [dynamic process management](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html), sets the target for the maximum number of spare child processes. | `10`
+`pgpool.numInitChildren` | This defines the hard limit for concurrent incoming connections: when using static process management pgpool will pre-fork exactly this many children. When using dynamic process management, pgpool will try to maintain a pool of child processes that satisfy the values of minSpareChilden and maxSpareChildren but will never go over numInitChildren. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-connection.html#GUC-NUM-INIT-CHILDREN)) | `32`
 `pgpool.maxPool` | The maximum number of cached connections in each Pgpool-II child process. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-connection.html#GUC-MAX-POOL)) | `32`
 `pgpool.childLifeTime` | Specifies the time in seconds to terminate a Pgpool-II child process if it remains idle. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-connection-pooling.html#GUC-CHILD-LIFE-TIME)) | `5min`
 `pgpool.childMaxConnections` | Specifies the lifetime of a Pgpool-II child process in terms of the number of client connections it can receive. Pgpool-II will terminate the child process after it has served child_max_connections client connections and will immediately spawn a new child process to take its place. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-connection-pooling.html#GUC-CHILD-MAX-CONNECTIONS)) | `8192`

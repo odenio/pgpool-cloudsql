@@ -86,7 +86,15 @@ allow_clear_text_frontend_auth = on
 #------------------------------------------------------------------------------
 
 # - Concurrent session and pool size -
-num_init_children = {{ .NUM_INIT_CHILDREN }}
+{{ if eq .PROCESS_MANAGEMENT_MODE "dynamic" -}}
+process_management_mode = dynamic
+process_management_strategy = {{ default "gentle" .PROCESS_MANAGEMENT_STRATEGY }}
+min_spare_children = {{ default "5" .MIN_SPARE_CHILDREN }}
+max_spare_children = {{ default "10" .MAX_SPARE_CHILDREN }}
+{{ else -}}
+process_management_mode = static
+{{ end  -}}
+num_init_children = {{ default "32" .NUM_INIT_CHILDREN }}
 max_pool = {{ .MAX_POOL }}
 child_life_time = {{ .CHILD_LIFE_TIME }}
 child_max_connections = {{ .CHILD_MAX_CONNECTIONS }}
