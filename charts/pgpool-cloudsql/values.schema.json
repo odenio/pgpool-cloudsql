@@ -1,0 +1,1393 @@
+{
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Root Schema",
+    "required": [
+        "deploy",
+        "discovery",
+        "exporter",
+        "telegraf",
+        "pcp",
+        "pgpool"
+    ],
+    "properties": {
+        "deploy": {
+            "type": "object",
+            "default": {},
+            "title": "The deploy Schema",
+            "required": [
+                "replicaCount",
+                "repository",
+                "affinity",
+                "tolerations",
+                "annotations",
+                "resources",
+                "podDisruptionBudget",
+                "service",
+                "startupProbe",
+                "readinessProbe",
+                "livenessProbe"
+            ],
+            "properties": {
+                "replicaCount": {
+                    "type": "integer",
+                    "default": 0,
+                    "title": "The replicaCount Schema",
+                    "examples": [
+                        1
+                    ]
+                },
+                "repository": {
+                    "type": "string",
+                    "default": "odentech/pgpool-cloudsql",
+                    "title": "The repository Schema",
+                    "examples": [
+                        "odentech/pgpool-cloudsql"
+                    ]
+                },
+                "tag": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The tag Schema",
+                    "examples": [
+                        "1.2.0"
+                    ]
+                },
+                "affinity": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The affinity Schema",
+                    "required": [],
+                    "properties": {},
+                    "examples": [{}]
+                },
+                "tolerations": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The tolerations Schema",
+                    "required": [],
+                    "properties": {},
+                    "examples": [{}]
+                },
+                "annotations": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The annotations Schema",
+                    "required": [],
+                    "properties": {},
+                    "examples": [{}]
+                },
+                "resources": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The resources Schema",
+                    "required": [
+                        "pgpool",
+                        "discovery",
+                        "exporter",
+                        "telegraf"
+                    ],
+                    "properties": {
+                        "pgpool": {
+                            "type": "object",
+                            "default": {},
+                            "title": "The pgpool Schema",
+                            "required": [],
+                            "properties": {},
+                            "examples": [{}]
+                        },
+                        "discovery": {
+                            "type": "object",
+                            "default": {},
+                            "title": "The discovery Schema",
+                            "required": [],
+                            "properties": {},
+                            "examples": [{}]
+                        },
+                        "exporter": {
+                            "type": "object",
+                            "default": {},
+                            "title": "The exporter Schema",
+                            "required": [],
+                            "properties": {},
+                            "examples": [{}]
+                        },
+                        "telegraf": {
+                            "type": "object",
+                            "default": {},
+                            "title": "The telegraf Schema",
+                            "required": [],
+                            "properties": {},
+                            "examples": [{}]
+                        }
+                    },
+                    "examples": [{
+                        "pgpool": {},
+                        "discovery": {},
+                        "exporter": {},
+                        "telegraf": {}
+                    }]
+                },
+                "podDisruptionBudget": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The podDisruptionBudget Schema",
+                    "required": [
+                        "maxUnavailable"
+                    ],
+                    "properties": {
+                        "maxUnavailable": {
+                            "type": "integer",
+                            "default": 0,
+                            "title": "The maxUnavailable Schema",
+                            "examples": [
+                                1
+                            ]
+                        }
+                    },
+                    "examples": [{
+                        "maxUnavailable": 1
+                    }]
+                },
+                "service": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The service Schema",
+                    "required": [
+                        "tier",
+                        "additionalLabels"
+                    ],
+                    "properties": {
+                        "tier": {
+                            "type": "string",
+                            "default": "",
+                            "title": "The tier Schema",
+                            "examples": [
+                                "db"
+                            ]
+                        },
+                        "additionalLabels": {
+                            "type": "object",
+                            "default": {},
+                            "title": "The additionalLabels Schema",
+                            "required": [],
+                            "properties": {},
+                            "examples": [{}]
+                        }
+                    },
+                    "examples": [{
+                        "tier": "db",
+                        "additionalLabels": {}
+                    }]
+                },
+                "startupProbe": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The startupProbe Schema",
+                    "required": [
+                        "pgpool",
+                        "exporter"
+                    ],
+                    "properties": {
+                        "pgpool": {
+                            "type": "object",
+                            "default": {},
+                            "title": "The pgpool Schema",
+                            "required": [
+                                "enabled",
+                                "initialDelaySeconds",
+                                "periodSeconds",
+                                "timeoutSeconds",
+                                "successThreshold",
+                                "failureThreshold"
+                            ],
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "default": false,
+                                    "title": "The enabled Schema",
+                                    "examples": [
+                                        true
+                                    ]
+                                },
+                                "initialDelaySeconds": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The initialDelaySeconds Schema",
+                                    "examples": [
+                                        5
+                                    ]
+                                },
+                                "periodSeconds": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The periodSeconds Schema",
+                                    "examples": [
+                                        5
+                                    ]
+                                },
+                                "timeoutSeconds": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The timeoutSeconds Schema",
+                                    "examples": [
+                                        4
+                                    ]
+                                },
+                                "successThreshold": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The successThreshold Schema",
+                                    "examples": [
+                                        1
+                                    ]
+                                },
+                                "failureThreshold": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The failureThreshold Schema",
+                                    "examples": [
+                                        15
+                                    ]
+                                }
+                            },
+                            "examples": [{
+                                "enabled": true,
+                                "initialDelaySeconds": 5,
+                                "periodSeconds": 5,
+                                "timeoutSeconds": 4,
+                                "successThreshold": 1,
+                                "failureThreshold": 15
+                            }]
+                        },
+                        "exporter": {
+                            "type": "object",
+                            "default": {},
+                            "title": "The exporter Schema",
+                            "required": [
+                                "enabled",
+                                "initialDelaySeconds",
+                                "periodSeconds",
+                                "timeoutSeconds",
+                                "successThreshold",
+                                "failureThreshold"
+                            ],
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "default": false,
+                                    "title": "The enabled Schema",
+                                    "examples": [
+                                        true
+                                    ]
+                                },
+                                "initialDelaySeconds": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The initialDelaySeconds Schema",
+                                    "examples": [
+                                        5
+                                    ]
+                                },
+                                "periodSeconds": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The periodSeconds Schema",
+                                    "examples": [
+                                        5
+                                    ]
+                                },
+                                "timeoutSeconds": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The timeoutSeconds Schema",
+                                    "examples": [
+                                        4
+                                    ]
+                                },
+                                "successThreshold": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The successThreshold Schema",
+                                    "examples": [
+                                        1
+                                    ]
+                                },
+                                "failureThreshold": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The failureThreshold Schema",
+                                    "examples": [
+                                        15
+                                    ]
+                                }
+                            },
+                            "examples": [{
+                                "enabled": true,
+                                "initialDelaySeconds": 5,
+                                "periodSeconds": 5,
+                                "timeoutSeconds": 4,
+                                "successThreshold": 1,
+                                "failureThreshold": 15
+                            }]
+                        }
+                    },
+                    "examples": [{
+                        "pgpool": {
+                            "enabled": true,
+                            "initialDelaySeconds": 5,
+                            "periodSeconds": 5,
+                            "timeoutSeconds": 4,
+                            "successThreshold": 1,
+                            "failureThreshold": 15
+                        },
+                        "exporter": {
+                            "enabled": true,
+                            "initialDelaySeconds": 5,
+                            "periodSeconds": 5,
+                            "timeoutSeconds": 4,
+                            "successThreshold": 1,
+                            "failureThreshold": 15
+                        }
+                    }]
+                },
+                "readinessProbe": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The readinessProbe Schema",
+                    "required": [
+                        "pgpool",
+                        "exporter"
+                    ],
+                    "properties": {
+                        "pgpool": {
+                            "type": "object",
+                            "default": {},
+                            "title": "The pgpool Schema",
+                            "required": [
+                                "enabled",
+                                "initialDelaySeconds",
+                                "periodSeconds",
+                                "timeoutSeconds",
+                                "successThreshold",
+                                "failureThreshold"
+                            ],
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "default": false,
+                                    "title": "The enabled Schema",
+                                    "examples": [
+                                        true
+                                    ]
+                                },
+                                "initialDelaySeconds": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The initialDelaySeconds Schema",
+                                    "examples": [
+                                        5
+                                    ]
+                                },
+                                "periodSeconds": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The periodSeconds Schema",
+                                    "examples": [
+                                        5
+                                    ]
+                                },
+                                "timeoutSeconds": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The timeoutSeconds Schema",
+                                    "examples": [
+                                        4
+                                    ]
+                                },
+                                "successThreshold": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The successThreshold Schema",
+                                    "examples": [
+                                        1
+                                    ]
+                                },
+                                "failureThreshold": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The failureThreshold Schema",
+                                    "examples": [
+                                        2
+                                    ]
+                                }
+                            },
+                            "examples": [{
+                                "enabled": true,
+                                "initialDelaySeconds": 5,
+                                "periodSeconds": 5,
+                                "timeoutSeconds": 4,
+                                "successThreshold": 1,
+                                "failureThreshold": 2
+                            }]
+                        },
+                        "exporter": {
+                            "type": "object",
+                            "default": {},
+                            "title": "The exporter Schema",
+                            "required": [
+                                "enabled",
+                                "initialDelaySeconds",
+                                "periodSeconds",
+                                "timeoutSeconds",
+                                "successThreshold",
+                                "failureThreshold"
+                            ],
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "default": false,
+                                    "title": "The enabled Schema",
+                                    "examples": [
+                                        true
+                                    ]
+                                },
+                                "initialDelaySeconds": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The initialDelaySeconds Schema",
+                                    "examples": [
+                                        5
+                                    ]
+                                },
+                                "periodSeconds": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The periodSeconds Schema",
+                                    "examples": [
+                                        5
+                                    ]
+                                },
+                                "timeoutSeconds": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The timeoutSeconds Schema",
+                                    "examples": [
+                                        4
+                                    ]
+                                },
+                                "successThreshold": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The successThreshold Schema",
+                                    "examples": [
+                                        1
+                                    ]
+                                },
+                                "failureThreshold": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The failureThreshold Schema",
+                                    "examples": [
+                                        2
+                                    ]
+                                }
+                            },
+                            "examples": [{
+                                "enabled": true,
+                                "initialDelaySeconds": 5,
+                                "periodSeconds": 5,
+                                "timeoutSeconds": 4,
+                                "successThreshold": 1,
+                                "failureThreshold": 2
+                            }]
+                        }
+                    },
+                    "examples": [{
+                        "pgpool": {
+                            "enabled": true,
+                            "initialDelaySeconds": 5,
+                            "periodSeconds": 5,
+                            "timeoutSeconds": 4,
+                            "successThreshold": 1,
+                            "failureThreshold": 2
+                        },
+                        "exporter": {
+                            "enabled": true,
+                            "initialDelaySeconds": 5,
+                            "periodSeconds": 5,
+                            "timeoutSeconds": 4,
+                            "successThreshold": 1,
+                            "failureThreshold": 2
+                        }
+                    }]
+                },
+                "livenessProbe": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The livenessProbe Schema",
+                    "required": [
+                        "pgpool",
+                        "exporter"
+                    ],
+                    "properties": {
+                        "pgpool": {
+                            "type": "object",
+                            "default": {},
+                            "title": "The pgpool Schema",
+                            "required": [
+                                "enabled",
+                                "initialDelaySeconds",
+                                "periodSeconds",
+                                "timeoutSeconds",
+                                "successThreshold",
+                                "failureThreshold"
+                            ],
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "default": false,
+                                    "title": "The enabled Schema",
+                                    "examples": [
+                                        true
+                                    ]
+                                },
+                                "initialDelaySeconds": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The initialDelaySeconds Schema",
+                                    "examples": [
+                                        5
+                                    ]
+                                },
+                                "periodSeconds": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The periodSeconds Schema",
+                                    "examples": [
+                                        5
+                                    ]
+                                },
+                                "timeoutSeconds": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The timeoutSeconds Schema",
+                                    "examples": [
+                                        4
+                                    ]
+                                },
+                                "successThreshold": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The successThreshold Schema",
+                                    "examples": [
+                                        1
+                                    ]
+                                },
+                                "failureThreshold": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The failureThreshold Schema",
+                                    "examples": [
+                                        5
+                                    ]
+                                }
+                            },
+                            "examples": [{
+                                "enabled": true,
+                                "initialDelaySeconds": 5,
+                                "periodSeconds": 5,
+                                "timeoutSeconds": 4,
+                                "successThreshold": 1,
+                                "failureThreshold": 5
+                            }]
+                        },
+                        "exporter": {
+                            "type": "object",
+                            "default": {},
+                            "title": "The exporter Schema",
+                            "required": [
+                                "enabled",
+                                "initialDelaySeconds",
+                                "periodSeconds",
+                                "timeoutSeconds",
+                                "successThreshold",
+                                "failureThreshold"
+                            ],
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "default": false,
+                                    "title": "The enabled Schema",
+                                    "examples": [
+                                        true
+                                    ]
+                                },
+                                "initialDelaySeconds": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The initialDelaySeconds Schema",
+                                    "examples": [
+                                        5
+                                    ]
+                                },
+                                "periodSeconds": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The periodSeconds Schema",
+                                    "examples": [
+                                        5
+                                    ]
+                                },
+                                "timeoutSeconds": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The timeoutSeconds Schema",
+                                    "examples": [
+                                        4
+                                    ]
+                                },
+                                "successThreshold": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The successThreshold Schema",
+                                    "examples": [
+                                        1
+                                    ]
+                                },
+                                "failureThreshold": {
+                                    "type": "integer",
+                                    "default": 0,
+                                    "title": "The failureThreshold Schema",
+                                    "examples": [
+                                        5
+                                    ]
+                                }
+                            },
+                            "examples": [{
+                                "enabled": true,
+                                "initialDelaySeconds": 5,
+                                "periodSeconds": 5,
+                                "timeoutSeconds": 4,
+                                "successThreshold": 1,
+                                "failureThreshold": 5
+                            }]
+                        }
+                    },
+                    "examples": [{
+                        "pgpool": {
+                            "enabled": true,
+                            "initialDelaySeconds": 5,
+                            "periodSeconds": 5,
+                            "timeoutSeconds": 4,
+                            "successThreshold": 1,
+                            "failureThreshold": 5
+                        },
+                        "exporter": {
+                            "enabled": true,
+                            "initialDelaySeconds": 5,
+                            "periodSeconds": 5,
+                            "timeoutSeconds": 4,
+                            "successThreshold": 1,
+                            "failureThreshold": 5
+                        }
+                    }]
+                }
+            },
+            "examples": [{
+                "replicaCount": 1,
+                "repository": "odentech/pgpool-cloudsql",
+                "affinity": {},
+                "tolerations": {},
+                "annotations": {},
+                "resources": {
+                    "pgpool": {},
+                    "discovery": {},
+                    "exporter": {},
+                    "telegraf": {}
+                },
+                "podDisruptionBudget": {
+                    "maxUnavailable": 1
+                },
+                "service": {
+                    "tier": "db",
+                    "additionalLabels": {}
+                },
+                "startupProbe": {
+                    "pgpool": {
+                        "enabled": true,
+                        "initialDelaySeconds": 5,
+                        "periodSeconds": 5,
+                        "timeoutSeconds": 4,
+                        "successThreshold": 1,
+                        "failureThreshold": 15
+                    },
+                    "exporter": {
+                        "enabled": true,
+                        "initialDelaySeconds": 5,
+                        "periodSeconds": 5,
+                        "timeoutSeconds": 4,
+                        "successThreshold": 1,
+                        "failureThreshold": 15
+                    }
+                },
+                "readinessProbe": {
+                    "pgpool": {
+                        "enabled": true,
+                        "initialDelaySeconds": 5,
+                        "periodSeconds": 5,
+                        "timeoutSeconds": 4,
+                        "successThreshold": 1,
+                        "failureThreshold": 2
+                    },
+                    "exporter": {
+                        "enabled": true,
+                        "initialDelaySeconds": 5,
+                        "periodSeconds": 5,
+                        "timeoutSeconds": 4,
+                        "successThreshold": 1,
+                        "failureThreshold": 2
+                    }
+                },
+                "livenessProbe": {
+                    "pgpool": {
+                        "enabled": true,
+                        "initialDelaySeconds": 5,
+                        "periodSeconds": 5,
+                        "timeoutSeconds": 4,
+                        "successThreshold": 1,
+                        "failureThreshold": 5
+                    },
+                    "exporter": {
+                        "enabled": true,
+                        "initialDelaySeconds": 5,
+                        "periodSeconds": 5,
+                        "timeoutSeconds": 4,
+                        "successThreshold": 1,
+                        "failureThreshold": 5
+                    }
+                }
+            }]
+        },
+        "discovery": {
+            "type": "object",
+            "default": {},
+            "title": "The discovery Schema",
+            "required": [
+                "primaryInstancePrefix",
+                "stayInRegion",
+                "pruneThreshold"
+            ],
+            "properties": {
+                "primaryInstancePrefix": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The primaryInstancePrefix Schema",
+                    "examples": [
+                        ""
+                    ]
+                },
+                "stayInRegion": {
+                    "type": "boolean",
+                    "default": false,
+                    "title": "The stayInRegion Schema",
+                    "examples": [
+                        true
+                    ]
+                },
+                "pruneThreshold": {
+                    "type": "integer",
+                    "default": 0,
+                    "title": "The pruneThreshold Schema",
+                    "examples": [
+                        900
+                    ]
+                }
+            },
+            "examples": [{
+                "primaryInstancePrefix": "",
+                "stayInRegion": true,
+                "pruneThreshold": 900
+            }]
+        },
+        "exporter": {
+            "type": "object",
+            "default": {},
+            "title": "The exporter Schema",
+            "required": [
+                "postgresUsername",
+                "postgresPassword",
+                "postgresDatabase",
+                "exitOnError"
+            ],
+            "properties": {
+                "postgresUsername": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The postgresUsername Schema",
+                    "examples": [
+                        ""
+                    ]
+                },
+                "postgresPassword": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The postgresPassword Schema",
+                    "examples": [
+                        ""
+                    ]
+                },
+                "postgresDatabase": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The postgresDatabase Schema",
+                    "examples": [
+                        "postgres"
+                    ]
+                },
+                "exitOnError": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The exitOnError Schema",
+                    "examples": [
+                        "false"
+                    ]
+                }
+            },
+            "examples": [{
+                "postgresUsername": "",
+                "postgresPassword": "",
+                "postgresDatabase": "postgres",
+                "exitOnError": "false"
+            }]
+        },
+        "telegraf": {
+            "type": "object",
+            "default": {},
+            "title": "The telegraf Schema",
+            "required": [
+                "enabled",
+                "exitOnError"
+            ],
+            "properties": {
+                "enabled": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The enabled Schema",
+                    "examples": [
+                        "true"
+                    ]
+                },
+                "exitOnError": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The exitOnError Schema",
+                    "examples": [
+                        "false"
+                    ]
+                }
+            },
+            "examples": [{
+                "enabled": "true",
+                "exitOnError": "false"
+            }]
+        },
+        "pcp": {
+            "type": "object",
+            "default": {},
+            "title": "The pcp Schema",
+            "required": [
+                "password"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The password Schema",
+                    "examples": [
+                        ""
+                    ]
+                }
+            },
+            "examples": [{
+                "password": ""
+            }]
+        },
+        "pgpool": {
+            "type": "object",
+            "default": {},
+            "title": "The pgpool Schema",
+            "required": [
+                "version",
+                "processManagementMode",
+                "processManagementStrategy",
+                "minSpareChildren",
+                "maxSpareChildren",
+                "reservedConnections",
+                "numInitChildren",
+                "maxPool",
+                "childLifeTime",
+                "childMaxConnections",
+                "connectionLifeTime",
+                "clientIdleLimit",
+                "ignoreLeadingWhiteSpace",
+                "primaryRoutingQueryPatternList",
+                "allowSqlComments",
+                "disableLoadBalanceOnWrite",
+                "statementLevelLoadBalance",
+                "primaryWeight",
+                "replicasWeight",
+                "logMinMessages",
+                "logErrorVerbosity",
+                "srCheckUsername",
+                "srCheckPassword",
+                "srCheckDatabase",
+                "healthCheckUsername",
+                "healthCheckPassword",
+                "healthCheckDatabase",
+                "coredumpSizeLimit"
+            ],
+            "if": {
+              "properties": {
+                "version": {
+                  "message": {
+                    "pattern": "process mgmt mode must be static for pgpool.version prior to 4.4"
+                  },
+                  "pattern": "^4\\.[0-3]\\..*$"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "processManagementMode": {
+                  "message": {
+                    "const": "process mgmt mode must be static for pgpool.version prior to 4.4"
+                  },
+                  "const": "static"
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "processManagementMode": {
+                  "message": {
+                    "enum": "process mgmt mode must be static for pgpool.version prior to 4.4"
+                  },
+                  "enum": [
+                    "static",
+                    "dynamic"
+                  ]
+                }
+              }
+            },
+            "properties": {
+                "version": {
+                    "type": "string",
+                    "default": "4.5.0",
+                    "title": "The version Schema",
+                    "examples": [
+                        "4.5.0"
+                    ],
+                    "message": {
+                      "enum": "process mgmt mode must be static for pgpool.version prior to 4.4",
+                      "pattern": "process mgmt mode must be static for pgpool.version prior to 4.4"
+                    },
+                    "enum": [
+                      "4.5.0",
+                      "4.4.5",
+                      "4.3.8",
+                      "4.2.15",
+                      "4.1.18",
+                      "4.0.25"
+                    ]
+                },
+                "processManagementMode": {
+                    "type": "string",
+                    "default": "static",
+                    "title": "The processManagementMode Schema",
+                    "examples": [
+                        "static"
+                    ],
+                    "message": {
+                      "enum": "process mgmt mode must be static for pgpool.version prior to 4.4",
+                      "const": "process mgmt mode must be static for pgpool.version prior to 4.4"
+                    },
+                    "enum": [
+                      "static",
+                      "dynamic"
+                    ]
+                },
+                "processManagementStrategy": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The processManagementStrategy Schema",
+                    "examples": [
+                        "gentle"
+                    ],
+                    "enum": [
+                      "lazy",
+                      "gentle",
+                      "aggressive"
+                    ]
+                },
+                "minSpareChildren": {
+                    "type": "integer",
+                    "default": 0,
+                    "title": "The minSpareChildren Schema",
+                    "examples": [
+                        5
+                    ]
+                },
+                "maxSpareChildren": {
+                    "type": "integer",
+                    "default": 0,
+                    "title": "The maxSpareChildren Schema",
+                    "examples": [
+                        10
+                    ]
+                },
+                "reservedConnections": {
+                    "type": "integer",
+                    "default": 0,
+                    "title": "The reservedConnections Schema",
+                    "examples": [
+                        0
+                    ]
+                },
+                "numInitChildren": {
+                    "type": "integer",
+                    "default": 0,
+                    "title": "The numInitChildren Schema",
+                    "examples": [
+                        32
+                    ]
+                },
+                "maxPool": {
+                    "type": "integer",
+                    "default": 0,
+                    "title": "The maxPool Schema",
+                    "examples": [
+                        32
+                    ]
+                },
+                "childLifeTime": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The childLifeTime Schema",
+                    "examples": [
+                        "5min"
+                    ]
+                },
+                "childMaxConnections": {
+                    "type": "integer",
+                    "default": 0,
+                    "title": "The childMaxConnections Schema",
+                    "examples": [
+                        8192
+                    ]
+                },
+                "connectionLifeTime": {
+                    "type": "integer",
+                    "default": 0,
+                    "title": "The connectionLifeTime Schema",
+                    "examples": [
+                        0
+                    ]
+                },
+                "clientIdleLimit": {
+                    "type": "integer",
+                    "default": 0,
+                    "title": "The clientIdleLimit Schema",
+                    "examples": [
+                        300
+                    ]
+                },
+                "ignoreLeadingWhiteSpace": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The ignoreLeadingWhiteSpace Schema",
+                    "examples": [
+                        "on"
+                    ]
+                },
+                "primaryRoutingQueryPatternList": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The primaryRoutingQueryPatternList Schema",
+                    "examples": [
+                        ".*DO NOT LOAD BALANCE.*"
+                    ]
+                },
+                "allowSqlComments": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The allowSqlComments Schema",
+                    "examples": [
+                        "on"
+                    ]
+                },
+                "disableLoadBalanceOnWrite": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The disableLoadBalanceOnWrite Schema",
+                    "examples": [
+                        "transaction"
+                    ]
+                },
+                "statementLevelLoadBalance": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The statementLevelLoadBalance Schema",
+                    "examples": [
+                        "on"
+                    ]
+                },
+                "primaryWeight": {
+                    "type": "integer",
+                    "default": 0,
+                    "title": "The primaryWeight Schema",
+                    "examples": [
+                        0
+                    ]
+                },
+                "replicasWeight": {
+                    "type": "integer",
+                    "default": 0,
+                    "title": "The replicasWeight Schema",
+                    "examples": [
+                        1
+                    ]
+                },
+                "logMinMessages": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The logMinMessages Schema",
+                    "examples": [
+                        "ERROR"
+                    ]
+                },
+                "logErrorVerbosity": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The logErrorVerbosity Schema",
+                    "examples": [
+                        "TERSE"
+                    ]
+                },
+                "srCheckUsername": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The srCheckUsername Schema",
+                    "examples": [
+                        ""
+                    ]
+                },
+                "srCheckPassword": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The srCheckPassword Schema",
+                    "examples": [
+                        ""
+                    ]
+                },
+                "srCheckDatabase": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The srCheckDatabase Schema",
+                    "examples": [
+                        "postgres"
+                    ]
+                },
+                "healthCheckUsername": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The healthCheckUsername Schema",
+                    "examples": [
+                        ""
+                    ]
+                },
+                "healthCheckPassword": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The healthCheckPassword Schema",
+                    "examples": [
+                        ""
+                    ]
+                },
+                "healthCheckDatabase": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The healthCheckDatabase Schema",
+                    "examples": [
+                        "postgres"
+                    ]
+                },
+                "coredumpSizeLimit": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The coredumpSizeLimit Schema",
+                    "examples": [
+                        "0"
+                    ]
+                }
+            },
+            "examples": [{
+                "version": "4.5.0",
+                "processManagementMode": "static",
+                "processManagementStrategy": "gentle",
+                "minSpareChildren": 5,
+                "maxSpareChildren": 10,
+                "reservedConnections": 0,
+                "numInitChildren": 32,
+                "maxPool": 32,
+                "childLifeTime": "5min",
+                "childMaxConnections": 8192,
+                "connectionLifeTime": 0,
+                "clientIdleLimit": 300,
+                "ignoreLeadingWhiteSpace": "on",
+                "primaryRoutingQueryPatternList": ".*DO NOT LOAD BALANCE.*",
+                "allowSqlComments": "on",
+                "disableLoadBalanceOnWrite": "transaction",
+                "statementLevelLoadBalance": "on",
+                "primaryWeight": 0,
+                "replicasWeight": 1,
+                "logMinMessages": "ERROR",
+                "logErrorVerbosity": "TERSE",
+                "srCheckUsername": "",
+                "srCheckPassword": "",
+                "srCheckDatabase": "postgres",
+                "healthCheckUsername": "",
+                "healthCheckPassword": "",
+                "healthCheckDatabase": "postgres",
+                "coredumpSizeLimit": "0"
+            }]
+        }
+    },
+    "examples": [{
+        "deploy": {
+            "replicaCount": 1,
+            "repository": "odentech/pgpool-cloudsql",
+            "tag": "1.1.10",
+            "affinity": {},
+            "tolerations": {},
+            "annotations": {},
+            "resources": {
+                "pgpool": {},
+                "discovery": {},
+                "exporter": {},
+                "telegraf": {}
+            },
+            "podDisruptionBudget": {
+                "maxUnavailable": 1
+            },
+            "service": {
+                "tier": "db",
+                "additionalLabels": {}
+            },
+            "startupProbe": {
+                "pgpool": {
+                    "enabled": true,
+                    "initialDelaySeconds": 5,
+                    "periodSeconds": 5,
+                    "timeoutSeconds": 4,
+                    "successThreshold": 1,
+                    "failureThreshold": 15
+                },
+                "exporter": {
+                    "enabled": true,
+                    "initialDelaySeconds": 5,
+                    "periodSeconds": 5,
+                    "timeoutSeconds": 4,
+                    "successThreshold": 1,
+                    "failureThreshold": 15
+                }
+            },
+            "readinessProbe": {
+                "pgpool": {
+                    "enabled": true,
+                    "initialDelaySeconds": 5,
+                    "periodSeconds": 5,
+                    "timeoutSeconds": 4,
+                    "successThreshold": 1,
+                    "failureThreshold": 2
+                },
+                "exporter": {
+                    "enabled": true,
+                    "initialDelaySeconds": 5,
+                    "periodSeconds": 5,
+                    "timeoutSeconds": 4,
+                    "successThreshold": 1,
+                    "failureThreshold": 2
+                }
+            },
+            "livenessProbe": {
+                "pgpool": {
+                    "enabled": true,
+                    "initialDelaySeconds": 5,
+                    "periodSeconds": 5,
+                    "timeoutSeconds": 4,
+                    "successThreshold": 1,
+                    "failureThreshold": 5
+                },
+                "exporter": {
+                    "enabled": true,
+                    "initialDelaySeconds": 5,
+                    "periodSeconds": 5,
+                    "timeoutSeconds": 4,
+                    "successThreshold": 1,
+                    "failureThreshold": 5
+                }
+            }
+        },
+        "discovery": {
+            "primaryInstancePrefix": "",
+            "stayInRegion": true,
+            "pruneThreshold": 900
+        },
+        "exporter": {
+            "postgresUsername": "",
+            "postgresPassword": "",
+            "postgresDatabase": "postgres",
+            "exitOnError": "false"
+        },
+        "telegraf": {
+            "enabled": "true",
+            "exitOnError": "false"
+        },
+        "pcp": {
+            "password": ""
+        },
+        "pgpool": {
+            "version": "4.5.0",
+            "processManagementMode": "static",
+            "processManagementStrategy": "gentle",
+            "minSpareChildren": 5,
+            "maxSpareChildren": 10,
+            "reservedConnections": 0,
+            "numInitChildren": 32,
+            "maxPool": 32,
+            "childLifeTime": "5min",
+            "childMaxConnections": 8192,
+            "connectionLifeTime": 0,
+            "clientIdleLimit": 300,
+            "ignoreLeadingWhiteSpace": "on",
+            "primaryRoutingQueryPatternList": ".*DO NOT LOAD BALANCE.*",
+            "allowSqlComments": "on",
+            "disableLoadBalanceOnWrite": "transaction",
+            "statementLevelLoadBalance": "on",
+            "primaryWeight": 0,
+            "replicasWeight": 1,
+            "logMinMessages": "ERROR",
+            "logErrorVerbosity": "TERSE",
+            "srCheckUsername": "",
+            "srCheckPassword": "",
+            "srCheckDatabase": "postgres",
+            "healthCheckUsername": "",
+            "healthCheckPassword": "",
+            "healthCheckDatabase": "postgres",
+            "coredumpSizeLimit": "0"
+        }
+    }]
+}

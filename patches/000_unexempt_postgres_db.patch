@@ -1,0 +1,12 @@
+diff --git a/src/protocol/child.c b/src/protocol/child.c
+index d334dad3c..77a4337e9 100644
+--- a/src/protocol/child.c
++++ b/src/protocol/child.c
+@@ -562,7 +562,6 @@ backend_cleanup(POOL_CONNECTION * volatile *frontend, POOL_CONNECTION_POOL * vol
+ 		if ((sp &&
+ 			 (!strcmp(sp->database, "template0") ||
+ 			  !strcmp(sp->database, "template1") ||
+-			  !strcmp(sp->database, "postgres") ||
+ 			  !strcmp(sp->database, "regression"))) ||
+ 			(*frontend != NULL &&
+ 			 ((*frontend)->socket_state == POOL_SOCKET_EOF ||

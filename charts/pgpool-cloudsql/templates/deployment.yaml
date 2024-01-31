@@ -1,3 +1,8 @@
+{{ if ne .Values.deploy.tag "" -}}
+{{ $_ := set . "image" (print .Values.deploy.repository ":" .Values.deploy.tag) -}}
+{{ else -}}
+{{ $_ := set . "image" (print .Values.deploy.repository ":" .Chart.Version "-" .Values.pgpool.version) -}}
+{{ end -}}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -36,7 +41,7 @@ spec:
 
       containers:
       - name: pgpool
-        image: "{{ .Values.deploy.repository }}:{{ .Values.deploy.tag }}"
+        image: "{{ .image }}"
         imagePullPolicy: Always
         ports:
           - name: postgres-port
@@ -86,7 +91,7 @@ spec:
           value: "{{ .Values.pgpool.coredumpSizeLimit }}"
 
       - name: discovery
-        image: "{{ .Values.deploy.repository }}:{{ .Values.deploy.tag }}"
+        image: "{{ .image }}"
         imagePullPolicy: Always
         {{- with .Values.deploy.resources.discovery }}
         resources:
@@ -163,7 +168,7 @@ spec:
         ports:
           - name: metrics
             containerPort: 9090
-        image: "{{ .Values.deploy.repository }}:{{ .Values.deploy.tag }}"
+        image: "{{ .image }}"
         imagePullPolicy: Always
         {{- with .Values.deploy.resources.exporter }}
         resources:
@@ -220,7 +225,7 @@ spec:
 
       {{- if eq .Values.telegraf.enabled "true" }}
       - name: telegraf
-        image: "{{ .Values.deploy.repository }}:{{ .Values.deploy.tag }}"
+        image: "{{ .image }}"
         imagePullPolicy: Always
         {{- with .Values.deploy.resources.telegraf }}
         resources:

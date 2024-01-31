@@ -50,6 +50,7 @@ instance no matter what.  This is configureable at deploy time as
 
 Old Version | New Version | Upgrade Guide
 --- | --- | ---
+v1.1.10 | v1.2.0 | [link](UPGRADE.md#v1110--v120)
 v1.1.8 | v1.1.10 | [link](UPGRADE.md#v118--v1110)
 v1.1.9 | v1.1.9 | [link](UPGRADE.md#v118--v119)
 v1.1.7 | v1.1.8 | [link](UPGRADE.md#v117--v118)
@@ -117,8 +118,8 @@ See below for the full list of possible values:
 Parameter | Description | Default
 --- | --- | ---
 `deploy.replicaCount` | Number of pod replicas to deploy | `1`
-`deploy.repository` | Docker image repository of the runtime image | `odentech/pgpool-cloudsql`
-`deploy.tag` | Docker image tag of the runtime image | `1.1.0`
+`deploy.repository` | Docker image repository of the runtime container image | `odentech/pgpool-cloudsql`
+`deploy.tag` | If set, override the tag of the runtime container image. If left empty, we use the concatenation of the chart version (`1.2.0`) and the selected `pgpool.version` e.g. `1.2.0-4.5.0` | `""`
 `deploy.service.tier` | Value for the "tier" [label](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) applied to the kubernetes [service](https://kubernetes.io/docs/concepts/services-networking/service/) | `db`
 `deploy.service.additionalLabels` | Map of additional k/v string pairs to add as labels for the kubernetes service | `{}`
 `deploy.annotations` | Kubernetes [annotation](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/) spec applied to the deployment pods | `{}`
@@ -230,10 +231,11 @@ Parameter | Description | Default
 
 Parameter | Description | Default
 --- | --- | ---
+`pgpool.version` | Which version of pgpool to deploy. Currently supported: `4.5.0`, `4.4.5`, `4.3.8`, `4.2.15`, `4.1.18`, `4.0.25`  | `4.5.0`
 `pgpool.reservedConnections` | When this parameter is set to 1 or greater, incoming connections from clients are not accepted with error message "Sorry, too many clients already", rather than blocked if the number of current connections from clients is more than (`numInitChildren` - `reservedConnections`). ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-connection.html#GUC-RESERVED-CONNECTIONS)) | `0`
 pgpool.processManagmentMode | Whether to use static or dynamic [process management](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html). Allowable values are `static` and `dynamic` | `static`
 pgpool.processManagementStrategy | When using [dynamic process managment](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html), defines how aggressively to scale down idle connections. Allowable values are `lazy`, `gentle` and `aggressive`. | `gentle`
-pgpool.minSpareChildren | When using [dynamic process management](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html), sets the target for the minimum number of spare child processes. | `10`
+pgpool.minSpareChildren | When using [dynamic process management](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html), sets the target for the minimum number of spare child processes. | `5`
 pgpool.maxSpareChildren | When using [dynamic process management](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html), sets the target for the maximum number of spare child processes. | `10`
 `pgpool.numInitChildren` | This defines the hard limit for concurrent incoming connections: when using static process management pgpool will pre-fork exactly this many children. When using dynamic process management, pgpool will try to maintain a pool of child processes that satisfy the values of minSpareChilden and maxSpareChildren but will never go over numInitChildren. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-connection.html#GUC-NUM-INIT-CHILDREN)) | `32`
 `pgpool.maxPool` | The maximum number of cached connections in each Pgpool-II child process. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-connection.html#GUC-MAX-POOL)) | `32`
