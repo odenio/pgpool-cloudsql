@@ -1,5 +1,43 @@
 # Upgrading Steps
 
+## `v1.1.10` → `v1.2.0`
+
+### New features
+
+This release allows runtime picking of a version of PGPool-II from among the multiple
+supported releases:
+
+- `4.5.0`
+- `4.4.5`
+- `4.3.8`
+- `4.2.15`
+- `4.1.18`
+- `4.0.25`
+
+In order to keep deployed image size small, we do this by creating a docker
+image for each combination of chart release and pgpool release, e.g.:
+`odentech/pgpool-cloudsql:1.2.0-4.4.5`.
+
+This means that the behavior of the `deploy.tag` setting has changed subtly: it
+is no longer required, the default value is empty, and if the installer sets a
+non-empty value, that overrides the tag portion of the image entirely. If you
+are setting `deploy.tag` manually, you almost certainly want to be setting
+`deploy.repository` as well!
+
+*WARNING* - dynamic process management is only supported in v4.4 and above: we
+have added a JSONschema values validator and attempting to configure dynamic
+process managment with e.g. `pgpool.version=4.3.8` will fail validation and
+refuse to install.
+
+Also: provide some basic build-time tooling for testing and deploying patches
+to pgpool itself, and document how to do this.
+
+### VALUES - New:
+
+Parameter | Description | Default
+--- | --- | ---
+`pgpool.version` | Pick which version of the actual PGPool-II binary to deploy from among the current release branches. | `4.5.0`
+
 ## `v1.1.9` → `v1.1.10`
 
 ### Software upgrade
