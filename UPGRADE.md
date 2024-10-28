@@ -7,16 +7,16 @@
 This release allows runtime picking of a version of PGPool-II from among the multiple
 supported releases:
 
-- `4.5.0`
-- `4.4.5`
-- `4.3.8`
-- `4.2.15`
-- `4.1.18`
+- `4.5.4`
+- `4.4.9`
+- `4.3.12`
+- `4.2.19`
+- `4.1.22`
 - `4.0.25`
 
 In order to keep deployed image size small, we do this by creating a docker
 image for each combination of chart release and pgpool release, e.g.:
-`odentech/pgpool-cloudsql:1.2.0-4.4.5`.
+`odentech/pgpool-cloudsql:1.2.0-4.5.4`.
 
 This means that the behavior of the `deploy.tag` setting has changed subtly: it
 is no longer required, the default value is empty, and if the installer sets a

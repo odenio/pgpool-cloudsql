@@ -140,13 +140,13 @@ pcp:
 
 pgpool:
   # what version of pgpool to use!  Currently supported versions are:
-  # 4.5.0
-  # 4.4.5
-  # 4.3.8
-  # 4.2.15
-  # 4.1.18
+  # 4.5.4
+  # 4.4.9
+  # 4.3.12
+  # 4.2.19
+  # 4.1.22
   # 4.0.25
-  version: "4.5.0"
+  version: "4.5.4"
   # whether to use static or dynamic process management mode; see
   # https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html
   # allowed values are "static" and "dynamic"

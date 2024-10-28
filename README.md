@@ -231,7 +231,7 @@ Parameter | Description | Default
 
 Parameter | Description | Default
 --- | --- | ---
-`pgpool.version` | Which version of pgpool to deploy. Currently supported: `4.5.0`, `4.4.5`, `4.3.8`, `4.2.15`, `4.1.18`, `4.0.25`  | `4.5.0`
+`pgpool.version` | Which version of pgpool to deploy. Currently supported: `4.5.4`, `4.4.9`, `4.3.12`, `4.2.19`, `4.1.22`, `4.0.25`  | `4.5.4`
 `pgpool.reservedConnections` | When this parameter is set to 1 or greater, incoming connections from clients are not accepted with error message "Sorry, too many clients already", rather than blocked if the number of current connections from clients is more than (`numInitChildren` - `reservedConnections`). ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-connection.html#GUC-RESERVED-CONNECTIONS)) | `0`
 pgpool.processManagmentMode | Whether to use static or dynamic [process management](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html). Allowable values are `static` and `dynamic` | `static`
 pgpool.processManagementStrategy | When using [dynamic process managment](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html), defines how aggressively to scale down idle connections. Allowable values are `lazy`, `gentle` and `aggressive`. | `gentle`
