@@ -158,6 +158,8 @@ spec:
           value: "{{ .Values.pgpool.healthCheckPassword }}"
         - name: HEALTH_CHECK_DATABASE
           value: "{{ .Values.pgpool.healthCheckDatabase }}"
+        - name: READ_ONLY_FUNCTION_LIST
+          value: "{{ .Values.pgpool.readOnlyFunctionList }}"
         - name: PCP_PASSWORD
           value: "{{ .Values.pcp.password }}"
         volumeMounts:

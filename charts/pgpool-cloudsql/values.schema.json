@@ -947,7 +947,8 @@
                 "healthCheckUsername",
                 "healthCheckPassword",
                 "healthCheckDatabase",
-                "coredumpSizeLimit"
+                "coredumpSizeLimit",
+                "readOnlyFunctionsList"
             ],
             "if": {
               "properties": {
@@ -1231,6 +1232,14 @@
                     "examples": [
                         "0"
                     ]
+                },
+                "readOnlyFunctionsList": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The readOnlyFunctionsList Schema",
+                    "examples": [
+                        "0"
+                    ]
                 }
             },
             "examples": [{
@@ -1261,7 +1270,8 @@
                 "healthCheckUsername": "",
                 "healthCheckPassword": "",
                 "healthCheckDatabase": "postgres",
-                "coredumpSizeLimit": "0"
+                "coredumpSizeLimit": "0",
+                "readOnlyFunctionsList": "read_some_data"
             }]
         }
     },
@@ -1387,7 +1397,8 @@
             "healthCheckUsername": "",
             "healthCheckPassword": "",
             "healthCheckDatabase": "postgres",
-            "coredumpSizeLimit": "0"
+            "coredumpSizeLimit": "0",
+            "readOnlyFunctionsList": ""
         }
     }]
 }
