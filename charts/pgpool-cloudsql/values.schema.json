@@ -947,8 +947,7 @@
                 "healthCheckUsername",
                 "healthCheckPassword",
                 "healthCheckDatabase",
-                "coredumpSizeLimit",
-                "readOnlyFunctionList"
+                "coredumpSizeLimit"
             ],
             "if": {
               "properties": {
