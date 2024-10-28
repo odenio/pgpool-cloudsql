@@ -985,22 +985,21 @@
             "properties": {
                 "version": {
                     "type": "string",
-                    "default": "4.5.0",
+                    "default": "4.5.4",
                     "title": "The version Schema",
                     "examples": [
-                        "4.5.0"
+                        "4.5.4"
                     ],
                     "message": {
                       "enum": "process mgmt mode must be static for pgpool.version prior to 4.4",
                       "pattern": "process mgmt mode must be static for pgpool.version prior to 4.4"
                     },
                     "enum": [
-                      "4.5.0",
-                      "4.4.5",
-                      "4.3.8",
-                      "4.2.15",
-                      "4.1.18",
-                      "4.0.25"
+                      "4.5.4",
+                      "4.4.9",
+                      "4.3.12",
+                      "4.2.19",
+                      "4.1.22"
                     ]
                 },
                 "processManagementMode": {
@@ -1231,6 +1230,14 @@
                     "examples": [
                         "0"
                     ]
+                },
+                "readOnlyFunctionList": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The readOnlyFunctionList Schema",
+                    "examples": [
+                        "0"
+                    ]
                 }
             },
             "examples": [{
@@ -1261,7 +1268,8 @@
                 "healthCheckUsername": "",
                 "healthCheckPassword": "",
                 "healthCheckDatabase": "postgres",
-                "coredumpSizeLimit": "0"
+                "coredumpSizeLimit": "0",
+                "readOnlyFunctionList": ""
             }]
         }
     },
@@ -1387,7 +1395,8 @@
             "healthCheckUsername": "",
             "healthCheckPassword": "",
             "healthCheckDatabase": "postgres",
-            "coredumpSizeLimit": "0"
+            "coredumpSizeLimit": "0",
+            "readOnlyFunctionList": ""
         }
     }]
 }

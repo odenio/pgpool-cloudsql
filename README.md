@@ -50,6 +50,7 @@ instance no matter what.  This is configureable at deploy time as
 
 Old Version | New Version | Upgrade Guide
 --- | --- | ---
+v1.2.0 | v1.3.0 | [link](UPGRADE.md#v120--v130)
 v1.1.10 | v1.2.0 | [link](UPGRADE.md#v1110--v120)
 v1.1.8 | v1.1.10 | [link](UPGRADE.md#v118--v1110)
 v1.1.9 | v1.1.9 | [link](UPGRADE.md#v118--v119)
@@ -77,7 +78,7 @@ helm repo update
 ```sh
 export RELEASE_NAME=my-pgpool-service # a name (you will need 1 installed chart for each primary DB)
 export NAMESPACE=my-k8s-namespace     # a kubernetes namespace
-export CHART_VERSION=1.1.4           # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
+export CHART_VERSION=1.3.0            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
 export VALUES_FILE=./my_values.yaml   # your values file
 
 helm install \
@@ -231,7 +232,7 @@ Parameter | Description | Default
 
 Parameter | Description | Default
 --- | --- | ---
-`pgpool.version` | Which version of pgpool to deploy. Currently supported: `4.5.0`, `4.4.5`, `4.3.8`, `4.2.15`, `4.1.18`, `4.0.25`  | `4.5.0`
+`pgpool.version` | Which version of pgpool to deploy. Currently supported: `4.5.4`, `4.4.9`, `4.3.12`, `4.2.19`, `4.1.22`, `4.0.25`  | `4.5.4`
 `pgpool.reservedConnections` | When this parameter is set to 1 or greater, incoming connections from clients are not accepted with error message "Sorry, too many clients already", rather than blocked if the number of current connections from clients is more than (`numInitChildren` - `reservedConnections`). ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-connection.html#GUC-RESERVED-CONNECTIONS)) | `0`
 pgpool.processManagmentMode | Whether to use static or dynamic [process management](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html). Allowable values are `static` and `dynamic` | `static`
 pgpool.processManagementStrategy | When using [dynamic process managment](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html), defines how aggressively to scale down idle connections. Allowable values are `lazy`, `gentle` and `aggressive`. | `gentle`
@@ -257,6 +258,7 @@ pgpool.maxSpareChildren | When using [dynamic process management](https://www.pg
 `pgpool.healthCheckPassword` | Specifies the password for the PostgreSQL user name configured in health_check_user to perform health check. The user and password must be same in all the PostgreSQL backends. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-health-check.html#GUC-HEALTH-CHECK-PASSWORD)) | `""`
 `pgpool.healthCheckDatabase` | Specifies the PostgreSQL database name to perform health check. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-health-check.html#GUC-HEALTH-CHECK-DATABASE)) | `postgres`
 `pgpool.coredumpSizeLimit` | Size limit in blocks of core files that pgpool is allowed to emit if a worker crashes; this is fed to `ulimit -c` in the [wrapper script](bin/pgpool.sh), so valid values are any integer or `"unlimited"`. | `"0"`
+`pgpool.readOnlyFunctionList` | List of functions that only read data so pgpool knows it can load balance them. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-load-balancing.html#RUNTIME-CONFIG-LOAD-BALANCING-SETTINGS)) | `""`
 
 <hr>
 </details>

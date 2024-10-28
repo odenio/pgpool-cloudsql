@@ -1,5 +1,33 @@
 # Upgrading Steps
 
+## `v1.2.0` → `v1.3.0`
+
+### SECURITY
+
+This release addresses [CVE-2024-45624](https://nvd.nist.gov/vuln/detail/CVE-2024-45624)
+and is strongly recommended for all users.  Support for affected versions of pgpool (`4.5.0`,
+`4.4.5`, `4.3.8`, `4.2.15` and `4.1.18`) is _removed_, and the available version of pgpool
+in each release channel is bumped to the latest:
+
+- `4.5.4`
+- `4.4.9`
+- `4.3.12`
+- `4.2.19`
+- `4.1.22`
+
+Support for the v4.0 branch of pgpool is removed entirely, hence the minor as opposed to
+patch semver bump here.
+
+### New features:
+
+Support for setting the [read_only_function_list](https://www.pgpool.net/docs/latest/en/html/runtime-config-load-balancing.html#GUC-READ-ONLY-FUNCTION-LIST) pgpool configuration parameter is added.
+
+### VALUES - New:
+
+Parameter | Description | Default
+--- | --- | ---
+`pgpool.readOnlyFunctionList` | A comma-separate list of Postgres function names which do not UPDATE the database and therefore can be safely load-balanced over read replicas. | `""`
+
 ## `v1.1.10` → `v1.2.0`
 
 ### New features
@@ -16,7 +44,7 @@ supported releases:
 
 In order to keep deployed image size small, we do this by creating a docker
 image for each combination of chart release and pgpool release, e.g.:
-`odentech/pgpool-cloudsql:1.2.0-4.4.5`.
+`odentech/pgpool-cloudsql:1.2.0-4.5.4`.
 
 This means that the behavior of the `deploy.tag` setting has changed subtly: it
 is no longer required, the default value is empty, and if the installer sets a
