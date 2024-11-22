@@ -12,21 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG ALPINE_VERSION=3.19
+ARG ALPINE_VERSION=3.20
+ARG GO_VERSION=1.22
+ARG PLATFORM=linux/amd64
 ###
 ### Build PGPool-II from source in a build container
 ###
-FROM --platform=linux/amd64 alpine:${ALPINE_VERSION} as pgpool_build
+FROM --platform=${PLATFORM} alpine:${ALPINE_VERSION} AS pgpool_build
 RUN apk update
 RUN apk add build-base libpq-dev linux-headers openssl-dev>3
-ENV pkgname pgpool
-ENV _pkgname pgpool-II
+ENV pkgname=pgpool
+ENV _pkgname=pgpool-II
 
-ARG PGPOOL_VERSION=4.5.0
-ENV PGPOOL_VERSION ${PGPOOL_VERSION}
+ARG PGPOOL_VERSION=4.5.4
+ENV PGPOOL_VERSION=${PGPOOL_VERSION}
 
 ARG APPLY_PATCHES=false
-ENV APPLY_PATCHES ${APPLY_PATCHES}
+ENV APPLY_PATCHES=${APPLY_PATCHES}
 
 WORKDIR /usr/local/src
 
@@ -56,7 +58,8 @@ RUN make DESTDIR=/pgpool_bin install
 ###
 ### build envtpl
 ###
-FROM --platform=linux/amd64 golang:1.19-alpine as go_utils
+FROM --platform=${PLATFORM} golang:$GO_VERSION-alpine AS go_utils
+RUN apk update
 RUN apk add --no-cache git make build-base python3 curl
 WORKDIR /src
 
@@ -68,14 +71,15 @@ RUN go install ./cmd/envtpl/...
 ###
 ### put together everything in the deploy image
 ###
-FROM --platform=linux/amd64 alpine:${ALPINE_VERSION}
+FROM --platform=${PLATFORM} alpine:${ALPINE_VERSION}
+RUN apk update
 RUN apk add --no-cache curl python3
 
 ARG TELEGRAF_VERSION=1.26.2
 RUN curl -sfL https://dl.influxdata.com/telegraf/releases/telegraf-${TELEGRAF_VERSION}_linux_amd64.tar.gz |\
   tar zxf - --strip-components=2 -C /
 
-ARG EXPORTER_VERSION=1.2.1
+ARG EXPORTER_VERSION=1.2.2
 RUN curl -sfL https://github.com/pgpool/pgpool2_exporter/releases/download/v${EXPORTER_VERSION}/pgpool2_exporter-${EXPORTER_VERSION}.linux-amd64.tar.gz |\
   tar zxf - --strip-components=1 -C /usr/bin
 
@@ -96,7 +100,7 @@ RUN apk add --no-cache \
       postgresql-client
 
 # Adding the package path to local
-ENV PATH $PATH:/usr/local/gcloud/google-cloud-sdk/bin
+ENV PATH=$PATH:/usr/local/gcloud/google-cloud-sdk/bin
 
 COPY --from=go_utils /go/bin/envtpl /bin/envtpl
 COPY --from=pgpool_build /pgpool_bin/ /

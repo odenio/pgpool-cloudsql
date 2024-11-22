@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash -e
 #
 
 # warning: this is not meant for external use and will fail badly
