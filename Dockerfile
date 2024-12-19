@@ -68,7 +68,10 @@ ARG EXPORTER_VERSION=1.2.2
 RUN git clone -b v${EXPORTER_VERSION} https://github.com/pgpool/pgpool2_exporter
 
 WORKDIR /src/envtpl
-RUN go install ./cmd/envtpl/...
+# CVE-2024-45337
+RUN go get golang.org/x/crypto
+RUN go mod tidy
+RUN go install -mod=mod ./cmd/envtpl/...
 
 WORKDIR /src/pgpool2_exporter
 RUN go install ./cmd/pgpool2_exporter/...
