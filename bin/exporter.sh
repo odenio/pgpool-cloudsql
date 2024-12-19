@@ -71,7 +71,7 @@ done
 log info "Starting pgpool2_exporter with LOG_LEVEL=${LOG_LEVEL} EXIT_ON_ERROR=${EXIT_ON_ERROR}"
 
 while true; do
-  /usr/bin/pgpool2_exporter --web.listen-address=":9090" --log.level="${LOG_LEVEL}" --log.format=logfmt 2>&1
+  /bin/pgpool2_exporter --web.listen-address=":9090" --log.level="${LOG_LEVEL}" --log.format=logfmt 2>&1
   EXITVAL="$?"
   if [[ "${EXIT_ON_ERROR}" == "true" ]]; then
     log fatal "pgpool2_exporter exited with value ${EXITVAL}"

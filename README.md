@@ -50,6 +50,7 @@ instance no matter what.  This is configureable at deploy time as
 
 Old Version | New Version | Upgrade Guide
 --- | --- | ---
+v1.3.1 | v1.3.2 | [link](UPGRADE.md#v131--v132)
 v1.3.0 | v1.3.1 | [link](UPGRADE.md#v130--v131)
 v1.2.0 | v1.3.0 | [link](UPGRADE.md#v120--v130)
 v1.1.10 | v1.2.0 | [link](UPGRADE.md#v1110--v120)
@@ -79,7 +80,7 @@ helm repo update
 ```sh
 export RELEASE_NAME=my-pgpool-service # a name (you will need 1 installed chart for each primary DB)
 export NAMESPACE=my-k8s-namespace     # a kubernetes namespace
-export CHART_VERSION=1.3.1            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
+export CHART_VERSION=1.3.2            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
 export VALUES_FILE=./my_values.yaml   # your values file
 
 helm install \
@@ -121,7 +122,7 @@ Parameter | Description | Default
 --- | --- | ---
 `deploy.replicaCount` | Number of pod replicas to deploy | `1`
 `deploy.repository` | Docker image repository of the runtime container image | `odentech/pgpool-cloudsql`
-`deploy.tag` | If set, override the tag of the runtime container image. If left empty, we use the concatenation of the chart version (`1.2.0`) and the selected `pgpool.version` e.g. `1.3.1-4.5.4` | `""`
+`deploy.tag` | If set, override the tag of the runtime container image. If left empty, we use the concatenation of the chart version (`1.2.0`) and the selected `pgpool.version` e.g. `1.3.2-4.5.4` | `""`
 `deploy.service.tier` | Value for the "tier" [label](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) applied to the kubernetes [service](https://kubernetes.io/docs/concepts/services-networking/service/) | `db`
 `deploy.service.additionalLabels` | Map of additional k/v string pairs to add as labels for the kubernetes service | `{}`
 `deploy.annotations` | Kubernetes [annotation](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/) spec applied to the deployment pods | `{}`

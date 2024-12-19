@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ARG ALPINE_VERSION=3.20
-ARG GO_VERSION=1.22
+ARG GO_VERSION=1.23
 ARG PLATFORM=linux/amd64
 ###
 ### Build PGPool-II from source in a build container
@@ -58,15 +58,20 @@ RUN make DESTDIR=/pgpool_bin install
 ###
 ### build envtpl
 ###
-FROM --platform=${PLATFORM} golang:$GO_VERSION-alpine AS go_utils
+FROM --platform=${PLATFORM} golang:$GO_VERSION-alpine AS go_build
 RUN apk update
 RUN apk add --no-cache git make build-base python3 curl
 WORKDIR /src
 
 RUN git clone https://github.com/subfuzion/envtpl
+ARG EXPORTER_VERSION=1.2.2
+RUN git clone -b v${EXPORTER_VERSION} https://github.com/pgpool/pgpool2_exporter
 
 WORKDIR /src/envtpl
 RUN go install ./cmd/envtpl/...
+
+WORKDIR /src/pgpool2_exporter
+RUN go install ./cmd/pgpool2_exporter/...
 
 ###
 ### put together everything in the deploy image
@@ -78,10 +83,6 @@ RUN apk add --no-cache curl python3
 ARG TELEGRAF_VERSION=1.26.2
 RUN curl -sfL https://dl.influxdata.com/telegraf/releases/telegraf-${TELEGRAF_VERSION}_linux_amd64.tar.gz |\
   tar zxf - --strip-components=2 -C /
-
-ARG EXPORTER_VERSION=1.2.2
-RUN curl -sfL https://github.com/pgpool/pgpool2_exporter/releases/download/v${EXPORTER_VERSION}/pgpool2_exporter-${EXPORTER_VERSION}.linux-amd64.tar.gz |\
-  tar zxf - --strip-components=1 -C /usr/bin
 
 # we build this in the deploy container because there's no guarantee
 # that golang:XXX-alpine and alpine:YYY will have the same python versions
@@ -102,7 +103,8 @@ RUN apk add --no-cache \
 # Adding the package path to local
 ENV PATH=$PATH:/usr/local/gcloud/google-cloud-sdk/bin
 
-COPY --from=go_utils /go/bin/envtpl /bin/envtpl
+COPY --from=go_build /go/bin/envtpl /bin/envtpl
+COPY --from=go_build /go/bin/pgpool2_exporter /bin/pgpool2_exporter
 COPY --from=pgpool_build /pgpool_bin/ /
 
 RUN mkdir /etc/templates

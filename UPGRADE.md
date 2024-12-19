@@ -1,5 +1,12 @@
 # Upgrading Steps
 
+## `v1.3.1` → `v1.3.2`
+
+This is a maintenance release:
+
+* the version of the Go runtime used to build the envtpl package is bumped from 1.22 to 1.22
+* the pgpool2_exporter package is built from source rather than installed from the github release artifact
+
 ## `v1.3.0` → `v1.3.1`
 
 This is a maintenance release:
