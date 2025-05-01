@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG ALPINE_VERSION=3.20
-ARG GO_VERSION=1.23
+ARG ALPINE_VERSION=3.21
+ARG GO_VERSION=1.24
 ARG PLATFORM=linux/amd64
 ###
 ### Build PGPool-II from source in a build container
@@ -58,7 +58,7 @@ RUN make DESTDIR=/pgpool_bin install
 ###
 ### build envtpl
 ###
-FROM --platform=${PLATFORM} golang:$GO_VERSION-alpine AS go_build
+FROM --platform=${PLATFORM} golang:$GO_VERSION-alpine${ALPINE_VERSION} AS go_build
 RUN apk update
 RUN apk add --no-cache git make build-base python3 curl
 WORKDIR /src

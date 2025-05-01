@@ -1,5 +1,12 @@
 # Upgrading Steps
 
+## `v1.3.2` → `v1.3.3`
+
+This is a maintenance release:
+
+* the version of the Go runtime used to build the envtpl package is bumped from 1.23 to 1.24
+* the Alpine Linux base image is updated from v3.20 to v3.21
+
 ## `v1.3.1` → `v1.3.2`
 
 This is a maintenance release:
