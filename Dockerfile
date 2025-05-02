@@ -83,10 +83,6 @@ FROM --platform=${PLATFORM} alpine:${ALPINE_VERSION}
 RUN apk update
 RUN apk add --no-cache curl python3
 
-ARG TELEGRAF_VERSION=1.26.2
-RUN curl -sfL https://dl.influxdata.com/telegraf/releases/telegraf-${TELEGRAF_VERSION}_linux_amd64.tar.gz |\
-  tar zxf - --strip-components=2 -C /
-
 # we build this in the deploy container because there's no guarantee
 # that golang:XXX-alpine and alpine:YYY will have the same python versions
 RUN mkdir -p /usr/local/gcloud \

@@ -1,4 +1,4 @@
-Copyright 2021 Oden Technologies Inc. except as noted below.
+Copyright 2021-2024 Oden Technologies Inc. except as noted below.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License.  You may obtain a copy of the
@@ -23,7 +23,7 @@ https://opensource.org/licenses/GPL-2.0
 https://opensource.org/licenses/BSD-2-Clause
 https://opensource.org/licenses/MIT
 
-PGPool-II is Copyright 2003-2021 the PgPool Global Development Group and is
+PGPool-II is Copyright 2003-2024 the PgPool Global Development Group and is
 released under the PGPool license:
 https://github.com/pgpool/pgpool2/blob/master/COPYING
 
@@ -34,15 +34,12 @@ pgpool2_exporter is Copyright (c) 2021 PgPool Global Development Group and is
 released under the MIT license:
 https://github.com/pgpool/pgpool2_exporter/blob/master/LICENSE
 
-Telegraf is Copyright (c) 2015-2020 InfluxData Inc. and is released under the
-MIT license: https://github.com/influxdata/telegraf/blob/master/LICENSE
-
 PostgreSQL and its libraries are released under the PostgreSQL License:
 https://www.postgresql.org/about/licence/
-Portions Copyright (c) 1996-2021, The PostgreSQL Global Development Group
+Portions Copyright (c) 1996-2024, The PostgreSQL Global Development Group
 Portions Copyright (c) 1994, The Regents of the University of California
 
-The Google Cloud SDK and the "gcloud" CLI tool are Copyright (c) 2021 by Google
+The Google Cloud SDK and the "gcloud" CLI tool are Copyright (c) 2024 by Google
 Inc, and are released under the Apache License v2.0:
 https://www.apache.org/licenses/LICENSE-2.0
 

@@ -1,5 +1,15 @@
 # Upgrading Steps
 
+## `v1.3.3` → `v1.4.0`
+
+The 1.4.0 release removes support for using
+[telegraf](https://github.com/influxdata/telegraf) to publish metrics to Google
+Cloud Monitoring: it is recommended that you configure [Google Cloud Managed
+Service for Prometheus](https://cloud.google.com/stackdriver/docs/managed-prometheus) if
+you are running pgpool-cloudsql in a Google Kubernetes Engine cluster, or use
+the [Prometheus Receiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/receiver/prometheusreceiver/README.md)
+of the [Opentelemetry Collector](https://opentelemetry.io/docs/collector/) otherwise.
+
 ## `v1.3.2` → `v1.3.3`
 
 This is a maintenance release:
