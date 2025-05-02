@@ -26,12 +26,6 @@ The primary moving parts are:
   exposes a Prometheus-compatible `/metrics` HTTP endpoint with statistics gleaned
   from PGPool's [internal stats commands](https://www.pgpool.net/docs/42/en/html/sql-commands.html).
 
-- The [telegraf](https://github.com/influxdata/telegraf) monitoring agent,
-  configured to forward the metrics exposed by the exporter to Google Cloud
-  Monitoring, formerly known as Stackdriver. (This portion is optional; if you
-  have an existing apparatus for scraping prometheus metrics, you can point
-  it directly at the exporter.)
-
 In general you should expect that if you add a new replica, it should start
 taking 1/Nth of the select query load (where N is the number of replicas)
 within 5 to 15 minutes (beware of stackdriver reporting lag!).
@@ -50,7 +44,8 @@ instance no matter what.  This is configureable at deploy time as
 
 Old Version | New Version | Upgrade Guide
 --- | --- | ---
-v1.3.2 | v1.3.3 | [link](UPGRADE.md#v132--v13r)
+v1.3.3 | v1.4.0 | [link](UPGRADE.md#v133--v140)
+v1.3.2 | v1.3.3 | [link](UPGRADE.md#v132--v133)
 v1.3.1 | v1.3.2 | [link](UPGRADE.md#v131--v132)
 v1.3.0 | v1.3.1 | [link](UPGRADE.md#v130--v131)
 v1.2.0 | v1.3.0 | [link](UPGRADE.md#v120--v130)
@@ -81,7 +76,7 @@ helm repo update
 ```sh
 export RELEASE_NAME=my-pgpool-service # a name (you will need 1 installed chart for each primary DB)
 export NAMESPACE=my-k8s-namespace     # a kubernetes namespace
-export CHART_VERSION=1.3.3            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
+export CHART_VERSION=1.4.0            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
 export VALUES_FILE=./my_values.yaml   # your values file
 
 helm install \
@@ -133,7 +128,6 @@ Parameter | Description | Default
 `deploy.resources.pgpool` | Kubernetes [resource block](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the pgpool container | `{}`
 `deploy.resources.discovery` | Kubernetes [resource block](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the discovery container. | `{}`
 `deploy.resources.exporter` | Kubernetes [resource block](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the pgpool2_exporter container. | `{}`
-`deploy.resources.telegraf` | Kubernetes [resource block](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the telegraf container. | `{}`
 `deploy.startupProbe.pgpool.enabled` | whether to create a [startup probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes) for the pgpool container | `true`
 `deploy.startupProbe.pgpool.initialDelaySeconds` | | `5`
 `deploy.startupProbe.pgpool.periodSeconds` | | `5`
@@ -213,20 +207,6 @@ Parameter | Description | Default
 <hr>
 </details>
 
-## telegraf options
-
-<details>
-<summary>Show More</summary>
-<hr>
-
-Parameter | Description | Default
---- | --- | ---
-`telegraf.enabled` | If true, deploy and configure the telegraf container | `true`
-`telegraf.exitOnError` | Exit the container if the telegraf process exits | `false`
-
-<hr>
-</details>
-
 ## pgpool options
 
 <details>
@@ -266,11 +246,36 @@ pgpool.maxSpareChildren | When using [dynamic process management](https://www.pg
 <hr>
 </details>
 
-# Monitoring with Google Cloud Monitoring (AKA Stackdriver)
+# Monitoring
 
-If the telegraf container is enabled, pgpool-cloudsql exports the following Google Cloud Monitoring
+## Prometheus configuration
+
+The `pgpool2_exporter` container exposes a prometheus-style `/metrics` endpoint
+on port 9090/tcp (and named as the `metrics` port in the pod port
+configuration), and if you have an existing local Prometheus infrastructure or
+if you are using the [Google Managed Service for
+Prometheus](https://cloud.google.com/stackdriver/docs/managed-prometheus), you
+can scrape and ingest those metrics directly.
+
+The details of this will be specific to your local Prometheus setup, but
+traditionally prometheus-on-kubernetes collection agents (whether the native
+prometheus one or the Opentelemetry Collector) use Kubernetes annotations to
+configure their scrape targets. To add annotations to your pods, use the
+`.deploy.annotations` value in your Helm values.yaml, for example:
+
+```yaml
+deploy:
+  annotations:
+    prometheus.io/scrape: enabled
+    prometheus.io/path: /metrics
+    prometheus.io/port: metrics
+```
+
+## Metrics list
+
+Pgpool-cloudsql exports the following Google Cloud Monitoring
 [metricDescriptors](https://cloud.google.com/monitoring/custom-metrics/creating-metrics)
-with the [gke_container](https://cloud.google.com/monitoring/api/resources#tag_gke_container)
+with the [prometheus_target](https://cloud.google.com/monitoring/api/resources#tag_prometheus_target)
 resource type and all resource labels automatically filled in.
 
 An example Stackdriver dashboard definition can be found in
@@ -283,7 +288,7 @@ The full list of metricDescriptor definitions is in
 <summary>Full metric descriptor list</summary>
 <hr>
 
-All metricDescriptors are created under the `custom.googleapis.com/telegraf/` prefix.
+All metricDescriptors are created under the `prometheus.googleapis.com/` prefix.
 
 Metric Descriptor | List of Metric Labels
 --- | ---
@@ -333,30 +338,6 @@ Metric Descriptor | List of Metric Labels
 
 <hr>
 </details>
-
-# Monitoring with Prometheus directly
-
-Using telegraf to forward prometheus metrics to Google Cloud
-Monitoring/Stackdriver is optional: the `pgpool2_exporter` container exposes a
-prometheus-style `/metrics` endpoint on port 9090/tcp (and named as the
-`metrics` port in the pod port configuration), and if you have an existing
-local Prometheus infrastructure or if you are using the [Google Managed Service
-for Prometheus](https://cloud.google.com/stackdriver/docs/managed-prometheus),
-you can scrape and ingest those metrics directly.
-
-The details of this will be specific to your local Prometheus setup, but
-traditionally prometheus-on-kubernetes collection agents (whether the native
-prometheus one or the Opentelemetry Collector) use Kubernetes annotations to
-configure their scrape targets. To add annotations to your pods, use the
-`.deploy.annotations` value in your Helm values.yaml, for example:
-
-```yaml
-deploy:
-  annotations:
-    prometheus.io/scrape: enabled
-    prometheus.io/path: /metrics
-    prometheus.io/port: metrics
-```
 
 # background info: maybe the real friends were all the yaks we shaved along the way
 
@@ -423,10 +404,3 @@ But there was some good news: the
 binary that scrapes and parses the data returned by the "sql-like" commands and
 exports it as a prometheus-compatible `/metrics` endpoint.
 
-## Oh god, Telegraf
-
-Lastly, it's worth calling out the [telegraf config
-file](Helm/templates/configmap.yaml); in order to correctly fill in the
-required attributes of a stackdriver `gke_container` resource, we run telegraf
-under a [wrapper script](bin/telegraf.sh) that queries the GCP instance
-metadata API in order to fill out the relevant environment variables.

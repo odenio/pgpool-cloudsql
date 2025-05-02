@@ -8,7 +8,6 @@
         "deploy",
         "discovery",
         "exporter",
-        "telegraf",
         "pcp",
         "pgpool"
     ],
@@ -86,8 +85,7 @@
                     "required": [
                         "pgpool",
                         "discovery",
-                        "exporter",
-                        "telegraf"
+                        "exporter"
                     ],
                     "properties": {
                         "pgpool": {
@@ -113,21 +111,12 @@
                             "required": [],
                             "properties": {},
                             "examples": [{}]
-                        },
-                        "telegraf": {
-                            "type": "object",
-                            "default": {},
-                            "title": "The telegraf Schema",
-                            "required": [],
-                            "properties": {},
-                            "examples": [{}]
                         }
                     },
                     "examples": [{
                         "pgpool": {},
                         "discovery": {},
-                        "exporter": {},
-                        "telegraf": {}
+                        "exporter": {}
                     }]
                 },
                 "podDisruptionBudget": {
@@ -705,8 +694,7 @@
                 "resources": {
                     "pgpool": {},
                     "discovery": {},
-                    "exporter": {},
-                    "telegraf": {}
+                    "exporter": {}
                 },
                 "podDisruptionBudget": {
                     "maxUnavailable": 1
@@ -860,37 +848,6 @@
                 "postgresUsername": "",
                 "postgresPassword": "",
                 "postgresDatabase": "postgres",
-                "exitOnError": "false"
-            }]
-        },
-        "telegraf": {
-            "type": "object",
-            "default": {},
-            "title": "The telegraf Schema",
-            "required": [
-                "enabled",
-                "exitOnError"
-            ],
-            "properties": {
-                "enabled": {
-                    "type": "string",
-                    "default": "",
-                    "title": "The enabled Schema",
-                    "examples": [
-                        "true"
-                    ]
-                },
-                "exitOnError": {
-                    "type": "string",
-                    "default": "",
-                    "title": "The exitOnError Schema",
-                    "examples": [
-                        "false"
-                    ]
-                }
-            },
-            "examples": [{
-                "enabled": "true",
                 "exitOnError": "false"
             }]
         },
@@ -1284,8 +1241,7 @@
             "resources": {
                 "pgpool": {},
                 "discovery": {},
-                "exporter": {},
-                "telegraf": {}
+                "exporter": {}
             },
             "podDisruptionBudget": {
                 "maxUnavailable": 1
@@ -1358,10 +1314,6 @@
             "postgresUsername": "",
             "postgresPassword": "",
             "postgresDatabase": "postgres",
-            "exitOnError": "false"
-        },
-        "telegraf": {
-            "enabled": "true",
             "exitOnError": "false"
         },
         "pcp": {

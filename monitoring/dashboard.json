@@ -183,7 +183,7 @@
                       ],
                       "perSeriesAligner": "ALIGN_MEAN"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/telegraf/pgpool2_frontend_used_ratio/gauge\" resource.type=\"gke_container\""
+                    "filter": "metric.type=\"prometheus.googleapis.com/pgpool2_frontend_used_ratio/gauge\" resource.type=\"gke_container\""
                   }
                 }
               }
@@ -220,7 +220,7 @@
                       "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_RATE"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/telegraf/pgpool2_pool_nodes_select_cnt/counter\" resource.type=\"gke_container\"",
+                    "filter": "metric.type=\"prometheus.googleapis.com/pgpool2_pool_nodes_select_cnt/counter\" resource.type=\"gke_container\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
                       "crossSeriesReducer": "REDUCE_SUM",
@@ -266,7 +266,7 @@
                       "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_RATE"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_insert_cnt/counter\" resource.type=\"gke_container\"",
+                    "filter": "metric.type=\"prometheus.googleapis.com/pgpool2_pool_backend_stats_insert_cnt/counter\" resource.type=\"gke_container\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
                       "crossSeriesReducer": "REDUCE_SUM",
@@ -312,7 +312,7 @@
                       "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_RATE"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_update_cnt/counter\" resource.type=\"gke_container\"",
+                    "filter": "metric.type=\"prometheus.googleapis.com/pgpool2_pool_backend_stats_update_cnt/counter\" resource.type=\"gke_container\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
                       "crossSeriesReducer": "REDUCE_SUM",
@@ -358,7 +358,7 @@
                       "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_RATE"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/telegraf/pgpool2_pool_backend_stats_delete_cnt/counter\" resource.type=\"gke_container\"",
+                    "filter": "metric.type=\"prometheus.googleapis.com/pgpool2_pool_backend_stats_delete_cnt/counter\" resource.type=\"gke_container\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
                       "crossSeriesReducer": "REDUCE_SUM",
@@ -408,7 +408,7 @@
                       ],
                       "perSeriesAligner": "ALIGN_MEAN"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/telegraf/pgpool2_frontend_used/gauge\" resource.type=\"gke_container\""
+                    "filter": "metric.type=\"prometheus.googleapis.com/pgpool2_frontend_used/gauge\" resource.type=\"gke_container\""
                   }
                 }
               }
@@ -449,7 +449,7 @@
                       ],
                       "perSeriesAligner": "ALIGN_MEAN"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/telegraf/pgpool2_backend_by_process_used/gauge\" resource.type=\"gke_container\""
+                    "filter": "metric.type=\"prometheus.googleapis.com/pgpool2_backend_by_process_used/gauge\" resource.type=\"gke_container\""
                   }
                 }
               }
@@ -489,7 +489,7 @@
                       ],
                       "perSeriesAligner": "ALIGN_MEAN"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/telegraf/pgpool2_backend_by_process_used_ratio/gauge\" resource.type=\"gke_container\""
+                    "filter": "metric.type=\"prometheus.googleapis.com/pgpool2_backend_by_process_used_ratio/gauge\" resource.type=\"gke_container\""
                   }
                 }
               }
@@ -529,7 +529,7 @@
                       ],
                       "perSeriesAligner": "ALIGN_MEAN"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/telegraf/pgpool2_backend_used_ratio/gauge\" resource.type=\"gke_container\""
+                    "filter": "metric.type=\"prometheus.googleapis.com/pgpool2_backend_used_ratio/gauge\" resource.type=\"gke_container\""
                   }
                 }
               }

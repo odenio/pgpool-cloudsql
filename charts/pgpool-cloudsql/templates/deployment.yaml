@@ -225,27 +225,6 @@ spec:
         - name: EXIT_ON_ERROR
           value: {{ .Values.exporter.exitOnError | default "false" | quote }}
 
-      {{- if eq .Values.telegraf.enabled "true" }}
-      - name: telegraf
-        image: "{{ .image }}"
-        imagePullPolicy: Always
-        {{- with .Values.deploy.resources.telegraf }}
-        resources:
-          {{- toYaml . | nindent 10 }}
-        {{- end }}
-        command:
-          - /usr/bin/telegraf.sh
-        env:
-        - name: EXIT_ON_ERROR
-          value: {{ .Values.telegraf.exitOnError | default "false" | quote }}
-        volumeMounts:
-        - name: telegraf-config
-          mountPath: /etc/telegraf
-      {{- end }}
-
       volumes:
       - name: etcdir
         emptyDir: {}
-      - name: telegraf-config
-        configMap:
-          name: "{{ .Release.Name }}-telegraf"

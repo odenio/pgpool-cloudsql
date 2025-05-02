@@ -48,7 +48,6 @@ deploy:
       #   memory: "1Gi"
     discovery: {}
     exporter: {}
-    telegraf: {}
   podDisruptionBudget:
     maxUnavailable: 1
   service:
@@ -127,12 +126,6 @@ exporter:
   postgresUsername: ""  # REQUIRED!
   postgresPassword: ""  # REQUIRED!
   postgresDatabase: "postgres"
-  exitOnError: "false"
-
-# if enabled, use github.com/influxdata/telegraf to scrape values from the
-# exporter container and push them directly to google cloud monitoring
-telegraf:
-  enabled: "true"
   exitOnError: "false"
 
 pcp:
