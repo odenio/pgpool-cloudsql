@@ -1,5 +1,24 @@
 # Upgrading Steps
 
+## `v1.4.0` → `v1.4.1`
+
+### SECURITY
+
+This release addresses [CVE-2025-46801](https://nvd.nist.gov/vuln/detail/CVE-2025-46801)
+and is strongly recommended for all users.  The available version of pgpool
+in each release channel is bumped to the latest:
+
+- `4.5.8`
+- `4.4.13`
+- `4.3.16`
+- `4.2.23`
+- `4.1.23`
+
+Additionally:
+
+* the version of the Go runtime used to build the envtpl package is bumped from 1.24 to 1.25
+* the Alpine Linux base image is updated from v3.21 to v3.22
+
 ## `v1.3.3` → `v1.4.0`
 
 The 1.4.0 release removes support for using
