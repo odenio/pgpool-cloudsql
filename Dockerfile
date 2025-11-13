@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG ALPINE_VERSION=3.21
-ARG GO_VERSION=1.24
+ARG ALPINE_VERSION=3.22
+ARG GO_VERSION=1.25
 ARG PLATFORM=linux/amd64
 ###
 ### Build PGPool-II from source in a build container
