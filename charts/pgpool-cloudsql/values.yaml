@@ -108,6 +108,11 @@ discovery:
   # `--filter name:${primaryInstancePrefix}` option and MUST match one and only one
   # non-replica instance.
   primaryInstancePrefix: ""  # REQUIRED!
+  # If set, replicas that have this GCP label set to "true" will be excluded from
+  # pgpool's backend pool.  This is useful for dedicating specific read replicas to
+  # other consumers (e.g. analytics) without pgpool load-balancing application
+  # traffic to them.  The label must be applied to the CloudSQL instance in GCP.
+  replicaSkipLabel: ""
   # The Google Cloud region where discovery logic looks for databases.
   # if "true" it's  the same pod's region,
   # all regions otherwise.

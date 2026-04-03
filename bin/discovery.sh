@@ -110,12 +110,17 @@ while true; do
     done
   fi
 
+  replica_filter="region:${REGION} AND masterInstanceName:${PROJECT_ID}:${primary_name} AND state:RUNNABLE"
+  if [[ -n "${REPLICA_SKIP_LABEL:-}" ]]; then
+    replica_filter+=" AND NOT labels.${REPLICA_SKIP_LABEL}=true"
+  fi
+
   mapfile -t current_replicas < <(
     gcloud \
       --project "${PROJECT_ID}" \
       sql instances list \
       --sort-by serverCaCert.createTime \
-      --filter "region:${REGION} AND masterInstanceName:${PROJECT_ID}:${primary_name} AND state:RUNNABLE" \
+      --filter "${replica_filter}" \
       --format 'csv[no-heading](name,ip_addresses.filter("type:PRIVATE").*extract(ip_address).flatten())'
   )
 

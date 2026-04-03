@@ -14,7 +14,9 @@ The primary moving parts are:
 - A [discovery](bin/discovery.sh) script that runs in a separate container.  Once a minute, this script:
      - Uses the `gcloud` cli to list any primary dbs that match the `PRIMARY_INSTANCE_PREFIX` env
        variable as a prefix. (i.e. a prefix of `metadata-` matches `metadata-4093504851`)
-     - Lists all currently active read replicas of the primary database
+     - Lists all currently active read replicas of the primary database, excluding any
+       that have a GCP label matching `REPLICA_SKIP_LABEL` set to `true` (see
+       `discovery.replicaSkipLabel`)
      - Uses the [envtpl](https://github.com/subfuzion/envtpl) tool to fill out [pgpool.conf.tmpl](conf/pgpool.conf.tmpl)
        and copy the result into `/etc/pgpool/pgpool.conf` if it differs from what is already there.
      - If replicas have been added or removed, it runs [pcp_reload_config](https://www.pgpool.net/docs/42/en/html/pcp-reload-config.html)
@@ -44,6 +46,7 @@ instance no matter what.  This is configureable at deploy time as
 
 Old Version | New Version | Upgrade Guide
 --- | --- | ---
+v1.4.1 | v1.5.0 | [link](UPGRADE.md#v141--v150)
 v1.4.0 | v1.4.1 | [link](UPGRADE.md#v140--v141)
 v1.3.3 | v1.4.0 | [link](UPGRADE.md#v133--v140)
 v1.3.2 | v1.3.3 | [link](UPGRADE.md#v132--v133)
@@ -77,7 +80,7 @@ helm repo update
 ```sh
 export RELEASE_NAME=my-pgpool-service # a name (you will need 1 installed chart for each primary DB)
 export NAMESPACE=my-k8s-namespace     # a kubernetes namespace
-export CHART_VERSION=1.4.1            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
+export CHART_VERSION=1.5.0            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
 export VALUES_FILE=./my_values.yaml   # your values file
 
 helm install \
@@ -188,6 +191,7 @@ Parameter | Description | Default
 Parameter | Description | Default
 --- | --- | ---
 `discovery.primaryInstancePrefix` | *REQUIRED* Search sting used to find the primary instance ID; is fed to `gcloud sql instances list --filter name:${PRIMARY_INSTANCE_PREFIX}`.  *Must* match only one instance. | (none)
+`discovery.replicaSkipLabel` | If set, replicas that have this GCP instance label set to `"true"` will be excluded from pgpool's backend pool.  This is useful for dedicating specific read replicas to other consumers (e.g. analytics) without pgpool load-balancing application traffic to them. | `""`
 `discovery.pruneThreshold` | Threshold in seconds after which an undiscoverable (missing or not in state `RUNNABLE`) replica will be removed from the generated configuration file. | `900`
 
 <hr>
