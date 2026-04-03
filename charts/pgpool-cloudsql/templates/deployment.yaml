@@ -102,6 +102,10 @@ spec:
         env:
         - name: PRIMARY_INSTANCE_PREFIX
           value: {{ required "You must set .discovery.primaryInstancePrefix!" .Values.discovery.primaryInstancePrefix | quote }}
+        {{- if .Values.discovery.replicaSkipLabel }}
+        - name: REPLICA_SKIP_LABEL
+          value: {{ .Values.discovery.replicaSkipLabel | quote }}
+        {{- end }}
         - name: STAY_IN_REGION
           value: {{ .Values.discovery.stayInRegion | quote }}
         - name: PRUNE_THRESHOLD
