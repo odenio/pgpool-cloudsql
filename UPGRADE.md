@@ -1,5 +1,31 @@
 # Upgrading Steps
 
+## `v1.4.1` → `v1.5.0`
+
+### New features
+
+Add the ability to exclude specific CloudSQL read replicas from pgpool's
+backend pool by GCP instance label. This is useful when you have dedicated
+read replicas that serve a specific consumer (e.g. an analytics engine) and
+you don't want pgpool load-balancing general application traffic to them.
+
+To use this feature, apply a GCP label to the CloudSQL instance you want to
+exclude (e.g. `pgpool-cloudsql-skip: "true"`), and set the
+`discovery.replicaSkipLabel` chart value to the label key:
+
+```yaml
+discovery:
+  replicaSkipLabel: "pgpool-cloudsql-skip"
+```
+
+When unset (the default), all replicas of the primary are included as before.
+
+### VALUES - New:
+
+Parameter | Description | Default
+--- | --- | ---
+`discovery.replicaSkipLabel` | If set, replicas with this GCP instance label set to `"true"` are excluded from pgpool's backend pool. | `""`
+
 ## `v1.4.0` → `v1.4.1`
 
 ### SECURITY
