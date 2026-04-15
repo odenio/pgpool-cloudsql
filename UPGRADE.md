@@ -9,9 +9,10 @@ backend pool by GCP instance label. This is useful when you have dedicated
 read replicas that serve a specific consumer (e.g. an analytics engine) and
 you don't want pgpool load-balancing general application traffic to them.
 
-To use this feature, apply a GCP label to the CloudSQL instance you want to
-exclude (e.g. `pgpool-cloudsql-skip: "true"`), and set the
-`discovery.replicaSkipLabel` chart value to the label key:
+To use this feature, apply one or more GCP labels to the CloudSQL instance you
+want to exclude (e.g. `pgpool-cloudsql-skip: "true"`), and set the
+`discovery.replicaSkipLabel` chart value to the label key or comma-separated
+label keys:
 
 ```yaml
 discovery:
@@ -24,7 +25,7 @@ When unset (the default), all replicas of the primary are included as before.
 
 Parameter | Description | Default
 --- | --- | ---
-`discovery.replicaSkipLabel` | If set, replicas with this GCP instance label set to `"true"` are excluded from pgpool's backend pool. | `""`
+`discovery.replicaSkipLabel` | If set, replicas with any listed GCP instance label set to `"true"` are excluded from pgpool's backend pool. Provide either a single label or a comma-separated list. | `""`
 
 ## `v1.4.0` → `v1.4.1`
 

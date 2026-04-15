@@ -112,7 +112,14 @@ while true; do
 
   replica_filter="region:${REGION} AND masterInstanceName:${PROJECT_ID}:${primary_name} AND state:RUNNABLE"
   if [[ -n "${REPLICA_SKIP_LABEL:-}" ]]; then
-    replica_filter+=" AND NOT labels.${REPLICA_SKIP_LABEL}=true"
+    IFS=',' read -r -a replica_skip_labels <<<"${REPLICA_SKIP_LABEL}"
+    for replica_skip_label in "${replica_skip_labels[@]}"; do
+      replica_skip_label="${replica_skip_label#"${replica_skip_label%%[![:space:]]*}"}"
+      replica_skip_label="${replica_skip_label%"${replica_skip_label##*[![:space:]]}"}"
+      if [[ -n "${replica_skip_label}" ]]; then
+        replica_filter+=" AND NOT labels.${replica_skip_label}=true"
+      fi
+    done
   fi
 
   mapfile -t current_replicas < <(
