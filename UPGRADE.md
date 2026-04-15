@@ -1,5 +1,15 @@
 # Upgrading Steps
 
+## `v1.5.0` → `v1.6.0`
+
+### New features
+
+The discovery container now accepts multiple skip labels in
+`discovery.replicaSkipLabel` as a comma-separated list. Any replica with one of
+those labels set to `"true"` will be excluded from pgpool's backend pool.
+
+Existing single-label configurations continue to work unchanged.
+
 ## `v1.4.1` → `v1.5.0`
 
 ### New features
