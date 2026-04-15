@@ -112,8 +112,11 @@ while true; do
 
   replica_filter="region:${REGION} AND masterInstanceName:${PROJECT_ID}:${primary_name} AND state:RUNNABLE"
   if [[ -n "${REPLICA_SKIP_LABEL:-}" ]]; then
+    # Support either a single label or a comma-separated list in REPLICA_SKIP_LABEL.
     IFS=',' read -r -a replica_skip_labels <<<"${REPLICA_SKIP_LABEL}"
     for replica_skip_label in "${replica_skip_labels[@]}"; do
+      # Trim surrounding whitespace and ignore empty entries so values like
+      # "foo, bar, ,baz" generate only the intended filter clauses.
       replica_skip_label="${replica_skip_label#"${replica_skip_label%%[![:space:]]*}"}"
       replica_skip_label="${replica_skip_label%"${replica_skip_label##*[![:space:]]}"}"
       if [[ -n "${replica_skip_label}" ]]; then
