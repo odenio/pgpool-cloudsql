@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG ALPINE_VERSION=3.22
-ARG GO_VERSION=1.25
+ARG ALPINE_VERSION=3.23
+ARG GO_VERSION=1.26.2
 ARG PLATFORM=linux/amd64
 ###
 ### Build PGPool-II from source in a build container
@@ -68,8 +68,6 @@ ARG EXPORTER_VERSION=1.2.2
 RUN git clone -b v${EXPORTER_VERSION} https://github.com/pgpool/pgpool2_exporter
 
 WORKDIR /src/envtpl
-# CVE-2024-45337
-RUN go get golang.org/x/crypto
 RUN go mod tidy
 RUN go install -mod=mod ./cmd/envtpl/...
 
@@ -79,7 +77,7 @@ RUN go install ./cmd/pgpool2_exporter/...
 ###
 ### put together everything in the deploy image
 ###
-FROM --platform=${PLATFORM} alpine:${ALPINE_VERSION}
+FROM --platform=${PLATFORM} alpine:${ALPINE_VERSION} as assemble
 RUN apk update
 RUN apk add --no-cache curl python3
 
@@ -110,6 +108,13 @@ RUN mkdir /etc/templates
 COPY conf/*.conf /etc/templates/
 COPY conf/*.tmpl /etc/templates/
 COPY bin/*.sh /usr/bin/
+
+###
+### smash all layers
+###
+FROM --platform=${PLATFORM} scratch
+
+COPY --from=assemble / /
 
 EXPOSE 5432
 EXPOSE 9898
