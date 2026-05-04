@@ -46,6 +46,7 @@ instance no matter what.  This is configureable at deploy time as
 
 Old Version | New Version | Upgrade Guide
 --- | --- | ---
+v1.6.0 | v1.6.1 | [link](UPGRADE.md#v160--v161)
 v1.5.0 | v1.6.0 | [link](UPGRADE.md#v150--v160)
 v1.4.1 | v1.5.0 | [link](UPGRADE.md#v141--v150)
 v1.4.0 | v1.4.1 | [link](UPGRADE.md#v140--v141)
@@ -81,7 +82,7 @@ helm repo update
 ```sh
 export RELEASE_NAME=my-pgpool-service # a name (you will need 1 installed chart for each primary DB)
 export NAMESPACE=my-k8s-namespace     # a kubernetes namespace
-export CHART_VERSION=1.6.0            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
+export CHART_VERSION=1.6.1            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
 export VALUES_FILE=./my_values.yaml   # your values file
 
 helm install \
