@@ -43,7 +43,7 @@ ADD patches patches
 RUN export APPLY_PATCHES
 RUN ./script/apply-patches.sh
 
-RUN ./configure \
+RUN CFLAGS="-g -O2 -std=gnu17" ./configure \
 		--prefix=/usr \
 		--sysconfdir=/etc/$pkgname \
 		--mandir=/usr/share/man \
@@ -77,7 +77,7 @@ RUN go install ./cmd/pgpool2_exporter/...
 ###
 ### put together everything in the deploy image
 ###
-FROM --platform=${PLATFORM} alpine:${ALPINE_VERSION} as assemble
+FROM --platform=${PLATFORM} alpine:${ALPINE_VERSION} AS assemble
 RUN apk update
 RUN apk add --no-cache curl python3
 
