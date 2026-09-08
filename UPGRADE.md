@@ -81,21 +81,36 @@ with a 404 regardless of version. Tarballs now come from
 Core dump collection is now configurable. Previously the only knob was
 `pgpool.coredumpSizeLimit`, and raising it meant cores landed wherever the
 process happened to be and grew without bound. Setting `pgpool.coredump.enabled`
-now mounts a dedicated volume, starts pgpool with its working directory inside
-it, and stops dumping as soon as one complete core has been captured, so a crash
-loop cannot exhaust the volume:
+now mounts a dedicated volume for them and stops dumping as soon as one complete
+core has been captured, so a crash loop cannot exhaust the volume.
+
+This takes one piece of setup outside the chart. Where a core goes is decided by
+the node's `/proc/sys/kernel/core_pattern`, which no pod can change, and on GKE
+that is a per-node-pool sysctl:
 
 ```yaml
+# node-config.yaml
+linuxConfig:
+  sysctl:
+    kernel.core_pattern: /var/coredumps/core.%e.%p.%t
+```
+
+```yaml
+# values.yaml
 pgpool:
   coredump:
     enabled: true
+    path: /var/coredumps   # the directory part of core_pattern, above
 ```
 
-Note that whether a core is capturable from inside the pod at all depends on the
-node's `/proc/sys/kernel/core_pattern`, which a pod cannot change. See
-[Collecting core dumps](README.md#collecting-core-dumps) for the details; the
-pgpool container logs the node's setting at startup and warns when it is one it
-cannot capture.
+`kernel.core_pattern` is on GKE's supported sysctl list, so this needs no
+privileged DaemonSet. GKE accepts absolute paths only, which is what we want:
+for a non-pipe pattern the kernel writes the core inside the *crashing
+process's* mount namespace, so an absolute path lands in the pgpool container at
+that path. `pgpool.coredump.path` must therefore be the directory part of the
+pattern, or the core goes to the container's ephemeral storage and is lost on
+restart. The pgpool container compares the two at startup and logs which case
+you are in. See [Collecting core dumps](README.md#collecting-core-dumps).
 
 ### VALUES - Deprecated:
 

@@ -40,24 +40,43 @@ ulimit -c "${COREDUMP_SIZE_LIMIT}" ||
 
 if [ "${COREDUMP_ENABLED}" = "true" ]; then
   mkdir -p "${COREDUMP_PATH}" || log fatal "Could not create ${COREDUMP_PATH}"
-  # pgpool only chdir()s to / as part of daemonizing, and we always run it with
-  # -n, so it inherits our working directory.  That is what decides where the
-  # kernel puts a core when core_pattern is a bare relative filename.
+  # Only matters when core_pattern is relative, in which case the kernel writes
+  # the core to the crashing process's working directory.  pgpool only chdir()s
+  # to / as part of daemonizing and we always run it with -n, so it inherits
+  # ours.  Harmless in the absolute-path case that GKE gives us.
   cd "${COREDUMP_PATH}" || log fatal "Could not cd to ${COREDUMP_PATH}"
-  log info "Core dumps enabled; working directory is ${COREDUMP_PATH}"
+  log info "Core dumps enabled; core dump volume is ${COREDUMP_PATH}"
 
-  # core_pattern is a node-wide kernel setting that we cannot change from inside
-  # an unprivileged pod, and it decides whether we get to see the core at all.
-  # Say so loudly at startup rather than letting someone wonder for an afternoon
-  # why the directory stays empty.
+  # core_pattern is a node-wide kernel setting that a pod cannot change, and it
+  # alone decides whether we ever see a core.  Work out at startup whether this
+  # node is actually configured to give us one, and say so, rather than letting
+  # someone wonder for an afternoon why the directory stays empty.
+  #
+  # For a non-pipe pattern the kernel creates the file in the *crashing
+  # process's* mount namespace, so an absolute pattern lands inside this
+  # container -- which is why GKE's node-pool sysctl allows absolute paths only.
   core_pattern="$(cat /proc/sys/kernel/core_pattern 2>/dev/null)"
   log info "Kernel core_pattern is '${core_pattern}'"
   case "${core_pattern}" in
   \|*)
-    log warning "core_pattern pipes cores to a helper on the node: nothing will appear in ${COREDUMP_PATH}"
+    log warning "core_pattern pipes cores to a helper on the node, so nothing will appear in ${COREDUMP_PATH}."
+    log warning "Set kernel.core_pattern to an absolute path under ${COREDUMP_PATH} on the node pool; see README.md."
     ;;
   /*)
-    log warning "core_pattern is an absolute path: cores land on the node filesystem, not in ${COREDUMP_PATH}"
+    # the good case, provided the kernel is writing into the volume we mounted
+    # rather than into the container's ephemeral upper layer
+    core_dir="${core_pattern%/*}"
+    if [ "${core_dir}" = "${COREDUMP_PATH}" ]; then
+      log info "core_pattern writes into our core dump volume; core collection is ready"
+    else
+      log warning "core_pattern writes to '${core_dir}', which is not the mounted core dump volume ${COREDUMP_PATH}."
+      log warning "Cores will land in the container's ephemeral storage and be lost when it restarts."
+      log warning "Set pgpool.coredump.path to '${core_dir}', or repoint the node pool's kernel.core_pattern."
+    fi
+    ;;
+  *)
+    log warning "core_pattern '${core_pattern}' is relative, so cores follow the working directory."
+    log warning "That works here, but GKE node pools only accept an absolute kernel.core_pattern; see README.md."
     ;;
   esac
 

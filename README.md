@@ -251,7 +251,7 @@ pgpool.maxSpareChildren | When using [dynamic process management](https://www.pg
 `pgpool.coredumpSizeLimit` | *DEPRECATED*, use `pgpool.coredump.*`. Size limit in blocks of core files that pgpool is allowed to emit if a worker crashes; this is fed to `ulimit -c` in the [wrapper script](bin/pgpool.sh), so valid values are any integer or `"unlimited"`. When set to a non-empty value it still overrides `pgpool.coredump.sizeLimit`. | `""`
 `pgpool.coredump.enabled` | Collect core files when a pgpool worker crashes. See [Collecting core dumps](#collecting-core-dumps). | `false`
 `pgpool.coredump.sizeLimit` | Value fed to `ulimit -c`: a size in 512-byte blocks, or `"unlimited"`. | `"unlimited"`
-`pgpool.coredump.path` | Where the core dump volume is mounted, and the working directory pgpool is started from. | `/var/coredumps`
+`pgpool.coredump.path` | Where the core dump volume is mounted. Must match the directory part of the node pool's `kernel.core_pattern`. See [Collecting core dumps](#collecting-core-dumps). | `/var/coredumps`
 `pgpool.coredump.stopAfterFirst` | Once one complete core has been captured, drop `RLIMIT_CORE` to zero on the running pgpool processes so no further cores are written until the pod restarts. | `true`
 `pgpool.coredump.volume.existingClaim` | If set, mount this existing PersistentVolumeClaim for core files instead of an `emptyDir`, so that cores survive the pod being rescheduled. | `""`
 `pgpool.coredump.volume.sizeLimit` | [sizeLimit](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir) for the core dump `emptyDir`; ignored when `existingClaim` is set. Exceeding it **evicts the pod**, so this is a backstop rather than the primary guard. | `4Gi`
@@ -266,49 +266,102 @@ By default pgpool runs with `ulimit -c 0`, because it drops core files
 willy-nilly and a crash loop will happily fill a volume: a single pgpool child
 can dump hundreds of megabytes, and there can be `numInitChildren` of them.
 
-When you are chasing a segfault, set `pgpool.coredump.enabled` and the chart
-will mount a dedicated volume, start pgpool with its working directory inside
-it, and stop dumping again as soon as it has one complete core:
+Collecting a core takes two pieces: one on the node pool, which the chart cannot
+do for you, and one in the chart.
+
+## Step one: point the node pool's `core_pattern` at the volume
+
+Where a core goes is decided by `/proc/sys/kernel/core_pattern`, a kernel-wide
+setting that no pod can change. On GKE it is configured per node pool, and
+[`kernel.core_pattern` is on GKE's supported sysctl
+list](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/LinuxNodeConfig),
+so this needs no privileged DaemonSet:
+
+```yaml
+# node-config.yaml
+linuxConfig:
+  sysctl:
+    kernel.core_pattern: /var/coredumps/core.%e.%p.%t
+```
+
+```sh
+gcloud container node-pools update "${POOL}" \
+  --cluster "${CLUSTER}" \
+  --system-config-from-file=node-config.yaml
+```
+
+or in Terraform:
+
+```hcl
+node_config {
+  linux_node_config {
+    sysctls = {
+      "kernel.core_pattern" = "/var/coredumps/core.%e.%p.%t"
+    }
+  }
+}
+```
+
+Updating a node pool's system config recreates its nodes, so roll it out the way
+you would any other node pool change.
+
+GKE accepts **absolute paths only** here, and that is exactly what we want. For
+a non-pipe pattern the kernel creates the core in the *crashing process's* mount
+namespace, so an absolute path lands inside the pgpool container, at that path,
+regardless of the process's working directory.
+
+## Step two: enable collection in the chart
 
 ```yaml
 pgpool:
   coredump:
     enabled: true
+    path: /var/coredumps   # must match the directory in core_pattern
 ```
 
-## Whether you get a core at all is up to the node
+`pgpool.coredump.path` has to be the directory part of the `core_pattern` you
+configured above. That is where the chart mounts the core dump volume; if the
+two disagree, the kernel still writes the core, but into the container's
+ephemeral storage, where it counts against the node's disk and is lost the
+moment the container restarts. The pgpool container compares the two at startup
+and says which case you are in:
 
-The kernel decides where a core goes via `/proc/sys/kernel/core_pattern`, which
-is a **node-wide** setting that an unprivileged pod cannot change. There are
-three cases, and only the first one is capturable from inside the pod:
+```
+INFO: Kernel core_pattern is '/var/coredumps/core.%e.%p.%t'
+INFO: core_pattern writes into our core dump volume; core collection is ready
+```
 
-Value of `core_pattern` | Where the core goes | Can we collect it?
+## The cases that will not work
+
+`core_pattern` value | Where the core goes | Usable?
 --- | --- | ---
-a bare relative name, e.g. `core.%p` | the crashing process's working directory | **yes**, this is the case this feature is built for
-an absolute path, e.g. `/var/core/%e.%p` | the node filesystem | no, but you can retrieve it from the node
-a pipe, e.g. `\|/usr/share/apport/apport ...` | handed to a helper on the node | no
+absolute, matching `coredump.path` | the mounted volume in this container | **yes** - the supported setup
+absolute, some other directory | this container's ephemeral storage | lost on restart; fix `coredump.path`
+relative, e.g. `core.%p` | the crashing process's working directory | works, but GKE will not let you set it
+a pipe, e.g. `\|/usr/share/apport/apport ...` | a helper on the node, outside the pod | no
 
-Check before you go looking for files that will never appear:
+The pipe form is the one to watch for on non-GKE clusters and on GKE Ubuntu node
+images: the kernel runs the helper on the host, so the core never enters the
+pod. GKE's node-pool sysctl rejects piped patterns outright.
+
+To see what a node is currently using:
 
 ```sh
 kubectl debug node/<node> -it --image=busybox -- cat /host/proc/sys/kernel/core_pattern
 ```
 
-The pgpool container also logs the node's `core_pattern` at startup and warns
-when it is one of the two cases it cannot capture.
-
 ## Retrieving the core
 
-The pgpool container logs a `Core file detected` warning, and then a
-`Core file ... is complete` line once the kernel has finished writing it. Copy
-it out before the pod is rescheduled (an `emptyDir` does survive the pgpool
-container restarting, but not the pod moving):
+The pgpool container logs a `Core file detected` warning, then `Core file ... is
+complete` once the kernel has finished writing it. Copy it out before the pod is
+rescheduled - an `emptyDir` survives the pgpool container restarting, but not the
+pod moving:
 
 ```sh
 kubectl cp <namespace>/<pod>:var/coredumps/<core file> ./core -c pgpool
 ```
 
-To keep cores across a reschedule instead, point
+To keep cores across a reschedule, point
 `pgpool.coredump.volume.existingClaim` at a PersistentVolumeClaim you have
 provisioned. Note that an RWO claim will block a rolling update when
 `deploy.replicaCount` is greater than 1.
@@ -321,9 +374,10 @@ Once a complete core exists, the watcher uses
 parent is the important one: children inherit the limit at fork, so nothing
 forked afterwards will dump either.
 
-This bounds disk use by construction, and the first core is generally the one
-you want, since it has not been perturbed by whatever the earlier crashes broke.
-If you genuinely need to compare several crashes, set
+This matters more than it looks. A `core_pattern` containing `%p` gives every
+crash its own filename, so without a stop the volume fills; the first core is
+also generally the one you want, since it has not been perturbed by whatever the
+earlier crashes broke. If you genuinely need to compare several crashes, set
 `pgpool.coredump.stopAfterFirst` to `false` and make sure
 `pgpool.coredump.volume.sizeLimit` is generous enough that you do not get the
 pod evicted.

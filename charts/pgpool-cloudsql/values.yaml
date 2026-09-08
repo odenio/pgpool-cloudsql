@@ -262,25 +262,35 @@ pgpool:
   # a single child can dump hundreds of megabytes, and there can be
   # numInitChildren of them, so a crash loop will cheerfully fill a volume.
   #
-  # IMPORTANT: whether a core reaches us at all is decided by the node's
-  # /proc/sys/kernel/core_pattern, which is a kernel-wide setting that an
-  # unprivileged pod cannot change:
+  # IMPORTANT: this needs one piece of setup OUTSIDE the chart.  Whether a core
+  # is written at all, and where, is decided by the node's
+  # /proc/sys/kernel/core_pattern -- a kernel-wide setting no pod can change.
+  # On GKE it is set per node pool, and `kernel.core_pattern` is on the
+  # supported sysctl list, so no privileged DaemonSet is needed:
   #
-  #   - a bare relative name (e.g. "core.%p") writes into the crashing process's
-  #     working directory, which is what `path` below controls.  This is the case
-  #     this feature is built for.
-  #   - an absolute path writes to the *node* filesystem, out of our reach.
-  #   - a pipe ("|/usr/share/apport/apport ...", common on GKE Ubuntu nodes)
-  #     hands the core to a helper on the node and we never see it.
+  #   # node-config.yaml
+  #   linuxConfig:
+  #     sysctl:
+  #       kernel.core_pattern: /var/coredumps/core.%e.%p.%t
   #
-  # The pgpool container logs the node's core_pattern at startup, and warns when
-  # it is one of the two cases we cannot capture.
+  #   gcloud container node-pools update POOL --cluster CLUSTER \
+  #     --system-config-from-file=node-config.yaml
+  #
+  # For a non-pipe pattern the kernel writes the core inside the *crashing
+  # process's* mount namespace, so an absolute path lands in this container --
+  # which is why GKE accepts absolute paths only, and why `path` below must be
+  # the directory part of the pattern you configure.  Get that wrong and the
+  # core is written to the container's ephemeral storage and lost on restart.
+  #
+  # The pgpool container logs the node's core_pattern at startup and tells you
+  # which case you are in.  See README.md for the full walkthrough.
   coredump:
     enabled: false
     # fed to `ulimit -c`: a size in 512-byte blocks, or "unlimited"
     sizeLimit: "unlimited"
-    # where the volume is mounted, and the working directory pgpool is started
-    # from so that a relative core_pattern lands there
+    # Where the core dump volume is mounted.  This MUST match the directory
+    # part of the node pool's kernel.core_pattern (see above), otherwise the
+    # kernel writes the core somewhere we have not mounted a volume.
     path: /var/coredumps
     # Once we have captured one complete core, drop RLIMIT_CORE to zero on the
     # running pgpool processes so no further cores are written until the pod
