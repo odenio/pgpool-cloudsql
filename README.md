@@ -331,11 +331,34 @@ INFO: Kernel core_pattern is '/var/coredumps/core.%e.%p.%t'
 INFO: core_pattern writes into our core dump volume; core collection is ready
 ```
 
+## What stock GKE gives you
+
+Measured on a GKE 1.3x node pool running Container-Optimized OS, kernel 6.12,
+containerd 2.1.7, with no `linuxNodeConfig` customisation:
+
+Setting | Stock value | Consequence
+--- | --- | ---
+`kernel.core_pattern` | `/core.%e.%p.%t` | absolute, so cores *are* written into the container - but at its root, which is ephemeral storage you cannot mount a volume over
+`fs.suid_dumpable` | `2` | only affects setuid/privilege-tainted processes, which pgpool is not; see below
+`RLIMIT_CORE` hard limit | `unlimited` | containerd does not cap it, so the chart is free to raise the soft limit
+
+So on a stock node pool cores are produced but land in the container's root
+filesystem, where they inflate node disk usage and vanish on the next container
+restart. That is why step one is not optional: repointing `core_pattern` at the
+mounted volume is what turns a core you cannot keep into one you can.
+
+The `fs.suid_dumpable=2` setting is worth knowing about even though it does not
+bite us here. In that mode the kernel resolves the core path against PID 1's
+root - the *node* filesystem - rather than the container's, but only for
+processes whose dumpable flag was downgraded by a privilege-changing exec.
+pgpool is not setuid, so it takes the ordinary path.
+
 ## The cases that will not work
 
 `core_pattern` value | Where the core goes | Usable?
 --- | --- | ---
 absolute, matching `coredump.path` | the mounted volume in this container | **yes** - the supported setup
+absolute, container root (COS default) | this container's root, ephemeral | lost on restart; repoint the node pool
 absolute, some other directory | this container's ephemeral storage | lost on restart; fix `coredump.path`
 relative, e.g. `core.%p` | the crashing process's working directory | works, but GKE will not let you set it
 a pipe, e.g. `\|/usr/share/apport/apport ...` | a helper on the node, outside the pod | no
@@ -344,11 +367,18 @@ The pipe form is the one to watch for on non-GKE clusters and on GKE Ubuntu node
 images: the kernel runs the helper on the host, so the core never enters the
 pod. GKE's node-pool sysctl rejects piped patterns outright.
 
-To see what a node is currently using:
+To see what a node is currently using, read it from any pod already running on
+it - `/proc/sys/kernel/core_pattern` is the node's setting, visible read-only
+from inside the container, so this needs no privileged debug pod:
 
 ```sh
-kubectl debug node/<node> -it --image=busybox -- cat /host/proc/sys/kernel/core_pattern
+kubectl exec <pod> -c pgpool -- sh -c \
+  'cat /proc/sys/kernel/core_pattern; ulimit -H -c'
 ```
+
+A hard `RLIMIT_CORE` of `0` there means the container runtime is capping it and
+no core can be written whatever `core_pattern` says; that has to be fixed on the
+node, not in the pod. The pgpool container logs both values at startup.
 
 ## Retrieving the core
 

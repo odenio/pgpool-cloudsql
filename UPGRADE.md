@@ -104,7 +104,10 @@ pgpool:
 ```
 
 `kernel.core_pattern` is on GKE's supported sysctl list, so this needs no
-privileged DaemonSet. GKE accepts absolute paths only, which is what we want:
+privileged DaemonSet. The step is not optional on GKE: stock Container-Optimized
+OS ships `core_pattern=/core.%e.%p.%t`, which writes cores into the container's
+root filesystem, where they count against node disk and are lost on the next
+container restart. GKE accepts absolute paths only, which is what we want:
 for a non-pipe pattern the kernel writes the core inside the *crashing
 process's* mount namespace, so an absolute path lands in the pgpool container at
 that path. `pgpool.coredump.path` must therefore be the directory part of the

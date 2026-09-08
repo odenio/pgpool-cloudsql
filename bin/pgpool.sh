@@ -77,8 +77,18 @@ if [ "${COREDUMP_ENABLED}" = "true" ]; then
     # the good case, provided the kernel is writing into the volume we mounted
     # rather than into the container's ephemeral upper layer
     core_dir="${core_pattern%/*}"
+    # a pattern at the filesystem root, e.g. COS's default "/core.%e.%p.%t",
+    # strips to the empty string rather than to "/"
+    [ -z "${core_dir}" ] && core_dir="/"
     if [ "${core_dir}" = "${COREDUMP_PATH}" ]; then
       log info "core_pattern writes into our core dump volume; core collection is ready"
+    elif [ "${core_dir}" = "/" ]; then
+      # the stock Container-Optimized OS setting: usable, but it drops cores in
+      # the container's root, which is ephemeral and cannot have a volume mounted
+      # over it, so the node pool has to be repointed
+      log warning "core_pattern writes to the container root, which is ephemeral storage we cannot mount a volume over."
+      log warning "Cores will be lost when this container restarts, and will count against the node's disk."
+      log warning "Set the node pool's kernel.core_pattern to '${COREDUMP_PATH}/core.%e.%p.%t'; see README.md."
     else
       log warning "core_pattern writes to '${core_dir}', which is not the mounted core dump volume ${COREDUMP_PATH}."
       log warning "Cores will land in the container's ephemeral storage and be lost when it restarts."
