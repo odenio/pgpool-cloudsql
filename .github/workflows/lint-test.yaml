@@ -20,6 +20,12 @@ jobs:
         with:
           python-version: 3.9
 
+      # the docker build matrix, the values schema and the chart defaults all
+      # name pgpool versions independently, and they have silently drifted
+      # before (see script/check-versions.sh)
+      - name: Check pgpool version references agree
+        run: ./script/check-versions.sh
+
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.7.0
 
@@ -29,7 +35,7 @@ jobs:
           set -x
           changed=$(ct list-changed --config ct.yaml)
           if [[ -n "$changed" ]]; then
-            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Run chart-testing (lint)

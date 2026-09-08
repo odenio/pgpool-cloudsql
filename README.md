@@ -46,6 +46,7 @@ instance no matter what.  This is configureable at deploy time as
 
 Old Version | New Version | Upgrade Guide
 --- | --- | ---
+v1.6.1 | v1.7.0 | [link](UPGRADE.md#v161--v170)
 v1.6.0 | v1.6.1 | [link](UPGRADE.md#v160--v161)
 v1.5.0 | v1.6.0 | [link](UPGRADE.md#v150--v160)
 v1.4.1 | v1.5.0 | [link](UPGRADE.md#v141--v150)
@@ -82,7 +83,7 @@ helm repo update
 ```sh
 export RELEASE_NAME=my-pgpool-service # a name (you will need 1 installed chart for each primary DB)
 export NAMESPACE=my-k8s-namespace     # a kubernetes namespace
-export CHART_VERSION=1.6.1            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
+export CHART_VERSION=1.7.0            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
 export VALUES_FILE=./my_values.yaml   # your values file
 
 helm install \
@@ -124,7 +125,7 @@ Parameter | Description | Default
 --- | --- | ---
 `deploy.replicaCount` | Number of pod replicas to deploy | `1`
 `deploy.repository` | Docker image repository of the runtime container image | `odentech/pgpool-cloudsql`
-`deploy.tag` | If set, override the tag of the runtime container image. If left empty, we use the concatenation of the chart version (`1.2.0`) and the selected `pgpool.version` e.g. `1.3.3-4.5.4` | `""`
+`deploy.tag` | If set, override the tag of the runtime container image. If left empty, we use the concatenation of the chart version (`1.7.0`) and the selected `pgpool.version` e.g. `1.7.0-4.5.12` | `""`
 `deploy.service.tier` | Value for the "tier" [label](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) applied to the kubernetes [service](https://kubernetes.io/docs/concepts/services-networking/service/) | `db`
 `deploy.service.additionalLabels` | Map of additional k/v string pairs to add as labels for the kubernetes service | `{}`
 `deploy.annotations` | Kubernetes [annotation](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/) spec applied to the deployment pods | `{}`
@@ -222,7 +223,7 @@ Parameter | Description | Default
 
 Parameter | Description | Default
 --- | --- | ---
-`pgpool.version` | Which version of pgpool to deploy. Currently supported: `4.5.4`, `4.4.9`, `4.3.12`, `4.2.19`, `4.1.22`, `4.0.25`  | `4.5.4`
+`pgpool.version` | Which version of pgpool to deploy. Currently supported: `4.7.2`, `4.6.7`, `4.5.12`, `4.4.17`, `4.3.20`  | `4.5.12`
 `pgpool.reservedConnections` | When this parameter is set to 1 or greater, incoming connections from clients are not accepted with error message "Sorry, too many clients already", rather than blocked if the number of current connections from clients is more than (`numInitChildren` - `reservedConnections`). ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-connection.html#GUC-RESERVED-CONNECTIONS)) | `0`
 pgpool.processManagmentMode | Whether to use static or dynamic [process management](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html). Allowable values are `static` and `dynamic` | `static`
 pgpool.processManagementStrategy | When using [dynamic process managment](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html), defines how aggressively to scale down idle connections. Allowable values are `lazy`, `gentle` and `aggressive`. | `gentle`
@@ -247,11 +248,85 @@ pgpool.maxSpareChildren | When using [dynamic process management](https://www.pg
 `pgpool.healthCheckUsername` | *REQUIRED* Specifies the PostgreSQL user name to perform health check. The same user must exist in all the PostgreSQL backends. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-health-check.html#GUC-HEALTH-CHECK-USER)) | `""`
 `pgpool.healthCheckPassword` | Specifies the password for the PostgreSQL user name configured in health_check_user to perform health check. The user and password must be same in all the PostgreSQL backends. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-health-check.html#GUC-HEALTH-CHECK-PASSWORD)) | `""`
 `pgpool.healthCheckDatabase` | Specifies the PostgreSQL database name to perform health check. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-health-check.html#GUC-HEALTH-CHECK-DATABASE)) | `postgres`
-`pgpool.coredumpSizeLimit` | Size limit in blocks of core files that pgpool is allowed to emit if a worker crashes; this is fed to `ulimit -c` in the [wrapper script](bin/pgpool.sh), so valid values are any integer or `"unlimited"`. | `"0"`
+`pgpool.coredumpSizeLimit` | *DEPRECATED*, use `pgpool.coredump.*`. Size limit in blocks of core files that pgpool is allowed to emit if a worker crashes; this is fed to `ulimit -c` in the [wrapper script](bin/pgpool.sh), so valid values are any integer or `"unlimited"`. When set to a non-empty value it still overrides `pgpool.coredump.sizeLimit`. | `""`
+`pgpool.coredump.enabled` | Collect core files when a pgpool worker crashes. See [Collecting core dumps](#collecting-core-dumps). | `false`
+`pgpool.coredump.sizeLimit` | Value fed to `ulimit -c`: a size in 512-byte blocks, or `"unlimited"`. | `"unlimited"`
+`pgpool.coredump.path` | Where the core dump volume is mounted, and the working directory pgpool is started from. | `/var/coredumps`
+`pgpool.coredump.stopAfterFirst` | Once one complete core has been captured, drop `RLIMIT_CORE` to zero on the running pgpool processes so no further cores are written until the pod restarts. | `true`
+`pgpool.coredump.volume.existingClaim` | If set, mount this existing PersistentVolumeClaim for core files instead of an `emptyDir`, so that cores survive the pod being rescheduled. | `""`
+`pgpool.coredump.volume.sizeLimit` | [sizeLimit](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir) for the core dump `emptyDir`; ignored when `existingClaim` is set. Exceeding it **evicts the pod**, so this is a backstop rather than the primary guard. | `4Gi`
 `pgpool.readOnlyFunctionList` | List of functions that only read data so pgpool knows it can load balance them. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-load-balancing.html#RUNTIME-CONFIG-LOAD-BALANCING-SETTINGS)) | `""`
 
 <hr>
 </details>
+
+# Collecting core dumps
+
+By default pgpool runs with `ulimit -c 0`, because it drops core files
+willy-nilly and a crash loop will happily fill a volume: a single pgpool child
+can dump hundreds of megabytes, and there can be `numInitChildren` of them.
+
+When you are chasing a segfault, set `pgpool.coredump.enabled` and the chart
+will mount a dedicated volume, start pgpool with its working directory inside
+it, and stop dumping again as soon as it has one complete core:
+
+```yaml
+pgpool:
+  coredump:
+    enabled: true
+```
+
+## Whether you get a core at all is up to the node
+
+The kernel decides where a core goes via `/proc/sys/kernel/core_pattern`, which
+is a **node-wide** setting that an unprivileged pod cannot change. There are
+three cases, and only the first one is capturable from inside the pod:
+
+Value of `core_pattern` | Where the core goes | Can we collect it?
+--- | --- | ---
+a bare relative name, e.g. `core.%p` | the crashing process's working directory | **yes**, this is the case this feature is built for
+an absolute path, e.g. `/var/core/%e.%p` | the node filesystem | no, but you can retrieve it from the node
+a pipe, e.g. `\|/usr/share/apport/apport ...` | handed to a helper on the node | no
+
+Check before you go looking for files that will never appear:
+
+```sh
+kubectl debug node/<node> -it --image=busybox -- cat /host/proc/sys/kernel/core_pattern
+```
+
+The pgpool container also logs the node's `core_pattern` at startup and warns
+when it is one of the two cases it cannot capture.
+
+## Retrieving the core
+
+The pgpool container logs a `Core file detected` warning, and then a
+`Core file ... is complete` line once the kernel has finished writing it. Copy
+it out before the pod is rescheduled (an `emptyDir` does survive the pgpool
+container restarting, but not the pod moving):
+
+```sh
+kubectl cp <namespace>/<pod>:var/coredumps/<core file> ./core -c pgpool
+```
+
+To keep cores across a reschedule instead, point
+`pgpool.coredump.volume.existingClaim` at a PersistentVolumeClaim you have
+provisioned. Note that an RWO claim will block a rolling update when
+`deploy.replicaCount` is greater than 1.
+
+## Why it stops after the first core
+
+Once a complete core exists, the watcher uses
+[`prlimit(2)`](https://man7.org/linux/man-pages/man2/prlimit.2.html) to set
+`RLIMIT_CORE` to zero on the running pgpool parent and all of its children. The
+parent is the important one: children inherit the limit at fork, so nothing
+forked afterwards will dump either.
+
+This bounds disk use by construction, and the first core is generally the one
+you want, since it has not been perturbed by whatever the earlier crashes broke.
+If you genuinely need to compare several crashes, set
+`pgpool.coredump.stopAfterFirst` to `false` and make sure
+`pgpool.coredump.volume.sizeLimit` is generous enough that you do not get the
+pod evicted.
 
 # Monitoring
 

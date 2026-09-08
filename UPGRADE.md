@@ -1,5 +1,119 @@
 # Upgrading Steps
 
+## `v1.6.1` → `v1.7.0`
+
+### 🛑 Removed pgpool versions
+
+Support for the v4.1 and v4.2 branches of pgpool is **removed**; both are past
+end of life upstream. If you are pinning `pgpool.version` to a `4.1.x` or
+`4.2.x` release, the values validator will now refuse to install and you must
+move to 4.3 or later first.
+
+### Software upgrades
+
+Every remaining release channel moves to its current patch release, and the
+v4.6 and v4.7 branches are added:
+
+Branch | Old | New
+--- | --- | ---
+4.7 | (none) | `4.7.2`
+4.6 | (none) | `4.6.7`
+4.5 | `4.5.8` | `4.5.12`
+4.4 | `4.4.13` | `4.4.17`
+4.3 | `4.3.16` | `4.3.20`
+
+The default `pgpool.version` stays on the 4.5 branch, now `4.5.12`. 4.6 and 4.7
+are available opt-in.
+
+Neither new branch requires a configuration change on our side:
+
+* **4.6** adds `log_backend_messages` and removes nothing. Its one migration
+  note is that `health_check_user`, `sr_check_user`, `recovery_user` and
+  `wd_lifecheck_user` changed default from `nobody` to the empty string, which
+  does not affect us because the chart has always required and set the first two
+  explicitly.
+* **4.7** retires slony clustering mode (never used here), flips the
+  `log_pcp_processes` default from `on` to `off`, and renames `logdir` to
+  `work_dir`. We continue to emit `logdir`, which 4.7 still accepts with a
+  deprecation warning and which is the only spelling 4.3 through 4.6 understand.
+
+### 🛑 The default `pgpool.version` was previously broken
+
+`v1.4.1` bumped the pgpool releases in the build matrix but not in
+`values.yaml`, so from `v1.4.1` through `v1.6.1` the default `pgpool.version`
+stayed at `4.5.4` while the images published were `4.5.8`. A `helm install` that
+did not set `pgpool.version` explicitly therefore resolved to an image tag that
+was never built (e.g. `odentech/pgpool-cloudsql:1.6.1-4.5.4`) and the pods would
+sit in `ImagePullBackOff`. The default now tracks the build matrix, and
+`script/check-versions.sh` runs on every pull request to fail the build if the
+matrix, the values schema, the chart defaults, or the documented version lists
+ever disagree again.
+
+### Fixed: `socket_dir` was silently ignored
+
+The generated `pgpool.conf` set `socket_dir`, which has not been a pgpool
+parameter for many years; pgpool logged `unrecognized configuration parameter`
+at `INFO` and carried on with the default. It is now spelled
+`unix_socket_directories`. The effective value is `/tmp` either way, so there is
+no behavior change.
+
+### Fixed: the docker build workflow never ran
+
+`.github/workflows/docker.yaml` triggered on `release: [published]`, but our
+releases are cut by `helm/chart-releaser-action` using the default
+`GITHUB_TOKEN`, and GitHub deliberately does not deliver workflow-triggering
+events for that token. The workflow had therefore never executed once, and
+images had to be built by hand with `script/build-docker.sh`.
+
+`release.yml` now calls the docker build directly as a reusable workflow once
+chart-releaser reports a released chart, so image publishing follows a merge to
+`main` automatically. The workflow also accepts `workflow_dispatch` for a manual
+rebuild. `script/build-docker.sh` still works and is still the right tool for
+building an image with a patch from `patches/` applied.
+
+Separately, the Dockerfile's source download URL is updated: pgpool.net retired
+the `download.php?f=` endpoint, so *every* build against it had begun failing
+with a 404 regardless of version. Tarballs now come from
+`https://www.pgpool.net/source/`.
+
+### New features
+
+Core dump collection is now configurable. Previously the only knob was
+`pgpool.coredumpSizeLimit`, and raising it meant cores landed wherever the
+process happened to be and grew without bound. Setting `pgpool.coredump.enabled`
+now mounts a dedicated volume, starts pgpool with its working directory inside
+it, and stops dumping as soon as one complete core has been captured, so a crash
+loop cannot exhaust the volume:
+
+```yaml
+pgpool:
+  coredump:
+    enabled: true
+```
+
+Note that whether a core is capturable from inside the pod at all depends on the
+node's `/proc/sys/kernel/core_pattern`, which a pod cannot change. See
+[Collecting core dumps](README.md#collecting-core-dumps) for the details; the
+pgpool container logs the node's setting at startup and warns when it is one it
+cannot capture.
+
+### VALUES - Deprecated:
+
+Parameter | Notes
+--- | ---
+`pgpool.coredumpSizeLimit` | Superseded by `pgpool.coredump.sizeLimit`. The default is now `""` rather than `"0"`, and a non-empty value still overrides the new setting, so existing values files behave exactly as before. Core dumping remains off unless you opt in.
+
+### VALUES - New:
+
+Parameter | Description | Default
+--- | --- | ---
+`pgpool.coredump.enabled` | Collect core files when a pgpool worker crashes. | `false`
+`pgpool.coredump.sizeLimit` | Value fed to `ulimit -c`: a size in 512-byte blocks, or `"unlimited"`. | `"unlimited"`
+`pgpool.coredump.path` | Where the core dump volume is mounted, and the working directory pgpool is started from. | `/var/coredumps`
+`pgpool.coredump.stopAfterFirst` | After one complete core, set `RLIMIT_CORE` to zero on the running pgpool processes so no further cores are written until the pod restarts. | `true`
+`pgpool.coredump.volume.existingClaim` | Mount this existing PersistentVolumeClaim instead of an `emptyDir`, so cores survive a reschedule. | `""`
+`pgpool.coredump.volume.sizeLimit` | `sizeLimit` for the core dump `emptyDir`; ignored when `existingClaim` is set. Exceeding it evicts the pod. | `4Gi`
+
 ## `v1.6.0` → `v1.6.1`
 
 This is a maintenance release:

@@ -8,9 +8,12 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    outputs:
+      changed_charts: ${{ steps.chart_release.outputs.changed_charts }}
+      chart_version: ${{ steps.chart_release.outputs.chart_version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -20,14 +23,26 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Install Helm
-        uses: azure/setup-helm@v1
-        with:
-          version: v3.4.0
+        uses: azure/setup-helm@v4
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.2.1
+        id: chart_release
+        uses: helm/chart-releaser-action@v1.7.0
         with:
           config: cr.yaml
           charts_repo_url: https://odenio.github.io/pgpool-cloudsql
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+  # chart-releaser publishes the release with GITHUB_TOKEN, and GitHub does not
+  # deliver workflow-triggering events for that token, so a `release: published`
+  # trigger on the docker build never fires.  Call it directly instead.
+  docker_build:
+    needs: release
+    if: needs.release.outputs.changed_charts != ''
+    uses: ./.github/workflows/docker.yaml
+    with:
+      release_version: ${{ needs.release.outputs.chart_version }}
+    secrets:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}

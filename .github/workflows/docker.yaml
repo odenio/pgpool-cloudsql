@@ -1,21 +1,57 @@
 name: Docker Build
 
+# NOTE: this workflow used to trigger only on `release: [published]`, which meant
+# it never ran even once.  Releases here are cut by helm/chart-releaser-action in
+# release.yml using the default GITHUB_TOKEN, and GitHub deliberately does not
+# raise workflow-triggering events for anything that token does -- otherwise a
+# workflow could trivially trigger itself forever.  So the release was published,
+# no `release` event was ever delivered, and the images had to be built by hand
+# with script/build-docker.sh.
+#
+# The fix is to stop waiting for an event that will never arrive and let
+# release.yml call us directly once chart-releaser has cut the release.  The
+# other two triggers are conveniences: `workflow_dispatch` replaces the manual
+# build script, and `release` still works for a release created by a human (i.e.
+# not by GITHUB_TOKEN).
+
 on:
+  workflow_call:
+    inputs:
+      release_version:
+        description: "Chart version to tag images with, without a leading v (e.g. 1.7.0)"
+        required: true
+        type: string
+    secrets:
+      DOCKER_HUB_USERNAME:
+        required: true
+      DOCKER_HUB_ACCESS_TOKEN:
+        required: true
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: "Chart version to tag images with, without a leading v (e.g. 1.7.0). Defaults to the version in Chart.yaml."
+        required: false
+        type: string
   release:
     types: [published]
 
 jobs:
   docker_build:
     strategy:
+      # one broken pgpool branch should not stop the others from publishing
+      fail-fast: false
       matrix:
         pgpool_version:
-          - 4.5.8
-          - 4.4.13
-          - 4.3.16
-          - 4.2.23
-          - 4.1.23
+          - 4.7.2
+          - 4.6.7
+          - 4.5.12
+          - 4.4.17
+          - 4.3.20
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -25,18 +61,34 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Set output
+      - name: Determine release version
         id: vars
         run: |
-          REF_NAME=${{ github.ref_name }}
-          echo "release_version=${REF_NAME#v}" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          # in order of preference: what our caller told us, what a human typed
+          # into the workflow_dispatch form, the tag of a hand-cut release, and
+          # finally whatever Chart.yaml says.
+          version="${{ inputs.release_version }}"
+          if [ -z "${version}" ] && [ "${{ github.event_name }}" = "release" ]; then
+            version="${{ github.event.release.tag_name }}"
+          fi
+          if [ -z "${version}" ]; then
+            version="$(grep -E '^version:' charts/pgpool-cloudsql/Chart.yaml | awk '{print $2}')"
+          fi
+          version="${version#v}"
+          if [ -z "${version}" ]; then
+            echo "could not determine a release version to tag with" >&2
+            exit 1
+          fi
+          echo "release_version=${version}" >> "$GITHUB_OUTPUT"
+          echo "Tagging images as ${version}-${{ matrix.pgpool_version }}"
 
       - name: Build and push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
-          context: "{{defaultContext}}"
+          context: .
           file: ./Dockerfile
-          build-args: PGPOOL_VERSION=${{matrix.pgpool_version}}
+          build-args: PGPOOL_VERSION=${{ matrix.pgpool_version }}
           pull: true
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/pgpool-cloudsql:${{ steps.vars.outputs.release_version }}-${{matrix.pgpool_version}}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/pgpool-cloudsql:${{ steps.vars.outputs.release_version }}-${{ matrix.pgpool_version }}

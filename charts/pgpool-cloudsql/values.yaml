@@ -139,13 +139,12 @@ pcp:
 
 pgpool:
   # what version of pgpool to use!  Currently supported versions are:
-  # 4.5.4
-  # 4.4.9
-  # 4.3.12
-  # 4.2.19
-  # 4.1.22
-  # 4.0.25
-  version: "4.5.4"
+  # 4.7.2
+  # 4.6.7
+  # 4.5.12
+  # 4.4.17
+  # 4.3.20
+  version: "4.5.12"
   # whether to use static or dynamic process management mode; see
   # https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html
   # allowed values are "static" and "dynamic"
@@ -255,8 +254,50 @@ pgpool:
   healthCheckUsername: ""
   healthCheckPassword: ""
   healthCheckDatabase: "postgres"
-  # coredump size limit (fed to `ulimit -c`; defined in blocks or "unlimited")
-  coredumpSizeLimit: "0"
+  # DEPRECATED: use pgpool.coredump.* instead.  If this is set to a non-empty
+  # string it still wins, so existing values files keep working unchanged.
+  # (fed to `ulimit -c`; defined in blocks or "unlimited")
+  coredumpSizeLimit: ""
+  # Core dump collection.  Off by default: pgpool drops core files willy-nilly,
+  # a single child can dump hundreds of megabytes, and there can be
+  # numInitChildren of them, so a crash loop will cheerfully fill a volume.
+  #
+  # IMPORTANT: whether a core reaches us at all is decided by the node's
+  # /proc/sys/kernel/core_pattern, which is a kernel-wide setting that an
+  # unprivileged pod cannot change:
+  #
+  #   - a bare relative name (e.g. "core.%p") writes into the crashing process's
+  #     working directory, which is what `path` below controls.  This is the case
+  #     this feature is built for.
+  #   - an absolute path writes to the *node* filesystem, out of our reach.
+  #   - a pipe ("|/usr/share/apport/apport ...", common on GKE Ubuntu nodes)
+  #     hands the core to a helper on the node and we never see it.
+  #
+  # The pgpool container logs the node's core_pattern at startup, and warns when
+  # it is one of the two cases we cannot capture.
+  coredump:
+    enabled: false
+    # fed to `ulimit -c`: a size in 512-byte blocks, or "unlimited"
+    sizeLimit: "unlimited"
+    # where the volume is mounted, and the working directory pgpool is started
+    # from so that a relative core_pattern lands there
+    path: /var/coredumps
+    # Once we have captured one complete core, drop RLIMIT_CORE to zero on the
+    # running pgpool processes so no further cores are written until the pod
+    # restarts.  This bounds disk use by construction, and the first core is
+    # the one you want: it has not been perturbed by the earlier crashes.
+    # Set to false only if you specifically need to compare several crashes,
+    # and then make sure volume.sizeLimit is generous enough.
+    stopAfterFirst: true
+    volume:
+      # If set, mount this existing PersistentVolumeClaim instead of an emptyDir,
+      # so cores survive the pod being rescheduled.  Note that an RWO claim will
+      # block a rolling update with replicaCount > 1.
+      existingClaim: ""
+      # Applies to the emptyDir only, and is ignored when existingClaim is set.
+      # Note this is a hard Kubernetes limit: exceeding it gets the pod EVICTED,
+      # which is why stopAfterFirst is the primary guard rather than this.
+      sizeLimit: 4Gi
   # comma-separated list of read-only functions
   # cf: https://www.pgpool.net/docs/latest/en/html/runtime-config-load-balancing.html#GUC-READ-ONLY-FUNCTION-LIST
   readOnlyFunctionList: ""

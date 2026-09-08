@@ -86,9 +86,29 @@ spec:
         volumeMounts:
         - name: etcdir
           mountPath: /etc/pgpool
+        {{- if .Values.pgpool.coredump.enabled }}
+        - name: coredumps
+          mountPath: {{ .Values.pgpool.coredump.path | quote }}
+        {{- end }}
         env:
+        - name: COREDUMP_ENABLED
+          value: {{ .Values.pgpool.coredump.enabled | quote }}
+        {{- /* the deprecated flat pgpool.coredumpSizeLimit still wins when set,
+        so that values files written against <= v1.6.1 behave as they always did */}}
         - name: COREDUMP_SIZE_LIMIT
-          value: "{{ .Values.pgpool.coredumpSizeLimit }}"
+          {{- if .Values.pgpool.coredumpSizeLimit }}
+          value: {{ .Values.pgpool.coredumpSizeLimit | quote }}
+          {{- else if .Values.pgpool.coredump.enabled }}
+          value: {{ .Values.pgpool.coredump.sizeLimit | quote }}
+          {{- else }}
+          value: "0"
+          {{- end }}
+        {{- if .Values.pgpool.coredump.enabled }}
+        - name: COREDUMP_PATH
+          value: {{ .Values.pgpool.coredump.path | quote }}
+        - name: COREDUMP_STOP_AFTER_FIRST
+          value: {{ .Values.pgpool.coredump.stopAfterFirst | quote }}
+        {{- end }}
 
       - name: discovery
         image: "{{ .image }}"
@@ -232,3 +252,15 @@ spec:
       volumes:
       - name: etcdir
         emptyDir: {}
+      {{- if .Values.pgpool.coredump.enabled }}
+      - name: coredumps
+        {{- if .Values.pgpool.coredump.volume.existingClaim }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.pgpool.coredump.volume.existingClaim | quote }}
+        {{- else }}
+        emptyDir:
+          {{- with .Values.pgpool.coredump.volume.sizeLimit }}
+          sizeLimit: {{ . }}
+          {{- end }}
+        {{- end }}
+      {{- end }}

@@ -904,7 +904,8 @@
                 "healthCheckUsername",
                 "healthCheckPassword",
                 "healthCheckDatabase",
-                "coredumpSizeLimit"
+                "coredumpSizeLimit",
+                "coredump"
             ],
             "if": {
               "properties": {
@@ -912,7 +913,7 @@
                   "message": {
                     "pattern": "process mgmt mode must be static for pgpool.version prior to 4.4"
                   },
-                  "pattern": "^4\\.[0-3]\\..*$"
+                  "pattern": "^4\\.3\\..*$"
                 }
               }
             },
@@ -942,21 +943,21 @@
             "properties": {
                 "version": {
                     "type": "string",
-                    "default": "4.5.4",
+                    "default": "4.5.12",
                     "title": "The version Schema",
                     "examples": [
-                        "4.5.4"
+                        "4.5.12"
                     ],
                     "message": {
                       "enum": "process mgmt mode must be static for pgpool.version prior to 4.4",
                       "pattern": "process mgmt mode must be static for pgpool.version prior to 4.4"
                     },
                     "enum": [
-                      "4.5.4",
-                      "4.4.9",
-                      "4.3.12",
-                      "4.2.19",
-                      "4.1.22"
+                      "4.7.2",
+                      "4.6.7",
+                      "4.5.12",
+                      "4.4.17",
+                      "4.3.20"
                     ]
                 },
                 "processManagementMode": {
@@ -1183,10 +1184,83 @@
                 "coredumpSizeLimit": {
                     "type": "string",
                     "default": "",
-                    "title": "The coredumpSizeLimit Schema",
+                    "title": "The coredumpSizeLimit Schema (DEPRECATED: use pgpool.coredump)",
                     "examples": [
                         "0"
                     ]
+                },
+                "coredump": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The coredump Schema",
+                    "required": [
+                        "enabled",
+                        "sizeLimit",
+                        "path",
+                        "stopAfterFirst",
+                        "volume"
+                    ],
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "The enabled Schema",
+                            "examples": [
+                                false
+                            ]
+                        },
+                        "sizeLimit": {
+                            "type": "string",
+                            "default": "unlimited",
+                            "title": "The sizeLimit Schema",
+                            "examples": [
+                                "unlimited"
+                            ]
+                        },
+                        "path": {
+                            "type": "string",
+                            "default": "/var/coredumps",
+                            "title": "The path Schema",
+                            "examples": [
+                                "/var/coredumps"
+                            ]
+                        },
+                        "stopAfterFirst": {
+                            "type": "boolean",
+                            "default": true,
+                            "title": "The stopAfterFirst Schema",
+                            "examples": [
+                                true
+                            ]
+                        },
+                        "volume": {
+                            "type": "object",
+                            "default": {},
+                            "title": "The volume Schema",
+                            "required": [
+                                "existingClaim",
+                                "sizeLimit"
+                            ],
+                            "properties": {
+                                "existingClaim": {
+                                    "type": "string",
+                                    "default": "",
+                                    "title": "The existingClaim Schema",
+                                    "examples": [
+                                        ""
+                                    ]
+                                },
+                                "sizeLimit": {
+                                    "type": "string",
+                                    "default": "4Gi",
+                                    "title": "The sizeLimit Schema",
+                                    "examples": [
+                                        "4Gi"
+                                    ]
+                                }
+                            }
+                        }
+                    }
                 },
                 "readOnlyFunctionList": {
                     "type": "string",
@@ -1198,7 +1272,7 @@
                 }
             },
             "examples": [{
-                "version": "4.5.0",
+                "version": "4.5.12",
                 "processManagementMode": "static",
                 "processManagementStrategy": "gentle",
                 "minSpareChildren": 5,
@@ -1225,7 +1299,7 @@
                 "healthCheckUsername": "",
                 "healthCheckPassword": "",
                 "healthCheckDatabase": "postgres",
-                "coredumpSizeLimit": "0",
+                "coredumpSizeLimit": "",
                 "readOnlyFunctionList": ""
             }]
         }
@@ -1320,7 +1394,7 @@
             "password": ""
         },
         "pgpool": {
-            "version": "4.5.0",
+            "version": "4.5.12",
             "processManagementMode": "static",
             "processManagementStrategy": "gentle",
             "minSpareChildren": 5,
@@ -1347,7 +1421,7 @@
             "healthCheckUsername": "",
             "healthCheckPassword": "",
             "healthCheckDatabase": "postgres",
-            "coredumpSizeLimit": "0",
+            "coredumpSizeLimit": "",
             "readOnlyFunctionList": ""
         }
     }]
