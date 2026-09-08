@@ -47,6 +47,17 @@ if [ "${COREDUMP_ENABLED}" = "true" ]; then
   cd "${COREDUMP_PATH}" || log fatal "Could not cd to ${COREDUMP_PATH}"
   log info "Core dumps enabled; core dump volume is ${COREDUMP_PATH}"
 
+  # RLIMIT_CORE has a hard ceiling we inherit from the container runtime, and a
+  # soft limit can never be raised above it.  If containerd (or dockerd) was
+  # started with LimitCORE=0, no core can ever be written no matter how the
+  # kernel's core_pattern is configured, and the failure is completely silent.
+  # Report what we actually ended up with.
+  log info "Core dump limit is now soft=$(ulimit -c) hard=$(ulimit -H -c)"
+  if [ "$(ulimit -H -c)" = "0" ]; then
+    log warning "The container runtime caps RLIMIT_CORE at 0, so no core can be written."
+    log warning "This is set on the node, not in the pod; check LimitCORE= on the containerd systemd unit."
+  fi
+
   # core_pattern is a node-wide kernel setting that a pod cannot change, and it
   # alone decides whether we ever see a core.  Work out at startup whether this
   # node is actually configured to give us one, and say so, rather than letting
