@@ -10,12 +10,34 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       changed_charts: ${{ steps.chart_release.outputs.changed_charts }}
-      chart_version: ${{ steps.chart_release.outputs.chart_version }}
+      chart_version: ${{ steps.chart_version.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      # Deliberately NOT chart-releaser's own chart_version output.  That is set
+      # from lookup_latest_tag(), which is `git describe --tags HEAD~` evaluated
+      # before packaging, so it reports the tag that existed *before* this run:
+      # on the merge that releases 1.7.0 it returns v1.6.1, and we would publish
+      # images tagged for the previous chart while the new chart asks for tags
+      # that were never built.  Upstream: helm/chart-releaser-action#227 and
+      # #238, both still open as of v1.7.0 (the latest release).
+      #
+      # Chart.yaml is the real source of truth: cr.yaml releases as
+      # "v{{ .Version }}", so the tag chart-releaser creates is this value.
+      - name: Read the chart version
+        id: chart_version
+        run: |
+          set -euo pipefail
+          version="$(yq eval '.version' charts/pgpool-cloudsql/Chart.yaml)"
+          if [ -z "${version}" ] || [ "${version}" = "null" ]; then
+            echo "could not read .version from charts/pgpool-cloudsql/Chart.yaml" >&2
+            exit 1
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "Chart version is ${version}"
 
       - name: Configure Git
         run: |
