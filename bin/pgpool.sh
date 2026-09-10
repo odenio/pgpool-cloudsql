@@ -17,92 +17,10 @@
 # shellcheck disable=SC1091
 . /usr/bin/functions.sh
 
-# pgpool has a tendency to leave core files around willy-nilly, which is
-# disconcerting, so the default remains "don't dump at all".  Set
-# pgpool.coredump.enabled when you actually need to catch a crash.
-COREDUMP_ENABLED="${COREDUMP_ENABLED:-"false"}"
-# the chart always passes COREDUMP_SIZE_LIMIT, but default it off the enable
-# flag anyway so that running this image by hand with COREDUMP_ENABLED=true
-# does not silently collect nothing
-if [ "${COREDUMP_ENABLED}" = "true" ]; then
-  COREDUMP_SIZE_LIMIT="${COREDUMP_SIZE_LIMIT:-"unlimited"}"
-else
-  COREDUMP_SIZE_LIMIT="${COREDUMP_SIZE_LIMIT:-"0"}"
-fi
-COREDUMP_PATH="${COREDUMP_PATH:-"/var/coredumps"}"
-# the watcher is a child process and reads these from the environment; exporting
-# here keeps its idea of the directory from diverging from the one we cd into
-export COREDUMP_PATH COREDUMP_STOP_AFTER_FIRST
-
+# pgpool has a tendency to leave core files around willy-nilly, which is disconcerting
+COREDUMP_SIZE_LIMIT="${COREDUMP_SIZE_LIMIT:-"0"}"
 log info "Setting coredump size limit to ${COREDUMP_SIZE_LIMIT}"
-ulimit -c "${COREDUMP_SIZE_LIMIT}" ||
-  log warning "Could not set coredump size limit to ${COREDUMP_SIZE_LIMIT}"
-
-if [ "${COREDUMP_ENABLED}" = "true" ]; then
-  mkdir -p "${COREDUMP_PATH}" || log fatal "Could not create ${COREDUMP_PATH}"
-  # Only matters when core_pattern is relative, in which case the kernel writes
-  # the core to the crashing process's working directory.  pgpool only chdir()s
-  # to / as part of daemonizing and we always run it with -n, so it inherits
-  # ours.  Harmless in the absolute-path case that GKE gives us.
-  cd "${COREDUMP_PATH}" || log fatal "Could not cd to ${COREDUMP_PATH}"
-  log info "Core dumps enabled; core dump volume is ${COREDUMP_PATH}"
-
-  # RLIMIT_CORE has a hard ceiling we inherit from the container runtime, and a
-  # soft limit can never be raised above it.  If containerd (or dockerd) was
-  # started with LimitCORE=0, no core can ever be written no matter how the
-  # kernel's core_pattern is configured, and the failure is completely silent.
-  # Report what we actually ended up with.
-  log info "Core dump limit is now soft=$(ulimit -c) hard=$(ulimit -H -c)"
-  if [ "$(ulimit -H -c)" = "0" ]; then
-    log warning "The container runtime caps RLIMIT_CORE at 0, so no core can be written."
-    log warning "This is set on the node, not in the pod; check LimitCORE= on the containerd systemd unit."
-  fi
-
-  # core_pattern is a node-wide kernel setting that a pod cannot change, and it
-  # alone decides whether we ever see a core.  Work out at startup whether this
-  # node is actually configured to give us one, and say so, rather than letting
-  # someone wonder for an afternoon why the directory stays empty.
-  #
-  # For a non-pipe pattern the kernel creates the file in the *crashing
-  # process's* mount namespace, so an absolute pattern lands inside this
-  # container -- which is why GKE's node-pool sysctl allows absolute paths only.
-  core_pattern="$(cat /proc/sys/kernel/core_pattern 2>/dev/null)"
-  log info "Kernel core_pattern is '${core_pattern}'"
-  case "${core_pattern}" in
-  \|*)
-    log warning "core_pattern pipes cores to a helper on the node, so nothing will appear in ${COREDUMP_PATH}."
-    log warning "Set kernel.core_pattern to an absolute path under ${COREDUMP_PATH} on the node pool; see README.md."
-    ;;
-  /*)
-    # the good case, provided the kernel is writing into the volume we mounted
-    # rather than into the container's ephemeral upper layer
-    core_dir="${core_pattern%/*}"
-    # a pattern at the filesystem root, e.g. COS's default "/core.%e.%p.%t",
-    # strips to the empty string rather than to "/"
-    [ -z "${core_dir}" ] && core_dir="/"
-    if [ "${core_dir}" = "${COREDUMP_PATH}" ]; then
-      log info "core_pattern writes into our core dump volume; core collection is ready"
-    elif [ "${core_dir}" = "/" ]; then
-      # the stock Container-Optimized OS setting: usable, but it drops cores in
-      # the container's root, which is ephemeral and cannot have a volume mounted
-      # over it, so the node pool has to be repointed
-      log warning "core_pattern writes to the container root, which is ephemeral storage we cannot mount a volume over."
-      log warning "Cores will be lost when this container restarts, and will count against the node's disk."
-      log warning "Set the node pool's kernel.core_pattern to '${COREDUMP_PATH}/core.%e.%p.%t'; see README.md."
-    else
-      log warning "core_pattern writes to '${core_dir}', which is not the mounted core dump volume ${COREDUMP_PATH}."
-      log warning "Cores will land in the container's ephemeral storage and be lost when it restarts."
-      log warning "Set pgpool.coredump.path to '${core_dir}', or repoint the node pool's kernel.core_pattern."
-    fi
-    ;;
-  *)
-    log warning "core_pattern '${core_pattern}' is relative, so cores follow the working directory."
-    log warning "That works here, but GKE node pools only accept an absolute kernel.core_pattern; see README.md."
-    ;;
-  esac
-
-  /usr/bin/coredump-watch.sh &
-fi
+ulimit -c "${COREDUMP_SIZE_LIMIT}"
 
 # there is no point in starting until the discovery script has generated
 # our config file

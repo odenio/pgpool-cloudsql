@@ -904,8 +904,7 @@
                 "healthCheckUsername",
                 "healthCheckPassword",
                 "healthCheckDatabase",
-                "coredumpSizeLimit",
-                "coredump"
+                "coredumpSizeLimit"
             ],
             "if": {
               "properties": {
@@ -1184,83 +1183,10 @@
                 "coredumpSizeLimit": {
                     "type": "string",
                     "default": "",
-                    "title": "The coredumpSizeLimit Schema (DEPRECATED: use pgpool.coredump)",
+                    "title": "The coredumpSizeLimit Schema",
                     "examples": [
                         "0"
                     ]
-                },
-                "coredump": {
-                    "type": "object",
-                    "default": {},
-                    "title": "The coredump Schema",
-                    "required": [
-                        "enabled",
-                        "sizeLimit",
-                        "path",
-                        "stopAfterFirst",
-                        "volume"
-                    ],
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean",
-                            "default": false,
-                            "title": "The enabled Schema",
-                            "examples": [
-                                false
-                            ]
-                        },
-                        "sizeLimit": {
-                            "type": "string",
-                            "default": "unlimited",
-                            "title": "The sizeLimit Schema",
-                            "examples": [
-                                "unlimited"
-                            ]
-                        },
-                        "path": {
-                            "type": "string",
-                            "default": "/var/coredumps",
-                            "title": "The path Schema",
-                            "examples": [
-                                "/var/coredumps"
-                            ]
-                        },
-                        "stopAfterFirst": {
-                            "type": "boolean",
-                            "default": true,
-                            "title": "The stopAfterFirst Schema",
-                            "examples": [
-                                true
-                            ]
-                        },
-                        "volume": {
-                            "type": "object",
-                            "default": {},
-                            "title": "The volume Schema",
-                            "required": [
-                                "existingClaim",
-                                "sizeLimit"
-                            ],
-                            "properties": {
-                                "existingClaim": {
-                                    "type": "string",
-                                    "default": "",
-                                    "title": "The existingClaim Schema",
-                                    "examples": [
-                                        ""
-                                    ]
-                                },
-                                "sizeLimit": {
-                                    "type": "string",
-                                    "default": "4Gi",
-                                    "title": "The sizeLimit Schema",
-                                    "examples": [
-                                        "4Gi"
-                                    ]
-                                }
-                            }
-                        }
-                    }
                 },
                 "readOnlyFunctionList": {
                     "type": "string",
@@ -1299,7 +1225,7 @@
                 "healthCheckUsername": "",
                 "healthCheckPassword": "",
                 "healthCheckDatabase": "postgres",
-                "coredumpSizeLimit": "",
+                "coredumpSizeLimit": "0",
                 "readOnlyFunctionList": ""
             }]
         }
@@ -1421,7 +1347,7 @@
             "healthCheckUsername": "",
             "healthCheckPassword": "",
             "healthCheckDatabase": "postgres",
-            "coredumpSizeLimit": "",
+            "coredumpSizeLimit": "0",
             "readOnlyFunctionList": ""
         }
     }]

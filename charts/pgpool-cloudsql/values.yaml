@@ -254,60 +254,8 @@ pgpool:
   healthCheckUsername: ""
   healthCheckPassword: ""
   healthCheckDatabase: "postgres"
-  # DEPRECATED: use pgpool.coredump.* instead.  If this is set to a non-empty
-  # string it still wins, so existing values files keep working unchanged.
-  # (fed to `ulimit -c`; defined in blocks or "unlimited")
-  coredumpSizeLimit: ""
-  # Core dump collection.  Off by default: pgpool drops core files willy-nilly,
-  # a single child can dump hundreds of megabytes, and there can be
-  # numInitChildren of them, so a crash loop will cheerfully fill a volume.
-  #
-  # IMPORTANT: this needs one piece of setup OUTSIDE the chart.  Whether a core
-  # is written at all, and where, is decided by the node's
-  # /proc/sys/kernel/core_pattern -- a kernel-wide setting no pod can change.
-  # On GKE it is set per node pool, and `kernel.core_pattern` is on the
-  # supported sysctl list, so no privileged DaemonSet is needed:
-  #
-  #   # node-config.yaml
-  #   linuxConfig:
-  #     sysctl:
-  #       kernel.core_pattern: /var/coredumps/core.%e.%p.%t
-  #
-  #   gcloud container node-pools update POOL --cluster CLUSTER \
-  #     --system-config-from-file=node-config.yaml
-  #
-  # For a non-pipe pattern the kernel writes the core inside the *crashing
-  # process's* mount namespace, so an absolute path lands in this container --
-  # which is why GKE accepts absolute paths only, and why `path` below must be
-  # the directory part of the pattern you configure.  Get that wrong and the
-  # core is written to the container's ephemeral storage and lost on restart.
-  #
-  # The pgpool container logs the node's core_pattern at startup and tells you
-  # which case you are in.  See README.md for the full walkthrough.
-  coredump:
-    enabled: false
-    # fed to `ulimit -c`: a size in 512-byte blocks, or "unlimited"
-    sizeLimit: "unlimited"
-    # Where the core dump volume is mounted.  This MUST match the directory
-    # part of the node pool's kernel.core_pattern (see above), otherwise the
-    # kernel writes the core somewhere we have not mounted a volume.
-    path: /var/coredumps
-    # Once we have captured one complete core, drop RLIMIT_CORE to zero on the
-    # running pgpool processes so no further cores are written until the pod
-    # restarts.  This bounds disk use by construction, and the first core is
-    # the one you want: it has not been perturbed by the earlier crashes.
-    # Set to false only if you specifically need to compare several crashes,
-    # and then make sure volume.sizeLimit is generous enough.
-    stopAfterFirst: true
-    volume:
-      # If set, mount this existing PersistentVolumeClaim instead of an emptyDir,
-      # so cores survive the pod being rescheduled.  Note that an RWO claim will
-      # block a rolling update with replicaCount > 1.
-      existingClaim: ""
-      # Applies to the emptyDir only, and is ignored when existingClaim is set.
-      # Note this is a hard Kubernetes limit: exceeding it gets the pod EVICTED,
-      # which is why stopAfterFirst is the primary guard rather than this.
-      sizeLimit: 4Gi
+  # coredump size limit (fed to `ulimit -c`; defined in blocks or "unlimited")
+  coredumpSizeLimit: "0"
   # comma-separated list of read-only functions
   # cf: https://www.pgpool.net/docs/latest/en/html/runtime-config-load-balancing.html#GUC-READ-ONLY-FUNCTION-LIST
   readOnlyFunctionList: ""

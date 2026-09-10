@@ -95,8 +95,7 @@ RUN apk add --no-cache \
       jq \
       libevent \
       openssl \
-      postgresql-client \
-      util-linux-misc
+      postgresql-client
 
 # Adding the package path to local
 ENV PATH=$PATH:/usr/local/gcloud/google-cloud-sdk/bin

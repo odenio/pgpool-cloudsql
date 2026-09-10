@@ -76,62 +76,6 @@ the `download.php?f=` endpoint, so *every* build against it had begun failing
 with a 404 regardless of version. Tarballs now come from
 `https://www.pgpool.net/source/`.
 
-### New features
-
-Core dump collection is now configurable. Previously the only knob was
-`pgpool.coredumpSizeLimit`, and raising it meant cores landed wherever the
-process happened to be and grew without bound. Setting `pgpool.coredump.enabled`
-now mounts a dedicated volume for them and stops dumping as soon as one complete
-core has been captured, so a crash loop cannot exhaust the volume.
-
-This takes one piece of setup outside the chart. Where a core goes is decided by
-the node's `/proc/sys/kernel/core_pattern`, which no pod can change, and on GKE
-that is a per-node-pool sysctl:
-
-```yaml
-# node-config.yaml
-linuxConfig:
-  sysctl:
-    kernel.core_pattern: /var/coredumps/core.%e.%p.%t
-```
-
-```yaml
-# values.yaml
-pgpool:
-  coredump:
-    enabled: true
-    path: /var/coredumps   # the directory part of core_pattern, above
-```
-
-`kernel.core_pattern` is on GKE's supported sysctl list, so this needs no
-privileged DaemonSet. The step is not optional on GKE: stock Container-Optimized
-OS ships `core_pattern=/core.%e.%p.%t`, which writes cores into the container's
-root filesystem, where they count against node disk and are lost on the next
-container restart. GKE accepts absolute paths only, which is what we want:
-for a non-pipe pattern the kernel writes the core inside the *crashing
-process's* mount namespace, so an absolute path lands in the pgpool container at
-that path. `pgpool.coredump.path` must therefore be the directory part of the
-pattern, or the core goes to the container's ephemeral storage and is lost on
-restart. The pgpool container compares the two at startup and logs which case
-you are in. See [Collecting core dumps](README.md#collecting-core-dumps).
-
-### VALUES - Deprecated:
-
-Parameter | Notes
---- | ---
-`pgpool.coredumpSizeLimit` | Superseded by `pgpool.coredump.sizeLimit`. The default is now `""` rather than `"0"`, and a non-empty value still overrides the new setting, so existing values files behave exactly as before. Core dumping remains off unless you opt in.
-
-### VALUES - New:
-
-Parameter | Description | Default
---- | --- | ---
-`pgpool.coredump.enabled` | Collect core files when a pgpool worker crashes. | `false`
-`pgpool.coredump.sizeLimit` | Value fed to `ulimit -c`: a size in 512-byte blocks, or `"unlimited"`. | `"unlimited"`
-`pgpool.coredump.path` | Where the core dump volume is mounted, and the working directory pgpool is started from. | `/var/coredumps`
-`pgpool.coredump.stopAfterFirst` | After one complete core, set `RLIMIT_CORE` to zero on the running pgpool processes so no further cores are written until the pod restarts. | `true`
-`pgpool.coredump.volume.existingClaim` | Mount this existing PersistentVolumeClaim instead of an `emptyDir`, so cores survive a reschedule. | `""`
-`pgpool.coredump.volume.sizeLimit` | `sizeLimit` for the core dump `emptyDir`; ignored when `existingClaim` is set. Exceeding it evicts the pod. | `4Gi`
-
 ## `v1.6.0` → `v1.6.1`
 
 This is a maintenance release:
