@@ -87,7 +87,9 @@ jobs:
           fi
           version="${version#v}"
           if ! printf '%s' "${version}" |
-            grep -qE '^[0-9]+\.[0-9]+\.[0-9]+([.+-][A-Za-z0-9._-]+)?$'; then
+            grep -qE '^[0-9]+\.[0-9]+\.[0-9]+([.-][A-Za-z0-9._-]+)?$'; then
+            # note: '+' is deliberately not accepted -- it is legal in a semver
+            # build-identifier but not in a docker tag
             echo "refusing '${version}' as an image tag component: not a chart version" >&2
             exit 1
           fi

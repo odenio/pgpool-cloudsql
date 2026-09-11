@@ -19,12 +19,12 @@ CHART_VERSION="$(yq eval '.version' <charts/pgpool-cloudsql/Chart.yaml)"
 
 REPOSITORY="${REPOSITORY:-"odentech/pgpool-cloudsql"}"
 
-yq eval '.jobs.docker_build.strategy.matrix.pgpool_version[]' <.github/workflows/docker.yaml | while read PGPOOL_VERSION; do
+yq eval '.jobs.docker_build.strategy.matrix.pgpool_version[]' <.github/workflows/docker.yaml | while read -r PGPOOL_VERSION; do
   tag="${REPOSITORY}:${CHART_VERSION}-${PGPOOL_VERSION}"
   echo "*** Building ${tag}"
   docker build \
     --build-arg PGPOOL_VERSION="${PGPOOL_VERSION}" \
-    --build-arg APPLY_PATCHES="TRUE" \
+    --build-arg APPLY_PATCHES="true" \
     --pull \
     -t "${tag}" \
     --push \
