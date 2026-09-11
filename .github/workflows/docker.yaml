@@ -8,11 +8,12 @@ name: Docker Build
 # no `release` event was ever delivered, and the images had to be built by hand
 # with script/build-docker.sh.
 #
-# The fix is to stop waiting for an event that will never arrive and let
-# release.yml call us directly once chart-releaser has cut the release.  The
-# other two triggers are conveniences: `workflow_dispatch` replaces the manual
-# build script, and `release` still works for a release created by a human (i.e.
-# not by GITHUB_TOKEN).
+# The fix is to stop waiting for an event that will never arrive: release.yml
+# calls us directly, and it does so *before* chart-releaser publishes, so the
+# chart is never installable ahead of the images it asks for.  The other two
+# triggers are conveniences: `workflow_dispatch` replaces the manual build
+# script, and `release` still works for a release created by a human (i.e. not
+# by GITHUB_TOKEN).
 
 on:
   workflow_call:
@@ -78,14 +79,15 @@ jobs:
           # in order of preference: what our caller told us, what a human typed
           # into the workflow_dispatch form, the tag of a hand-cut release, and
           # finally whatever Chart.yaml says.
+          chart_version="$(yq eval '.version' charts/pgpool-cloudsql/Chart.yaml)"
           version="${INPUT_VERSION}"
           if [ -z "${version}" ] && [ "${EVENT_NAME}" = "release" ]; then
             version="${RELEASE_TAG}"
           fi
-          if [ -z "${version}" ]; then
-            version="$(yq eval '.version' charts/pgpool-cloudsql/Chart.yaml)"
-          fi
           version="${version#v}"
+          if [ -z "${version}" ]; then
+            version="${chart_version}"
+          fi
           # [[ =~ ]] matches the whole string.  grep would match line by line,
           # so "1.7.0<newline>release_version=latest" would pass a line test and
           # then inject a second assignment into $GITHUB_OUTPUT, where the last
@@ -93,6 +95,15 @@ jobs:
           # build identifier, not in a docker tag.
           if [[ ! "${version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][A-Za-z0-9._-]+)?$ ]]; then
             echo "refusing '${version}' as an image tag component: not a chart version" >&2
+            exit 1
+          fi
+          # The tag says which release these images belong to, but the build
+          # uses whatever tree we checked out.  Dispatching from main with an
+          # older version would therefore rebuild current source on top of that
+          # release's already-published tags, silently mutating them.
+          if [ "${version}" != "${chart_version}" ]; then
+            echo "refusing to publish ${version} images from a tree whose Chart.yaml says ${chart_version}" >&2
+            echo "check out the matching release tag and dispatch from there instead" >&2
             exit 1
           fi
           echo "release_version=${version}" >> "$GITHUB_OUTPUT"

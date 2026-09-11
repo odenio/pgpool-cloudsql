@@ -71,10 +71,11 @@ releases are cut by `helm/chart-releaser-action` using the default
 events for that token. The workflow had therefore never executed once, and
 images had to be built by hand with `script/build-docker.sh`.
 
-`release.yml` now calls the docker build directly as a reusable workflow once
-chart-releaser reports a released chart, so image publishing follows a merge to
-`main` automatically. The workflow also accepts `workflow_dispatch` for a manual
-rebuild. `script/build-docker.sh` still works and is still the right tool for
+`release.yml` now calls the docker build directly as a reusable workflow, and
+does so *before* chart-releaser publishes: a merge to `main` works out the
+version, pushes every image, and only then releases the chart, so the chart is
+never installable ahead of the images it names. The workflow also accepts
+`workflow_dispatch` for a manual rebuild. `script/build-docker.sh` still works and is still the right tool for
 building an image with a patch from `patches/` applied.
 
 Separately, the Dockerfile's source download URL is updated: pgpool.net retired

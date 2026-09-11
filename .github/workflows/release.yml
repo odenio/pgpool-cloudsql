@@ -5,6 +5,14 @@ on:
     branches:
       - main
 
+# Every push to main starts an independent run, so without this two of them can
+# both see the version tag as absent, push the same image tags from different
+# commits, and race to publish.  Queue instead of cancelling: a half-finished
+# release is worse than a slow one.
+concurrency:
+  group: release-charts
+  cancel-in-progress: false
+
 # Ordering matters here. chart-releaser used to run first, which meant a single
 # failed matrix leg left a publicly installable chart pointing at image tags
 # that were never built -- the ImagePullBackOff this repository already shipped
