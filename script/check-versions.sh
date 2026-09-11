@@ -19,6 +19,7 @@ WORKFLOW=.github/workflows/docker.yaml
 SCHEMA=charts/pgpool-cloudsql/values.schema.json
 VALUES=charts/pgpool-cloudsql/values.yaml
 CHART=charts/pgpool-cloudsql/Chart.yaml
+DOCKERFILE=Dockerfile
 
 fail=0
 err() {
@@ -31,6 +32,8 @@ enum="$(yq -o=yaml eval '.properties.pgpool.properties.version.enum[]' "${SCHEMA
 values_default="$(yq eval '.pgpool.version' "${VALUES}")"
 schema_default="$(yq -o=yaml eval '.properties.pgpool.properties.version.default' "${SCHEMA}")"
 app_version="$(yq eval '.appVersion' "${CHART}")"
+docker_default="$(grep -oE '^ARG[[:space:]]+PGPOOL_VERSION=[^[:space:]]+' "${DOCKERFILE}" |
+  head -1 | cut -d= -f2 || true)"
 
 # the list of versions we build has to be exactly the list the chart will accept
 if [ "$(sort <<<"${matrix}")" != "$(sort <<<"${enum}")" ]; then
@@ -52,6 +55,14 @@ grep -qxF "${app_version}" <<<"${matrix}" ||
 
 [ "${app_version}" = "${values_default}" ] ||
   err "${CHART} appVersion '${app_version}' != ${VALUES} pgpool.version '${values_default}' (appVersion should name the version we deploy by default)"
+
+# a bare `docker build` with no --build-arg uses the Dockerfile's own default,
+# so that is one more version reference that can drift on its own
+if [ -z "${docker_default}" ]; then
+  err "could not read ARG PGPOOL_VERSION from ${DOCKERFILE}"
+elif [ "${docker_default}" != "${values_default}" ]; then
+  err "${DOCKERFILE} ARG PGPOOL_VERSION '${docker_default}' != ${VALUES} pgpool.version '${values_default}'"
+fi
 
 # the comment above pgpool.version in values.yaml is the list operators actually
 # read, so it rots the same way and is worth pinning down too

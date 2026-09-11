@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       changed_charts: ${{ steps.chart_release.outputs.changed_charts }}
-      chart_version: ${{ steps.chart_version.outputs.version }}
+      release_version: ${{ steps.chart_version.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -64,7 +64,7 @@ jobs:
     if: needs.release.outputs.changed_charts != ''
     uses: ./.github/workflows/docker.yaml
     with:
-      release_version: ${{ needs.release.outputs.chart_version }}
+      release_version: ${{ needs.release.outputs.release_version }}
     secrets:
       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
       DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}

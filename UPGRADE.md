@@ -49,13 +49,15 @@ sit in `ImagePullBackOff`. The default now tracks the build matrix, and
 matrix, the values schema, the chart defaults, or the documented version lists
 ever disagree again.
 
-### Fixed: `socket_dir` was silently ignored
+### Fixed: the socket directory setting was wrong on half the supported versions
 
-The generated `pgpool.conf` set `socket_dir`, which has not been a pgpool
-parameter for many years; pgpool logged `unrecognized configuration parameter`
-at `INFO` and carried on with the default. It is now spelled
-`unix_socket_directories`. The effective value is `/tmp` either way, so there is
-no behavior change.
+The generated `pgpool.conf` set `socket_dir`. Pgpool renamed that parameter to
+`unix_socket_directories` in 4.4.0 and kept no alias, so on 4.4 and later the
+setting was silently dropped: pgpool logs nothing, starts normally, and uses its
+own default. Spelling it the new way would just move the same dead setting onto
+4.3, which this release still supports. Since every supported version defaults
+the socket directory to `/tmp`, which is exactly what we were setting, the line
+is omitted entirely instead. No behavior change on any version.
 
 ### Fixed: the docker build workflow never ran
 
