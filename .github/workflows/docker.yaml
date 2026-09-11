@@ -63,25 +63,36 @@ jobs:
 
       - name: Determine release version
         id: vars
+        # ${{ }} expressions are substituted into the script before bash parses
+        # it, so a release tag or dispatch input like "v$(...)" would execute as
+        # shell syntax in a job that holds the Docker Hub push credentials.
+        # Everything below therefore arrives through env, where bash treats it
+        # as data, and is checked against the shape we expect before use.
+        env:
+          INPUT_VERSION: ${{ inputs.release_version }}
+          EVENT_NAME: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          PGPOOL_VERSION: ${{ matrix.pgpool_version }}
         run: |
           set -euo pipefail
           # in order of preference: what our caller told us, what a human typed
           # into the workflow_dispatch form, the tag of a hand-cut release, and
           # finally whatever Chart.yaml says.
-          version="${{ inputs.release_version }}"
-          if [ -z "${version}" ] && [ "${{ github.event_name }}" = "release" ]; then
-            version="${{ github.event.release.tag_name }}"
+          version="${INPUT_VERSION}"
+          if [ -z "${version}" ] && [ "${EVENT_NAME}" = "release" ]; then
+            version="${RELEASE_TAG}"
           fi
           if [ -z "${version}" ]; then
-            version="$(grep -E '^version:' charts/pgpool-cloudsql/Chart.yaml | awk '{print $2}')"
+            version="$(yq eval '.version' charts/pgpool-cloudsql/Chart.yaml)"
           fi
           version="${version#v}"
-          if [ -z "${version}" ]; then
-            echo "could not determine a release version to tag with" >&2
+          if ! printf '%s' "${version}" |
+            grep -qE '^[0-9]+\.[0-9]+\.[0-9]+([.+-][A-Za-z0-9._-]+)?$'; then
+            echo "refusing '${version}' as an image tag component: not a chart version" >&2
             exit 1
           fi
           echo "release_version=${version}" >> "$GITHUB_OUTPUT"
-          echo "Tagging images as ${version}-${{ matrix.pgpool_version }}"
+          echo "Tagging images as ${version}-${PGPOOL_VERSION}"
 
       - name: Build and push
         uses: docker/build-push-action@v6
