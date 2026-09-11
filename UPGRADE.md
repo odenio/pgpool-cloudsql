@@ -53,11 +53,15 @@ ever disagree again.
 
 The generated `pgpool.conf` set `socket_dir`. Pgpool renamed that parameter to
 `unix_socket_directories` in 4.4.0 and kept no alias, so on 4.4 and later the
-setting was silently dropped: pgpool logs nothing, starts normally, and uses its
-own default. Spelling it the new way would just move the same dead setting onto
-4.3, which this release still supports. Since every supported version defaults
-the socket directory to `/tmp`, which is exactly what we were setting, the line
-is omitted entirely instead. No behavior change on any version.
+setting was dropped and pgpool used its own default. Pgpool reports an unknown
+parameter as `unrecognized configuration parameter` at `INFO`, but it does so
+while parsing, before `log_min_messages` from the same file takes effect, and
+the built-in default suppresses `INFO` -- so nothing actually reaches the log
+and the setting failed silently. Spelling it the new way would just move the
+same dead setting onto 4.3, which this release still supports. Since every
+supported version defaults the socket directory to `/tmp`, which is exactly what
+we were setting, the line is omitted entirely instead. No behavior change on any
+version.
 
 ### Fixed: the docker build workflow never ran
 
