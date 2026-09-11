@@ -46,6 +46,7 @@ instance no matter what.  This is configureable at deploy time as
 
 Old Version | New Version | Upgrade Guide
 --- | --- | ---
+v1.6.1 | v1.7.0 | [link](UPGRADE.md#v161--v170)
 v1.6.0 | v1.6.1 | [link](UPGRADE.md#v160--v161)
 v1.5.0 | v1.6.0 | [link](UPGRADE.md#v150--v160)
 v1.4.1 | v1.5.0 | [link](UPGRADE.md#v141--v150)
@@ -82,7 +83,7 @@ helm repo update
 ```sh
 export RELEASE_NAME=my-pgpool-service # a name (you will need 1 installed chart for each primary DB)
 export NAMESPACE=my-k8s-namespace     # a kubernetes namespace
-export CHART_VERSION=1.6.1            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
+export CHART_VERSION=1.7.0            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
 export VALUES_FILE=./my_values.yaml   # your values file
 
 helm install \
@@ -124,7 +125,7 @@ Parameter | Description | Default
 --- | --- | ---
 `deploy.replicaCount` | Number of pod replicas to deploy | `1`
 `deploy.repository` | Docker image repository of the runtime container image | `odentech/pgpool-cloudsql`
-`deploy.tag` | If set, override the tag of the runtime container image. If left empty, we use the concatenation of the chart version (`1.2.0`) and the selected `pgpool.version` e.g. `1.3.3-4.5.4` | `""`
+`deploy.tag` | If set, override the tag of the runtime container image. If left empty, we use the concatenation of the chart version (`1.7.0`) and the selected `pgpool.version` e.g. `1.7.0-4.5.12` | `""`
 `deploy.service.tier` | Value for the "tier" [label](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) applied to the kubernetes [service](https://kubernetes.io/docs/concepts/services-networking/service/) | `db`
 `deploy.service.additionalLabels` | Map of additional k/v string pairs to add as labels for the kubernetes service | `{}`
 `deploy.annotations` | Kubernetes [annotation](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/) spec applied to the deployment pods | `{}`
@@ -222,7 +223,7 @@ Parameter | Description | Default
 
 Parameter | Description | Default
 --- | --- | ---
-`pgpool.version` | Which version of pgpool to deploy. Currently supported: `4.5.4`, `4.4.9`, `4.3.12`, `4.2.19`, `4.1.22`, `4.0.25`  | `4.5.4`
+`pgpool.version` | Which version of pgpool to deploy. Currently supported: `4.7.2`, `4.6.7`, `4.5.12`, `4.4.17`, `4.3.20`  | `4.5.12`
 `pgpool.reservedConnections` | When this parameter is set to 1 or greater, incoming connections from clients are not accepted with error message "Sorry, too many clients already", rather than blocked if the number of current connections from clients is more than (`numInitChildren` - `reservedConnections`). ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-connection.html#GUC-RESERVED-CONNECTIONS)) | `0`
 pgpool.processManagmentMode | Whether to use static or dynamic [process management](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html). Allowable values are `static` and `dynamic` | `static`
 pgpool.processManagementStrategy | When using [dynamic process managment](https://www.pgpool.net/docs/45/en/html/runtime-config-process-management.html), defines how aggressively to scale down idle connections. Allowable values are `lazy`, `gentle` and `aggressive`. | `gentle`

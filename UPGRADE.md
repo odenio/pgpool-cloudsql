@@ -1,5 +1,88 @@
 # Upgrading Steps
 
+## `v1.6.1` → `v1.7.0`
+
+### 🛑 Removed pgpool versions
+
+Support for the v4.1 and v4.2 branches of pgpool is **removed**; both are past
+end of life upstream. If you are pinning `pgpool.version` to a `4.1.x` or
+`4.2.x` release, the values validator will now refuse to install and you must
+move to 4.3 or later first.
+
+### Software upgrades
+
+Every remaining release channel moves to its current patch release, and the
+v4.6 and v4.7 branches are added:
+
+Branch | Old | New
+--- | --- | ---
+4.7 | (none) | `4.7.2`
+4.6 | (none) | `4.6.7`
+4.5 | `4.5.8` | `4.5.12`
+4.4 | `4.4.13` | `4.4.17`
+4.3 | `4.3.16` | `4.3.20`
+
+The default `pgpool.version` stays on the 4.5 branch, now `4.5.12`. 4.6 and 4.7
+are available opt-in.
+
+Neither new branch requires a configuration change on our side:
+
+* **4.6** adds `log_backend_messages` and removes nothing. Its one migration
+  note is that `health_check_user`, `sr_check_user`, `recovery_user` and
+  `wd_lifecheck_user` changed default from `nobody` to the empty string, which
+  does not affect us because the chart has always required and set the first two
+  explicitly.
+* **4.7** retires slony clustering mode (never used here), flips the
+  `log_pcp_processes` default from `on` to `off`, and renames `logdir` to
+  `work_dir`. We continue to emit `logdir`, which 4.7 still accepts with a
+  deprecation warning and which is the only spelling 4.3 through 4.6 understand.
+
+### 🛑 The default `pgpool.version` was previously broken
+
+`v1.4.1` bumped the pgpool releases in the build matrix but not in
+`values.yaml`, so from `v1.4.1` through `v1.6.1` the default `pgpool.version`
+stayed at `4.5.4` while the images published were `4.5.8`. A `helm install` that
+did not set `pgpool.version` explicitly therefore resolved to an image tag that
+was never built (e.g. `odentech/pgpool-cloudsql:1.6.1-4.5.4`) and the pods would
+sit in `ImagePullBackOff`. The default now tracks the build matrix, and
+`script/check-versions.sh` runs on every pull request to fail the build if the
+matrix, the values schema, the chart defaults, or the documented version lists
+ever disagree again.
+
+### Fixed: the socket directory setting was wrong on half the supported versions
+
+The generated `pgpool.conf` set `socket_dir`. Pgpool renamed that parameter to
+`unix_socket_directories` in 4.4.0 and kept no alias, so on 4.4 and later the
+setting was dropped and pgpool used its own default. Pgpool reports an unknown
+parameter as `unrecognized configuration parameter` at `INFO`, but it does so
+while parsing, before `log_min_messages` from the same file takes effect, and
+the built-in default suppresses `INFO` -- so nothing actually reaches the log
+and the setting failed silently. Spelling it the new way would just move the
+same dead setting onto 4.3, which this release still supports. Since every
+supported version defaults the socket directory to `/tmp`, which is exactly what
+we were setting, the line is omitted entirely instead. No behavior change on any
+version.
+
+### Fixed: the docker build workflow never ran
+
+`.github/workflows/docker.yaml` triggered on `release: [published]`, but our
+releases are cut by `helm/chart-releaser-action` using the default
+`GITHUB_TOKEN`, and GitHub deliberately does not deliver workflow-triggering
+events for that token. The workflow had therefore never executed once, and
+images had to be built by hand with `script/build-docker.sh`.
+
+`release.yml` now calls the docker build directly as a reusable workflow, and
+does so *before* chart-releaser publishes: a merge to `main` works out the
+version, pushes every image, and only then releases the chart, so the chart is
+never installable ahead of the images it names. The workflow also accepts
+`workflow_dispatch` for a manual rebuild. `script/build-docker.sh` still works and is still the right tool for
+building an image with a patch from `patches/` applied.
+
+Separately, the Dockerfile's source download URL is updated: pgpool.net retired
+the `download.php?f=` endpoint, so *every* build against it had begun failing
+with a 404 regardless of version. Tarballs now come from
+`https://www.pgpool.net/source/`.
+
 ## `v1.6.0` → `v1.6.1`
 
 This is a maintenance release:

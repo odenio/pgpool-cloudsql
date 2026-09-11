@@ -24,7 +24,7 @@ RUN apk add build-base libpq-dev linux-headers openssl-dev>3
 ENV pkgname=pgpool
 ENV _pkgname=pgpool-II
 
-ARG PGPOOL_VERSION=4.5.4
+ARG PGPOOL_VERSION=4.5.12
 ENV PGPOOL_VERSION=${PGPOOL_VERSION}
 
 ARG APPLY_PATCHES=false
@@ -32,7 +32,7 @@ ENV APPLY_PATCHES=${APPLY_PATCHES}
 
 WORKDIR /usr/local/src
 
-ADD https://www.pgpool.net/download.php?f=$_pkgname-$PGPOOL_VERSION.tar.gz pgpool.tgz
+ADD https://www.pgpool.net/source/$_pkgname-$PGPOOL_VERSION.tar.gz pgpool.tgz
 
 RUN tar zxf pgpool.tgz
 

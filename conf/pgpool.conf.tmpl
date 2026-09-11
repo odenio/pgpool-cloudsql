@@ -35,7 +35,10 @@
 
 listen_addresses = '*'
 port = 5432
-socket_dir = '/tmp'
+# No socket directory setting on purpose: pgpool renamed socket_dir to
+# unix_socket_directories in 4.4 and kept no alias, so no single spelling works
+# across the 4.3 to 4.7 range this chart supports.  All of them default to /tmp,
+# which is what we would be setting anyway.
 reserved_connections = {{ .RESERVED_CONNECTIONS }}
 
 # - Backend Connection Settings -
