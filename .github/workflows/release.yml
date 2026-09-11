@@ -5,12 +5,17 @@ on:
     branches:
       - main
 
+# Ordering matters here. chart-releaser used to run first, which meant a single
+# failed matrix leg left a publicly installable chart pointing at image tags
+# that were never built -- the ImagePullBackOff this repository already shipped
+# once. So: work out the version, build every image the new chart can ask for,
+# and only publish the chart once they are all pushed.
 jobs:
-  release:
+  version:
     runs-on: ubuntu-latest
     outputs:
-      changed_charts: ${{ steps.chart_release.outputs.changed_charts }}
       release_version: ${{ steps.chart_version.outputs.version }}
+      needs_release: ${{ steps.chart_version.outputs.needs_release }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,13 +25,15 @@ jobs:
       # Deliberately NOT chart-releaser's own chart_version output.  That is set
       # from lookup_latest_tag(), which is `git describe --tags HEAD~` evaluated
       # before packaging, so it reports the tag that existed *before* this run:
-      # on the merge that releases 1.7.0 it returns v1.6.1, and we would publish
-      # images tagged for the previous chart while the new chart asks for tags
-      # that were never built.  Upstream: helm/chart-releaser-action#227 and
-      # #238, both still open as of v1.7.0 (the latest release).
+      # on the merge that releases 1.7.0 it returns v1.6.1.  Upstream:
+      # helm/chart-releaser-action#227 and #238, both still open as of v1.7.0
+      # (the latest release).
       #
       # Chart.yaml is the real source of truth: cr.yaml releases as
-      # "v{{ .Version }}", so the tag chart-releaser creates is this value.
+      # "v{{ .Version }}", so the tag chart-releaser will create is this value,
+      # and that tag already existing is what tells us there is nothing to do --
+      # the same conclusion chart-releaser's own change detection reaches, just
+      # early enough that we can order the jobs by it.
       - name: Read the chart version
         id: chart_version
         run: |
@@ -39,7 +46,36 @@ jobs:
             exit 1
           fi
           echo "version=${version}" >> "$GITHUB_OUTPUT"
-          echo "Chart version is ${version}"
+          if git rev-parse -q --verify "refs/tags/v${version}" >/dev/null; then
+            echo "v${version} is already released; nothing to do"
+            echo "needs_release=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "v${version} is not released yet; building images, then releasing"
+            echo "needs_release=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  # fail-fast is off inside the reusable workflow so that one broken pgpool
+  # branch still reports the others, but any failure fails this job, which skips
+  # the release below and leaves the chart unpublished.
+  docker_build:
+    needs: version
+    if: needs.version.outputs.needs_release == 'true'
+    uses: ./.github/workflows/docker.yaml
+    with:
+      release_version: ${{ needs.version.outputs.release_version }}
+    secrets:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+  release:
+    needs: [version, docker_build]
+    if: needs.version.outputs.needs_release == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Configure Git
         run: |
@@ -50,23 +86,9 @@ jobs:
         uses: azure/setup-helm@v4
 
       - name: Run chart-releaser
-        id: chart_release
         uses: helm/chart-releaser-action@v1.7.0
         with:
           config: cr.yaml
           charts_repo_url: https://odenio.github.io/pgpool-cloudsql
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-
-  # chart-releaser publishes the release with GITHUB_TOKEN, and GitHub does not
-  # deliver workflow-triggering events for that token, so a `release: published`
-  # trigger on the docker build never fires.  Call it directly instead.
-  docker_build:
-    needs: release
-    if: needs.release.outputs.changed_charts != ''
-    uses: ./.github/workflows/docker.yaml
-    with:
-      release_version: ${{ needs.release.outputs.release_version }}
-    secrets:
-      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}

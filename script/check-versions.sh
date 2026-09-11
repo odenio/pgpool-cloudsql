@@ -67,7 +67,7 @@ fi
 # the comment above pgpool.version in values.yaml is the list operators actually
 # read, so it rots the same way and is worth pinning down too
 comment_list="$(sed -n '/# what version of pgpool to use/,/^  version:/p' "${VALUES}" |
-  grep -oE '^  # [0-9]+\.[0-9]+\.[0-9]+$' | awk '{print $2}')"
+  grep -oE '^  # [0-9]+\.[0-9]+\.[0-9]+$' | awk '{print $2}' || true)"
 if [ "$(sort <<<"${comment_list}")" != "$(sort <<<"${matrix}")" ]; then
   err "the supported-version comment in ${VALUES} does not match the build matrix:"
   diff --label "${VALUES} comment" --label "${WORKFLOW}" -u \
@@ -86,7 +86,7 @@ if [ -z "${readme_row}" ]; then
 else
   # take only the "Currently supported: ..." cell, not the default in the next one
   readme_list="$(sed -E 's/.*Currently supported: *//; s/\|.*$//' <<<"${readme_row}" |
-    grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | sort -u)"
+    grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | sort -u || true)"
   if [ "${readme_list}" != "$(sort <<<"${matrix}")" ]; then
     err "the supported-version list in README.md does not match the build matrix:"
     diff --label "README.md pgpool.version row" --label "${WORKFLOW}" -u \
