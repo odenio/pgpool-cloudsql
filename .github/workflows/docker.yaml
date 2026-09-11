@@ -86,10 +86,12 @@ jobs:
             version="$(yq eval '.version' charts/pgpool-cloudsql/Chart.yaml)"
           fi
           version="${version#v}"
-          if ! printf '%s' "${version}" |
-            grep -qE '^[0-9]+\.[0-9]+\.[0-9]+([.-][A-Za-z0-9._-]+)?$'; then
-            # note: '+' is deliberately not accepted -- it is legal in a semver
-            # build-identifier but not in a docker tag
+          # [[ =~ ]] matches the whole string.  grep would match line by line,
+          # so "1.7.0<newline>release_version=latest" would pass a line test and
+          # then inject a second assignment into $GITHUB_OUTPUT, where the last
+          # one wins.  '+' is also deliberately not accepted: legal in a semver
+          # build identifier, not in a docker tag.
+          if [[ ! "${version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][A-Za-z0-9._-]+)?$ ]]; then
             echo "refusing '${version}' as an image tag component: not a chart version" >&2
             exit 1
           fi
