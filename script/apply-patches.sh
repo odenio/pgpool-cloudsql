@@ -2,6 +2,7 @@
 #
 
 if [ "${APPLY_PATCHES}" = "true" ]; then
+  echo "*** Applying patches"
   for f in patches/*.patch; do
     echo "*** Applying prebuild patch: ${f}"
     patch -p1 -u -s <"${f}"

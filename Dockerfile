@@ -29,6 +29,8 @@ ENV PGPOOL_VERSION=${PGPOOL_VERSION}
 
 ARG APPLY_PATCHES=false
 ENV APPLY_PATCHES=${APPLY_PATCHES}
+ARG STRIP_BINARIES=true
+ENV STRIP_BINARIES=${STRIP_BINARIES}
 
 WORKDIR /usr/local/src
 
@@ -52,7 +54,7 @@ RUN CFLAGS="-g -O2 -std=gnu17" ./configure \
 		--disable-rpath
 
 RUN make -j3
-RUN strip src/pgpool
+RUN sh -c "if [ \"${STRIP_BINARIES}\" = \"true\" ]; then strip src/pgpool; fi"
 RUN make DESTDIR=/pgpool_bin install
 
 ###

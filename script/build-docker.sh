@@ -16,15 +16,21 @@ TOP="$(git rev-parse --show-toplevel)"
 cd "${TOP}"
 
 CHART_VERSION="$(yq eval '.version' <charts/pgpool-cloudsql/Chart.yaml)"
-
 REPOSITORY="${REPOSITORY:-"odentech/pgpool-cloudsql"}"
+APPLY_PATCHES="${APPLY_PATCHES:-"true"}"
+STRIP_BINARIES="${STRIP_BINARIES:-"false"}"
+TAG_SUFFIX="${TAG_SUFFIX:-""}"
 
 yq eval '.jobs.docker_build.strategy.matrix.pgpool_version[]' <.github/workflows/docker.yaml | while read -r PGPOOL_VERSION; do
   tag="${REPOSITORY}:${CHART_VERSION}-${PGPOOL_VERSION}"
+  if [ "${TAG_SUFFIX}" ]; then
+    tag="${tag}-${TAG_SUFFIX}"
+  fi
   echo "*** Building ${tag}"
   docker build \
     --build-arg PGPOOL_VERSION="${PGPOOL_VERSION}" \
-    --build-arg APPLY_PATCHES="true" \
+    --build-arg APPLY_PATCHES="${APPLY_PATCHES}" \
+    --build-arg STRIP_BINARIES="${STRIP_BINARIES}" \
     --pull \
     -t "${tag}" \
     --push \
