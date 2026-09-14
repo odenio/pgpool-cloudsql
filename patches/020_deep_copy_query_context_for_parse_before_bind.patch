@@ -1,0 +1,39 @@
+pool_query_context_shallow_copy() shares original_query/parse_tree pointers with
+its source. parse_before_bind() repoints the Parse and Bind sent messages at the copy,
+leaving the source unreferenced; replacing the previous unnamed portal then destroys the
+source and frees the parse tree the copy still uses (SIGSEGV in Execute/Bind on the next
+use of that cached statement). Copy the strings and parse trees into the copy's context.
+Applies to 4.3.20 through 4.7.2 (hunk avoids the signature line, which differs).
+
+--- a/src/context/pool_query_context.c
++++ b/src/context/pool_query_context.c
+@@ -139,6 +139,29 @@
+ 	memory_context = qc->memory_context;
+ 	memcpy(qc, query_context, sizeof(POOL_QUERY_CONTEXT));
+ 	qc->memory_context = memory_context;
++
++	/*
++	 * The query strings and parse trees of the source live in the source's
++	 * memory context.  parse_before_bind() repoints the Parse and Bind sent
++	 * messages at the copy and leaves the source unreferenced, so the source
++	 * is destroyed as soon as the previous portal is replaced.  Give the copy
++	 * its own copies so it survives that.
++	 */
++	{
++		MemoryContext oldcontext = MemoryContextSwitchTo(memory_context);
++
++		if (query_context->original_query)
++			qc->original_query = pstrdup(query_context->original_query);
++		if (query_context->rewritten_query)
++			qc->rewritten_query = pstrdup(query_context->rewritten_query);
++		if (query_context->parse_tree)
++			qc->parse_tree = copyObject(query_context->parse_tree);
++		if (query_context->rewritten_parse_tree)
++			qc->rewritten_parse_tree = copyObject(query_context->rewritten_parse_tree);
++		if (query_context->query_w_hex)
++			qc->query_w_hex = pstrdup(query_context->query_w_hex);
++		MemoryContextSwitchTo(oldcontext);
++	}
+ 	return qc;
+ }
+ 

@@ -46,7 +46,8 @@ if [ -z "${PCP_PASSWORD}" ]; then
   PCP_PASSWORD="$(head -c 10 /dev/urandom | base64)"
 fi
 PCP_PASSWORD_HASH="$(pg_md5 "${PCP_PASSWORD}")"
-export PCP_PASSWORD PCP_PASSWORD_HASH
+LOG_CLIENT_MESSAGES="${LOG_CLIENT_MESSAGES:-off}"
+export PCP_PASSWORD PCP_PASSWORD_HASH LOG_CLIENT_MESSAGES
 envtpl -m error -o /root/.pcppass "${TMPLDIR}/pcppass.tmpl" || log fatal "Error processing ${TMPLDIR}/pcppass.tmpl"
 envtpl -m error -o "${PGPDIR}/pcp.conf" "${TMPLDIR}/pcp.conf.tmpl" || log fatal "Error processing ${TMPLDIR}/pcp.conf.tmpl"
 chmod 0600 /root/.pcppass

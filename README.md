@@ -46,6 +46,7 @@ instance no matter what.  This is configureable at deploy time as
 
 Old Version | New Version | Upgrade Guide
 --- | --- | ---
+v1.7.0 | v1.7.1 | [link](UPGRADE.md#v170--v171)
 v1.6.1 | v1.7.0 | [link](UPGRADE.md#v161--v170)
 v1.6.0 | v1.6.1 | [link](UPGRADE.md#v160--v161)
 v1.5.0 | v1.6.0 | [link](UPGRADE.md#v150--v160)
@@ -83,7 +84,7 @@ helm repo update
 ```sh
 export RELEASE_NAME=my-pgpool-service # a name (you will need 1 installed chart for each primary DB)
 export NAMESPACE=my-k8s-namespace     # a kubernetes namespace
-export CHART_VERSION=1.7.0            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
+export CHART_VERSION=1.7.1            # a chart version: https://github.com/odenio/pgpool-cloudsql/releases
 export VALUES_FILE=./my_values.yaml   # your values file
 
 helm install \
@@ -125,7 +126,7 @@ Parameter | Description | Default
 --- | --- | ---
 `deploy.replicaCount` | Number of pod replicas to deploy | `1`
 `deploy.repository` | Docker image repository of the runtime container image | `odentech/pgpool-cloudsql`
-`deploy.tag` | If set, override the tag of the runtime container image. If left empty, we use the concatenation of the chart version (`1.7.0`) and the selected `pgpool.version` e.g. `1.7.0-4.5.12` | `""`
+`deploy.tag` | If set, override the tag of the runtime container image. If left empty, we use the concatenation of the chart version (`1.7.1`) and the selected `pgpool.version` e.g. `1.7.1-4.5.12` | `""`
 `deploy.service.tier` | Value for the "tier" [label](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) applied to the kubernetes [service](https://kubernetes.io/docs/concepts/services-networking/service/) | `db`
 `deploy.service.additionalLabels` | Map of additional k/v string pairs to add as labels for the kubernetes service | `{}`
 `deploy.annotations` | Kubernetes [annotation](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/) spec applied to the deployment pods | `{}`
@@ -240,6 +241,7 @@ pgpool.maxSpareChildren | When using [dynamic process management](https://www.pg
 `pgpool.allowSqlComments` | When set to on, Pgpool-II ignore the SQL comments when identifying if the load balance or query cache is possible on the query. When this parameter is set to off, the SQL comments on the query could effectively prevent the query from being load balanced or cached. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-load-balancing.html#GUC-ALLOW-SQL-COMMENTS)) | `on`
 `pgpool.disableLoadBalanceOnWrite` | Specify load balance behavior after write queries appear. Options are `off`, `transaction`, `trans_transaction`, `always` and `dml_adaptive`. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-load-balancing.html#GUC-DISABLE-LOAD-BALANCE-ON-WRITE)) | `transaction`
 `pgpool.statementLevelLoadBalance` | When set to on, the load balancing node is decided for each read query. When set to off, load balancing node is decided at the session start time and will not be changed until the session ends. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-load-balancing.html#GUC-STATEMENT-LEVEL-LOAD-BALANCE)) | `on`
+`pgpool.logClientMessages` | If set to `on`, prints client messages to the log. WARNING: this will produce _extremely_ verbose logs. Use with caution. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-logging.html#GUC-LOG-CLIENT-MESSAGES)) | `off`
 `pgpool.logMinMessages` | Controls which minimum message levels are emitted to log. Valid values are `DEBUG5`, `DEBUG4`, `DEBUG3`, `DEBUG2`, `DEBUG1`, `INFO`, `NOTICE`, `WARNING`, `ERROR`, `LOG`, `FATAL`, and `PANIC`. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-logging.html#GUC-LOG-MIN-MESSAGES)) | `ERROR`
 `pgpool.logErrorVerbosity` | Controls the amount of detail emitted for each message that is logged. Valid values are `TERSE`, `DEFAULT`, and `VERBOSE`, each adding more fields to displayed messages. `TERSE` excludes the logging of `DETAIL`, `HINT`, `QUERY` and `CONTEXT` error information.  ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-config-logging.html#GUC-LOG-ERROR-VERBOSITY)) | `TERSE`
 `pgpool.srCheckUsername` | *REQUIRED* Specifies the PostgreSQL user name to perform streaming replication check. The user must have LOGIN privilege and exist on all the PostgreSQL backends. ([docs](https://www.pgpool.net/docs/latest/en/html/runtime-streaming-replication-check.html#GUC-SR-CHECK-USER)) | `""`
