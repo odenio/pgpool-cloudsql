@@ -33,8 +33,8 @@ jobs:
       # Deliberately NOT chart-releaser's own chart_version output.  That is set
       # from lookup_latest_tag(), which is `git describe --tags HEAD~` evaluated
       # before packaging, so it reports the tag that existed *before* this run:
-      # on the merge that releases 1.7.0 it returns v1.6.1.  Upstream:
-      # helm/chart-releaser-action#227 and #238, both still open as of v1.7.0
+      # on the merge that releases 1.7.1 it returns v1.6.1.  Upstream:
+      # helm/chart-releaser-action#227 and #238, both still open as of v1.7.1
       # (the latest release).
       #
       # Chart.yaml is the real source of truth: cr.yaml releases as

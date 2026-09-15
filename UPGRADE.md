@@ -1,5 +1,14 @@
 # Upgrading Steps
 
+## `v1.7.0` → `v1.7.1`
+
+### New features
+
+Add the ability to toggle
+[log_client_messages](https://www.pgpool.net/docs/latest/en/html/runtime-config-logging.html#GUC-LOG-CLIENT-MESSAGES)
+for the pgpool process. The default value is `off`, matching the hardcoded value
+in all previous releases.
+
 ## `v1.6.1` → `v1.7.0`
 
 ### 🛑 Removed pgpool versions

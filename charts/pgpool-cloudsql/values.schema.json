@@ -896,6 +896,7 @@
                 "statementLevelLoadBalance",
                 "primaryWeight",
                 "replicasWeight",
+                "logClientMessages",
                 "logMinMessages",
                 "logErrorVerbosity",
                 "srCheckUsername",
@@ -1116,6 +1117,15 @@
                         1
                     ]
                 },
+                "logClientMessages": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The logClientMessages Schema",
+                    "examples": [
+                        "on",
+                        "off"
+                    ]
+                },
                 "logMinMessages": {
                     "type": "string",
                     "default": "",
@@ -1217,6 +1227,7 @@
                 "statementLevelLoadBalance": "on",
                 "primaryWeight": 0,
                 "replicasWeight": 1,
+                "logClientMessages": "off",
                 "logMinMessages": "ERROR",
                 "logErrorVerbosity": "TERSE",
                 "srCheckUsername": "",
@@ -1339,6 +1350,7 @@
             "statementLevelLoadBalance": "on",
             "primaryWeight": 0,
             "replicasWeight": 1,
+            "logClientMessages": "off",
             "logMinMessages": "ERROR",
             "logErrorVerbosity": "TERSE",
             "srCheckUsername": "",

@@ -146,6 +146,8 @@ spec:
           value: "{{ .Values.pgpool.primaryWeight }}"
         - name: REPLICAS_WEIGHT
           value: "{{ .Values.pgpool.replicasWeight }}"
+        - name: LOG_CLIENT_MESSAGES
+          value: {{ .Values.pgpool.logClientMessages | default "off" | quote }}
         - name: LOG_MIN_MESSAGES
           value: "{{ .Values.pgpool.logMinMessages }}"
         - name: LOG_ERROR_VERBOSITY
