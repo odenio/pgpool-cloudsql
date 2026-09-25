@@ -1,5 +1,13 @@
 # Upgrading Steps
 
+## `v1.7.1` → `v1.7.2`
+
+This is a maintenance release: the Go toolchain used to build `envtpl` and
+`pgpool2_exporter` is bumped from 1.26.2 to 1.26.8, picking up the Go standard
+library security fixes released since 1.26.2 (CVE-2026-39821, CVE-2026-39822,
+CVE-2026-42504, CVE-2026-46600, CVE-2026-56864, CVE-2026-56865 and others).
+No configuration changes.
+
 ## `v1.7.0` → `v1.7.1`
 
 ### New features
