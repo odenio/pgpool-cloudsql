@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ARG ALPINE_VERSION=3.23
-ARG GO_VERSION=1.26.2
+ARG GO_VERSION=1.26.8
 ARG PLATFORM=linux/amd64
 ###
 ### Build PGPool-II from source in a build container
