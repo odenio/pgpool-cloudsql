@@ -1,5 +1,11 @@
 # Upgrading Steps
 
+## `v1.7.2` → `v1.7.3`
+
+This is a maintenance release: the runtime image now runs `apk upgrade` in
+its final stage, picking up Alpine package security fixes such as python3
+3.12.16-r0 (CVE-2026-115557). No configuration changes.
+
 ## `v1.7.1` → `v1.7.2`
 
 This is a maintenance release: the Go toolchain used to build `envtpl` and
