@@ -3,6 +3,31 @@ entries:
   pgpool-cloudsql:
   - apiVersion: v2
     appVersion: 4.5.12
+    created: "2026-11-19T16:29:37.517179398Z"
+    description: the pgpool-ii connection pooling postgres proxy with automatic discovery
+      of GCP CloudSQL backends
+    digest: cd8c627431ac13382da8a1428997604f599e006a4cb2c9d8c1cdb5b6a8c2b5b5
+    icon: https://www.postgresql.org/media/img/about/press/elephant.png
+    keywords:
+    - postgresql
+    - pgpool
+    - proxy
+    - load-balancer
+    - google
+    - cloudsql
+    maintainers:
+    - email: tech@oden.io
+      name: odenio
+      url: https://oden.io
+    name: pgpool-cloudsql
+    sources:
+    - https://github.com/odenio/pgpool-cloudsql
+    type: application
+    urls:
+    - https://github.com/odenio/pgpool-cloudsql/releases/download/v1.7.3/pgpool-cloudsql-1.7.3.tgz
+    version: 1.7.3
+  - apiVersion: v2
+    appVersion: 4.5.12
     created: "2026-09-25T15:44:21.739109923Z"
     description: the pgpool-ii connection pooling postgres proxy with automatic discovery
       of GCP CloudSQL backends
@@ -251,4 +276,4 @@ entries:
     urls:
     - https://github.com/odenio/pgpool-cloudsql/releases/download/v1.3.2/pgpool-cloudsql-1.3.2.tgz
     version: 1.3.2
-generated: "2026-09-25T15:44:21.73914206Z"
+generated: "2026-11-19T16:29:37.517216213Z"
