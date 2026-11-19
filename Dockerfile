@@ -81,6 +81,7 @@ RUN go install ./cmd/pgpool2_exporter/...
 ###
 FROM --platform=${PLATFORM} alpine:${ALPINE_VERSION} AS assemble
 RUN apk update
+RUN apk upgrade --no-cache
 RUN apk add --no-cache curl python3
 
 # we build this in the deploy container because there's no guarantee
